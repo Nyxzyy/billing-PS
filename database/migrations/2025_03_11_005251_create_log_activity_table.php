@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('log_activities', function (Blueprint $table) {
+        Schema::create('log_activity', function (Blueprint $table) {
             $table->id();
             $table->timestamp('timestamp')->useCurrent();
             $table->foreignId('user_id')->nullable()->constrained('users');
