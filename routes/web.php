@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LogActivityController;
+use App\Http\Controllers\BillingPackageController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,3 +18,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/log-activity/{id}', [LogActivityController::class, 'show']); 
     Route::post('/log-activity', [LogActivityController::class, 'store']);   
 });
+
+Route::resource('billing-packages', BillingPackageController::class);
