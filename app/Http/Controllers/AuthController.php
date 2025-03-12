@@ -33,31 +33,20 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             $user = Auth::user();
-            
-            Log::info('Login berhasil', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'role' => $user->role
+    
+            $redirectUrl = strtolower($user->role->name) === 'kasir' ? '/kasir/dashboard' : '/admin/dashboard';
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Selamat datang, ' . $user->name . '!',
+                'redirect' => $redirectUrl
             ]);
-            
-            $successMessage = 'Selamat datang, ' . $user->name . '!';
-            
-            if ($user->role && strtolower($user->role->name) === 'kasir') {
-                Log::info('Redirecting to kasir dashboard');
-                return redirect('/kasir/dashboard')->with('success', $successMessage);
-            } elseif ($user->role && strtolower($user->role->name) === 'admin') {
-                Log::info('Redirecting to admin dashboard');
-                return redirect('/admin/dashboard')->with('success', $successMessage);
-            }
-            
-            Log::warning('Role tidak dikenal', ['role' => $user->role]);
-            return redirect('/login');
         }
     
-        Log::info('Login gagal', ['email' => $request->email]);
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->withInput($request->only('email'));
+        return response()->json([
+            'success' => false,
+            'errors' => ['email' => 'Email atau password salah.']
+        ], 401);
     }
     
     public function logout(Request $request)

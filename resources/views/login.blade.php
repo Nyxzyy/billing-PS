@@ -40,7 +40,9 @@
                 </div>
             @endif
 
-            <form action="{{ route('login') }}" method="POST" class="w-full max-w mt-4">
+            <div id="alert-message" class="hidden text-center text-red-600 font-semibold mt-3"></div>
+
+            <form id="loginForm" action="{{ route('login') }}" method="POST" class="w-full max-w mt-4">
                 @csrf
                 <div class="mb-4 relative w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
@@ -74,6 +76,52 @@
             </form>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#loginForm').submit(function(e) {
+                e.preventDefault();
+
+                let email = $('#email').val();
+                let password = $('#password').val();
+                let _token = $('input[name="_token"]').val();
+                let loginButton = $('button[type="submit"]');
+                let originalText = loginButton.html();
+
+                loginButton.prop('disabled', true).html('Memproses...');
+
+                $.ajax({
+                    url: "{{ route('login') }}",
+                    type: "POST",
+                    data: {
+                        email: email,
+                        password: password,
+                        _token: _token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            loginButton.html('Berhasil!');
+                            setTimeout(function() {
+                                window.location.href = response
+                                    .redirect;
+                            }, 1000);
+                        }
+                    },
+                    error: function(xhr) {
+                        let response = xhr.responseJSON;
+                        if (response && response.errors) {
+                            $('#alert-message').removeClass('hidden').text(response.errors
+                                .email || "Email atau password salah.");
+                        }
+                        loginButton.prop('disabled', false).html(originalText);
+                    }
+                });
+            });
+        });
+    </script>
+
+
 </body>
 
 </html>

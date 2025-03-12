@@ -13,7 +13,7 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="text-[#565656]">Hari ini,</p>
-                        <p class="text-lg md:text-xl font-bold">04 Maret 01:11</p>
+                        <p id="currentTime" class=" text-lg md:text-xl font-bold">{{ $today }}</p>
                     </div>
                     <div class="bg-[#3E81AB] text-white p-2 rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -70,3 +70,15 @@
         </div>
     </div>
 @endsection
+
+<script>
+    function fetchTime() {
+        fetch('/current-time')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('currentTime').innerText = data.time;
+            });
+    }
+
+    setInterval(fetchTime, 1000);
+</script>
