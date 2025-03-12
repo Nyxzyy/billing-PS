@@ -9,6 +9,20 @@ Route::get('/', function () {
     return view('login');
 });
 
+Route::prefix('kasir')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('kasir.dashboard');
+    })->name('kasir.dashboard');
+
+    Route::get('/billing', function () {
+        return view('kasir.billing');
+    })->name('kasir.billing');
+
+    Route::get('/laporan', function () {
+        return view('kasir.laporan');
+    })->name('kasir.laporan');
+});
+
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
