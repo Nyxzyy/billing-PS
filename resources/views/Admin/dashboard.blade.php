@@ -34,13 +34,8 @@
                 </ul>
             </nav>
             <div class="mt-auto">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit"
-                        class="block w-full text-left p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white">
-                        Keluar Akun
-                    </button>
-                </form>
+                <a href="#" class="block p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white">Keluar
+                    Akun</a>
             </div>
         </div>
 
