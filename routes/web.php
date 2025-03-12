@@ -6,7 +6,7 @@ use App\Http\Controllers\LogActivityController;
 use App\Http\Controllers\BillingPackageController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('login');
 });
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
