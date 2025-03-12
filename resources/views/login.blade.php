@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Billing Manage</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/css/styles.css', 'resources/js/app.js'])
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto">
 </head>
@@ -13,13 +13,13 @@
         <div class="w-3/5 relative bg-cover bg-center flex items-center justify-center" style="background-image: url('{{ asset('assets/images/Background (1).png') }}');">
             <div class="absolute inset-0 bg-black opacity-50"></div>
             <div class="relative p-6 text-center text-white">
-                <h1 class="text-4xl font-semibold italic underline" style="font-family: Roboto, sans-serif">"INILOGONYA"</h1>
+                <h1 class="text-4xl font-semibold italic underline">"INILOGONYA"</h1>
             </div>
         </div>
 
         <div class="w-2/5 bg-gray-200 p-6 px-16 shadow-lg flex flex-col justify-center">
-            <h2 class="text-3xl font-semibold" style="font-family: Roboto, sans-serif">Selamat Datang!</h2>
-            <p class="text-[#606060] mt-1 text-sm" style="font-family: Roboto, sans-serif">Silakan masuk untuk mengelola transaksi dan pelanggan dengan mudah.</p>
+            <h2 class="text-3xl font-semibold">Selamat Datang!</h2>
+            <p class="text-[#606060] mt-1 text-sm">Silakan masuk untuk mengelola transaksi dan pelanggan dengan mudah.</p>
             
             <form class="w-full max-w mt-4">
                 <div class="mb-4 relative w-full">
