@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('ip_address', 45);
             $table->string('location', 100);
             $table->enum('status', ['Tersedia', 'Berjalan', 'Pending', 'Selesai', 'Maintenance']);
+            $table->time('shutdown_time')->nullable();
             $table->dateTime('last_used_at')->nullable();
             $table->timestamps();
         });

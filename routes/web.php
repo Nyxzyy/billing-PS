@@ -51,6 +51,6 @@ Route::prefix('log-activity')->middleware('auth:sanctum')->controller(LogActivit
 // =======================================================================================
 Route::get('/current-time', function () {
     return response()->json([
-        'time' => now()->translatedFormat('l, d F Y H:i:s') // Waktu dalam format yang lebih enak dibaca
+        'time' => now()->translatedFormat('l, d F Y H:i') // Waktu dalam format yang lebih enak dibaca
     ]);
 });
