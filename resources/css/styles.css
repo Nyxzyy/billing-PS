@@ -7,3 +7,15 @@ body {
         display: none;
     }
 }
+
+/* Ubah warna teks jika dropdown disabled */
+#pilihPaket:disabled {
+    color: #e9e9e9; /* Warna abu-abu */
+    background-color: #ffffff; /* Opsional: ubah background */
+    border-color: #e9e9e9;
+}
+
+/* Pastikan option yang disabled juga berubah warna */
+#pilihPaket option:disabled {
+    color: #DBDBDB;
+}

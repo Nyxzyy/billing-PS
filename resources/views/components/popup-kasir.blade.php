@@ -14,17 +14,18 @@
 {{-- Modal Kendala --}}
 <div id="modalKendala" class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
     <div class="bg-white p-5 rounded-lg w-96">
-        <h2 class="text-sm  font-bold text-center mb-4">Kendala Device</h2>
+        <h2 class="text-sm font-bold text-center mb-4">Kendala Device</h2>
         <label class="text-xs text-[#656565]">Ketikkan Kendalanya</label>
-        <textarea class="w-full border border-[#C0C0C0] p-2 rounded mt-1" placeholder="Ketikkan Kendalanya. . . ."></textarea>
-        <div class="flex items-center">
+        <textarea id="textareaKendala" class="w-full border border-[#C0C0C0] p-2 rounded mt-1" placeholder="Ketikkan Kendalanya..."></textarea>
+        
+        <div class="flex items-center mt-2">
             <input type="checkbox" id="konfirmasi" class="mr-2">
             <label for="konfirmasi" class="text-[#4E4E4E] text-xs">Konfirmasi Kunci Device</label>
         </div>
 
         <div class="flex justify-end mt-4">
-            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs" onclick="closeModal('modalKendala')">Batal</button>
-            <button class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs" onclick="openModal('modalKonfirmasiKunci', 'modalKendala')">Kunci</button>
+            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs" onclick="closeModalKendala()">Batal</button>
+            <button id="btnKunci" class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs cursor-not-allowed" disabled onclick="openModalKunci()">Kunci</button>
         </div>
     </div>
 </div>
@@ -77,7 +78,7 @@
         <h2 class="text-sm font-bold text-center mb-4">Pilih Paket Billing</h2>
 
         <label class="text-xs text-[#656565]">Pilih Paket</label>
-        <select id="pilihPaket" class="w-full border border-[#C0C0C0] p-2 rounded mt-1">
+        <select id="pilihPaket" class="w-full border border-[#C0C0C0] p-2 rounded mt-1 text-[#969696]">
             <option value="" disabled selected>Pilih Paket</option>
             <option value="paket1">Paket Main 2 Jam - Rp. 10.000</option>
             <option value="paket2">Paket Main 5 Jam - Rp. 30.000</option>
@@ -146,12 +147,30 @@
         document.getElementById(modalToHide).classList.add("invisible");
 
         if (modalToHide === "modalPilihPaket") {
-            let paketDropdown = document.getElementById("pilihPaket");
-            if (paketDropdown.selectedIndex > 0) {
-                paketDropdown.selectedIndex = 0;
-            }
-            document.getElementById("openPaket").checked = false;
+            resetPilihPaket();
         }
+    }
+
+    function resetPilihPaket() {
+        let paketDropdown = document.getElementById("pilihPaket");
+        let openCheckbox = document.getElementById("openPaket");
+        let openLabel = document.querySelector("label[for='openPaket']");
+
+        // Reset dropdown ke default
+        paketDropdown.selectedIndex = 0;
+        paketDropdown.disabled = false;
+
+        // Reset checkbox ke default
+        openCheckbox.checked = false;
+        openCheckbox.disabled = false;
+        openLabel.style.color = "#4E4E4E";
+
+        // Reset warna option dropdown
+        let options = paketDropdown.querySelectorAll("option");
+        options.forEach(opt => opt.style.color = "black");
+
+        isTambahBilling = false;
+        btnKonfirmasi.innerHTML = "Print Struk dan Mulai";
     }
 
     let isTambahBilling = false;
@@ -207,6 +226,73 @@
 
         closeModal("modalPilihPaket");
         openModal("modalKonfirmasi");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let paketDropdown = document.getElementById("pilihPaket");
+        let openCheckbox = document.getElementById("openPaket");
+        let openLabel = document.querySelector("label[for='openPaket']");
+
+        paketDropdown.addEventListener("change", function () {
+            if (paketDropdown.value) {
+                openCheckbox.disabled = true;
+                openLabel.style.color = "#A0A0A0";
+            } else {
+                openCheckbox.disabled = false;
+                openLabel.style.color = "#4E4E4E";
+            }
+        });
+
+        openCheckbox.addEventListener("change", function () {
+            let options = paketDropdown.querySelectorAll("option");
+
+            if (openCheckbox.checked) {
+                paketDropdown.disabled = true;
+                options.forEach(opt => opt.style.color = "#969696");
+            } else {
+                paketDropdown.disabled = false;
+                options.forEach(opt => opt.style.color = "black");
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let textareaKendala = document.getElementById("textareaKendala");
+        let konfirmasiCheckbox = document.getElementById("konfirmasi");
+        let btnKunci = document.getElementById("btnKunci");
+
+        function checkForm() {
+            let isFilled = textareaKendala.value.trim() !== "" && konfirmasiCheckbox.checked;
+            btnKunci.disabled = !isFilled;
+            btnKunci.classList.toggle("cursor-not-allowed", !isFilled);
+            btnKunci.classList.toggle("cursor-pointer", isFilled);
+        }
+
+        textareaKendala.addEventListener("input", checkForm);
+        konfirmasiCheckbox.addEventListener("change", checkForm);
+    });
+
+    function closeModalKendala() {
+        resetModalKendala();
+        document.getElementById("modalKendala").classList.add("invisible");
+    }
+
+    function openModalKunci() {
+        resetModalKendala();
+        openModal('modalKonfirmasiKunci', 'modalKendala');
+    }
+
+    function resetModalKendala() {
+        let textareaKendala = document.getElementById("textareaKendala");
+        let konfirmasiCheckbox = document.getElementById("konfirmasi");
+        let btnKunci = document.getElementById("btnKunci");
+
+        // Reset semua elemen ke default
+        textareaKendala.value = "";
+        konfirmasiCheckbox.checked = false;
+        btnKunci.disabled = true;
+        btnKunci.classList.add("cursor-not-allowed");
+        btnKunci.classList.remove("cursor-pointer");
     }
 
 </script>
