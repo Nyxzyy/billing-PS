@@ -1,7 +1,7 @@
 {{-- Modal Mulai Shift --}}
 <div id="modalMulaiShift"
-    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-1/4">
+    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50 px-4">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md">
         <h2 class="text-sm font-bold">Mulai Shift Kerja</h2>
         <p class="mt-2 text-sm text-[#545454]">Klik Tombol dibawah ini untuk memulai shift anda saat ini.</p>
 
@@ -13,8 +13,9 @@
 </div>
 
 {{-- Modal Kendala --}}
-<div id="modalKendala" class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
-    <div class="bg-white p-5 rounded-lg w-96">
+<div id="modalKendala"
+    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50 px-4">
+    <div class="bg-white p-5 rounded-lg w-full max-w-sm md:max-w-md">
         <h2 class="text-sm font-bold text-center mb-4">Kendala Device</h2>
         <label class="text-xs text-[#656565]">Ketikkan Kendalanya</label>
         <textarea id="textareaKendala" class="w-full border border-[#C0C0C0] p-2 rounded mt-1"
@@ -35,8 +36,8 @@
 </div>
 
 <div id="modalKonfirmasiKunci"
-    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-1/4">
+    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50 px-4">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md">
         <h2 class="text-sm font-bold">Konfirmasi Kunci Device</h2>
         <p class="mt-2 text-sm">Apakah Anda yakin ingin mengunci Device <span class="text-[#FF4747] font-semibold">"PS
                 2"</span> ini?</p>
@@ -51,8 +52,8 @@
 
 {{-- Modal Detail Kendala --}}
 <div id="modalDetailKendala"
-    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
-    <div class="bg-white p-5 rounded-lg w-96">
+    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50 px-4">
+    <div class="bg-white p-5 rounded-lg w-full max-w-sm md:max-w-md">
         <h2 class="text-sm font-bold text-center mb-4">Detail Kendala Device</h2>
         <label class="text-xs text-[#656565]">Ketikkan Kendalanya</label>
         <textarea class="w-full border border-[#C0C0C0] p-2 rounded mt-1" placeholder="Ketikkan Kendalanya. . . ."></textarea>
@@ -71,8 +72,8 @@
 </div>
 
 <div id="modalBukaKunci"
-    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-1/4">
+    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50 px-4">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md">
         <h2 class="text-sm font-bold ">Konfirmasi Buka Kunci Device</h2>
         <p class="mt-2 text-sm">Apakah Anda yakin ingin membuka kunci Device <span
                 class="text-[#FF4747] font-semibold">"PS 2"</span> ini?</p>
@@ -87,8 +88,8 @@
 
 {{-- Modal Pilih Paket --}}
 <div id="modalPilihPaket"
-    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
-    <div class="bg-white p-5 rounded-lg w-96 shadow-lg">
+    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50 px-4">
+    <div class="bg-white p-5 rounded-lg w-full max-w-sm md:max-w-md shadow-lg">
         <h2 class="text-sm font-bold text-center mb-4">Pilih Paket Billing</h2>
 
         <label class="text-xs text-[#656565]">Pilih Paket</label>
@@ -120,8 +121,8 @@
 
 {{-- Modal Konfirmasi Paket --}}
 <div id="modalKonfirmasi"
-    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50 px-4">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md">
         <h2 class="text-sm font-bold">Konfirmasi Paket Billing</h2>
 
         <div class="border border-black rounded-md p-3 mt-2 text-sm">
@@ -139,10 +140,10 @@
     </div>
 </div>
 
-{{-- Modal Detail Paket Device --}}
+{{-- Modal Detail Paket --}}
 <div id="modalDetailPaket"
-    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+    class="invisible fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50 px-4">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md">
         <h2 class="text-sm font-bold">Detail Billing</h2>
 
         <div class="border border-black rounded-md p-3 mt-2 text-sm">
@@ -204,7 +205,7 @@
     function openModalPilihPaket(isTambah) {
         isTambahBilling = isTambah;
         let deviceId;
-        
+
         if (isTambah) {
             // Get device ID from konfirmasi button when adding to existing billing
             deviceId = document.getElementById('btnKonfirmasi').getAttribute('data-device-id');
@@ -291,6 +292,34 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
+        let paketDropdown = document.getElementById("pilihPaket");
+        let openCheckbox = document.getElementById("openPaket");
+        let openLabel = document.querySelector("label[for='openPaket']");
+
+        paketDropdown.addEventListener("change", function() {
+            if (paketDropdown.value) {
+                openCheckbox.disabled = true;
+                openLabel.style.color = "#D8D8D8";
+            } else {
+                openCheckbox.disabled = false;
+                openLabel.style.color = "#4E4E4E";
+            }
+        });
+
+        openCheckbox.addEventListener("change", function() {
+            let options = paketDropdown.querySelectorAll("option");
+
+            if (openCheckbox.checked) {
+                paketDropdown.disabled = true;
+                options.forEach(opt => opt.style.color = "#969696");
+            } else {
+                paketDropdown.disabled = false;
+                options.forEach(opt => opt.style.color = "black");
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
         let textareaKendala = document.getElementById("textareaKendala");
         let konfirmasiCheckbox = document.getElementById("konfirmasi");
         let btnKunci = document.getElementById("btnKunci");
@@ -360,60 +389,64 @@
             });
 
             fetch(endpoint, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    device_id: deviceId,
-                    package_id: packageId,
-                    is_open: isOpen,
-                    is_adding: isAdding
-                }),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => {
-                        throw new Error(err.message || 'Network response was not ok');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'Berjalan') {
-                    let message = isAdding ? "Billing berhasil ditambahkan!" : "Billing telah dimulai!";
-                    if (data.shutdown_time) {
-                        const shutdownTime = new Date(data.shutdown_time);
-                        const formattedTime = shutdownTime.toLocaleTimeString('id-ID', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: false
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        device_id: deviceId,
+                        package_id: packageId,
+                        is_open: isOpen,
+                        is_adding: isAdding
+                    }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.message || 'Network response was not ok');
                         });
-                        message += `\nWaktu selesai: ${formattedTime}`;
                     }
-                    alert(message);
-                    closeModal('modalKonfirmasi');
-                    location.reload();
-                } else {
-                    alert(data.message || "Gagal memulai billing!");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert(error.message || "Terjadi kesalahan saat memulai billing. Silakan coba lagi.");
-            });
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'Berjalan') {
+                        let message = isAdding ? "Billing berhasil ditambahkan!" :
+                            "Billing telah dimulai!";
+                        if (data.shutdown_time) {
+                            const shutdownTime = new Date(data.shutdown_time);
+                            const formattedTime = shutdownTime.toLocaleTimeString('id-ID', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                            });
+                            message += `\nWaktu selesai: ${formattedTime}`;
+                        }
+                        alert(message);
+                        closeModal('modalKonfirmasi');
+                        location.reload();
+                    } else {
+                        alert(data.message || "Gagal memulai billing!");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert(error.message ||
+                        "Terjadi kesalahan saat memulai billing. Silakan coba lagi.");
+                });
         });
     });
 
     function openModalDetailPaket(deviceId, deviceName, shutdownTime) {
         // Update modal content with device details
-        document.getElementById('modalDetailPaket').querySelector('p:nth-child(1)').innerHTML = `Device: <span class="font-semibold">${deviceName}</span>`;
-        document.getElementById('modalDetailPaket').querySelector('p:nth-child(3)').innerHTML = `Durasi: <span class="font-semibold">${shutdownTime}</span>`;
-        
+        document.getElementById('modalDetailPaket').querySelector('p:nth-child(1)').innerHTML =
+            `Device: <span class="font-semibold">${deviceName}</span>`;
+        document.getElementById('modalDetailPaket').querySelector('p:nth-child(3)').innerHTML =
+            `Durasi: <span class="font-semibold">${shutdownTime}</span>`;
+
         // Store device ID for later use
         document.getElementById('btnKonfirmasi').setAttribute('data-device-id', deviceId);
-        
+
         openModal('modalDetailPaket');
     }
 </script>
