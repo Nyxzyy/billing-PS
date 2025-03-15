@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LogActivityController;
-use App\Http\Controllers\BillingPackageController;
+use App\Http\Controllers\BillingPageKasirController;
+use App\Http\Controllers\DevicesController;
 
 // Redirect berdasarkan role
 Route::get('/', function () {
@@ -29,8 +30,11 @@ Route::controller(AuthController::class)->group(function () {
 // ======================= KASIR ROUTES =======================
 Route::prefix('kasir')->middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('kasir.dashboard');
-    Route::view('/billing', 'kasir.billing')->name('kasir.billing');
     Route::view('/laporan', 'kasir.laporan')->name('kasir.laporan');
+    Route::get('/billing', [BillingPageKasirController::class, 'Devices'])->name('kasir.billing');
+    Route::get('/paket-billing', [BillingPageKasirController::class, 'PaketBillingKasir'])->name('paket.billing');
+    Route::post('/billing/start', [BillingPageKasirController::class, 'startBilling'])->name('billing.start');
+    Route::post('/billing/add', [BillingPageKasirController::class, 'addBilling'])->name('billing.add');
 });
 
 // ======================= ADMIN ROUTES =======================

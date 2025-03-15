@@ -13,11 +13,6 @@ class BillingPackageController extends Controller
         return view('billing_packages.index', compact('packages'));
     }
 
-    public function create()
-    {
-        return view('billing_packages.create');
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -38,18 +33,6 @@ class BillingPackageController extends Controller
         ]);
 
         return redirect()->route('billing-packages.index')->with('success', 'Billing Package created successfully.');
-    }
-
-    public function show($id)
-    {
-        $package = BillingPackage::findOrFail($id);
-        return view('billing_packages.show', compact('package'));
-    }
-
-    public function edit($id)
-    {
-        $package = BillingPackage::findOrFail($id);
-        return view('billing_packages.edit', compact('package'));
     }
 
     public function update(Request $request, $id)

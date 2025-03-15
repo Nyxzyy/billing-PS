@@ -10,12 +10,19 @@
             dalam satu tampilan.</p>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
-            @include('components.billingCardavail')
-            @include('components.billingCardrunning')
-            @include('components.billingCarderror')
-            @include('components.billingCardwaiting')
+            @foreach ($devices as $device)
+                @if ($device->status == 'Tersedia')
+                    @include('components.billingCardavail', ['device' => $device])
+                @elseif ($device->status == 'Berjalan')
+                    @include('components.billingCardrunning', ['device' => $device])
+                @elseif ($device->status == 'Maintenance')
+                    @include('components.billingCarderror', ['device' => $device])
+                @elseif ($device->status == 'Pending')
+                    @include('components.billingCardwaiting', ['device' => $device])
+                @endif
+            @endforeach
         </div>
     </div>
 
-    @include('components.popup-kasir')
+    @include('components.popup-kasir', ['packages' => $packages])
 @endsection

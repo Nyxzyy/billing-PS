@@ -1,11 +1,17 @@
+@php
+    // Jika device tidak diteruskan, gunakan default
+    $device = $device ?? null;
+@endphp
+
 <div class="relative bg-white shadow-md rounded-lg p-4 flex flex-col">
     <div class="absolute left-0 top-0 h-full w-2 bg-[#364153] rounded-l-lg"></div>
     <div class="pl-2">
-        <h2 class="text-[#364153] font-bold text-sm">PS 02</h2>
-        <p class="text-[#6F6F6F] text-xs">Ruangan 1 - Lantai 1</p>
+        <h2 class="text-[#364153] font-bold text-sm">{{ $device->name ?? 'Tidak Ditemukan' }}</h2>
+        <p class="text-[#6F6F6F] text-xs">{{ $device->location ?? 'Tidak Ditemukan' }}</p>
         <p class="text-[#364153] font-bold text-xs mt-2 mb-4">Tersedia</p>
     </div>
-    <button class="text-xs mt-auto bg-[#364153] text-white font-extrabold py-2 rounded-lg w-full cursor-pointer" onclick="openModal('modalPilihPaket')">
+    <button class="text-xs mt-auto bg-[#364153] text-white font-extrabold py-2 rounded-lg w-full cursor-pointer btn-start-billing"
+        onclick="openModalPilihPaket(false)" data-device-id="{{ $device->id }}">
         MULAI
     </button>
     <div class="absolute top-4 right-4 text-[#FB2C36] cursor-pointer" onclick="openModal('modalKendala')">
@@ -16,4 +22,3 @@
         </svg>
     </div>
 </div>
-

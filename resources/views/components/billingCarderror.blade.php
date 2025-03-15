@@ -1,8 +1,12 @@
+@php
+    // Jika device tidak diteruskan, gunakan default
+    $device = $device ?? null;
+@endphp
 <div class="relative bg-white shadow-md rounded-lg p-4 flex flex-col">
     <div class="absolute left-0 top-0 h-full w-2 bg-[#A8A8A8] rounded-l-lg"></div>
     <div class="pl-2">
-        <h2 class="text-[#A8A8A8] font-bold text-sm">PS 02</h2>
-        <p class="text-[#CDCDCD] text-xs">Ruangan 1 - Lantai 1</p>
+        <h2 class="text-[#A8A8A8] font-bold text-sm">{{ $device->name ?? 'Tidak Ditemukan' }}</h2>
+        <p class="text-[#CDCDCD] text-xs">{{ $device->location ?? 'Tidak Ditemukan' }}</p>
         <p class="text-[#A8A8A8] font-bold text-xs mt-2 mb-4">Terkendala</p>
     </div>
     <button class="text-xs mt-auto bg-[#A8A8A8] text-white font-extrabold py-2 rounded-lg w-full">
