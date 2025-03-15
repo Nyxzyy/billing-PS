@@ -36,13 +36,19 @@
             </li>
             <li class="mb-4">
                 <a href="{{ route('kasir.laporan') }}"
-                    class="text-lg md:text-xl font-medium block p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white">
+                    class="group text-lg md:text-xl font-medium flex items-center gap-2 p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white">
+                    <img src="{{ asset('assets/icon/report_svgrepo.com.svg') }}" 
+                    alt="Laporan" 
+                    class="w-6 h-6 transition duration-200 group-hover:hidden">
+                    <img src="{{ asset('assets/icon/report-svgrepo-com 1.svg') }}" 
+                    alt="Laporan" 
+                    class="w-6 h-6 transition duration-200 hidden group-hover:block">
                     Laporan
                 </a>
             </li>
         </ul>
     </nav>
-    <div class="mt-auto">
+    <div class="mt-auto mb-4">
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit"
