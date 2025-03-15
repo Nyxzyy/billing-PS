@@ -184,7 +184,7 @@
 
         if (isTambahBilling) {
             openCheckbox.disabled = true;
-            openLabel.style.color = "#A0A0A0"; 
+            openLabel.style.color = "#D8D8D8"; 
         } else {
             openCheckbox.disabled = false;
             openLabel.style.color = "#4E4E4E"; 
@@ -236,7 +236,7 @@
         paketDropdown.addEventListener("change", function () {
             if (paketDropdown.value) {
                 openCheckbox.disabled = true;
-                openLabel.style.color = "#A0A0A0";
+                openLabel.style.color = "#D8D8D8";
             } else {
                 openCheckbox.disabled = false;
                 openLabel.style.color = "#4E4E4E";
