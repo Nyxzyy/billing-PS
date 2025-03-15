@@ -11,7 +11,7 @@ class DashboardController extends Controller
     public function index()
     {
         return view('kasir.dashboard', [
-            'today' => now()->translatedFormat('l, d F Y H:i:s') 
+            'today' => now()->translatedFormat('l, d F Y H:i') 
         ]);
     }
 }
