@@ -9,7 +9,7 @@
         <p class="text-[#414141] mb-8">Kontrol billing perangkat dengan cepat. Pantau status perangkat aktif dan non-aktif
             dalam satu tampilan.</p>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
             @foreach ($devices as $device)
                 @if ($device->status == 'Tersedia')
                     @include('components.billingCardavail', ['device' => $device])

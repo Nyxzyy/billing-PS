@@ -10,8 +10,10 @@
         <p class="text-[#6F6F6F] text-xs">{{ $device->location ?? 'Tidak Ditemukan' }}</p>
         <p class="text-[#364153] font-bold text-xs mt-2 mb-4">Tersedia</p>
     </div>
-    <button class="text-xs mt-auto bg-[#364153] text-white font-extrabold py-2 rounded-lg w-full cursor-pointer btn-start-billing"
-        onclick="openModalPilihPaket(false)" data-device-id="{{ $device->id }}">
+    <button 
+        class="text-xs mt-auto bg-[#364153] text-white font-extrabold py-2 rounded-lg w-full cursor-pointer btn-start-billing"
+        onclick="openModalPilihPaket(false, '{{ $device->id }}')" 
+        data-device-id="{{ $device->id }}">
         MULAI
     </button>
     <div class="absolute top-4 right-4 text-[#FB2C36] cursor-pointer" onclick="openModal('modalKendala')">

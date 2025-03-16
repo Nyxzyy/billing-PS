@@ -9,26 +9,31 @@ class TransactionReport extends Model
 {
     use HasFactory;
 
-    protected $table = 'transaction_report';
-    protected $fillable = ['cashier_id', 'device_id', 'package_id', 'package_type', 'package_time', 'start_time', 'end_time', 'total_price'];
+    protected $fillable = [
+        'user_id',
+        'device_id',
+        'package_name',
+        'package_time',
+        'start_time',
+        'end_time',
+        'total_price',
+        'status'
+    ];
 
-    public function cashier()
-    {
-        return $this->belongsTo(User::class, 'cashier_id');
-    }
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+        'package_time' => 'integer',
+        'total_price' => 'decimal:2'
+    ];
 
     public function device()
     {
         return $this->belongsTo(Device::class);
     }
 
-    public function billingPackage()
+    public function user()
     {
-        return $this->belongsTo(BillingPackage::class, 'package_id');
-    }
-
-    public function getPackageTypeAttribute()
-    {
-        return $this->package_id ? $this->billingPackage->package_name : 'Open Billing';
+        return $this->belongsTo(User::class);
     }
 }

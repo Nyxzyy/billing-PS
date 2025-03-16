@@ -49,17 +49,16 @@
         </ul>
     </nav>
     <div class="mt-auto mb-4">
-        <form method="POST" action="{{ route('logout') }}">
+        <form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden">
             @csrf
-            <button type="submit"
-                class="flex items-center gap-2 w-full text-left p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white hover:cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 17l5-5-5-5M19.8 12H9M13 22a10 10 0 1 1 0-20" />
-                </svg>
-                Keluar Akun
-            </button>
         </form>
+        <button onclick="checkShiftBeforeLogout()" class="flex items-center gap-2 w-full text-left p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white hover:cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 17l5-5-5-5M19.8 12H9M13 22a10 10 0 1 1 0-20" />
+            </svg>
+            Keluar Akun
+        </button>
     </div>
 
 </div>
@@ -72,5 +71,21 @@
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         sidebar.classList.toggle('-translate-x-full');
+    }
+
+    function checkShiftBeforeLogout() {
+        fetch('/kasir/shift/check-status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.hasActiveShift) {
+                    openModal('modalLogoutConfirm');
+                } else {
+                    document.getElementById('logout-form').submit();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('error', 'Terjadi kesalahan saat memeriksa status shift');
+            });
     }
 </script>

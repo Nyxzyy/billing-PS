@@ -6,6 +6,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LogActivityController;
 use App\Http\Controllers\BillingPageKasirController;
 use App\Http\Controllers\DevicesController;
+use App\Http\Controllers\LaporanPageKasirController;
+use App\Http\Controllers\ShiftController;
 
 // Redirect berdasarkan role
 Route::get('/', function () {
@@ -28,13 +30,30 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 // ======================= KASIR ROUTES =======================
+Route::get('/get-server-time', function () {
+    return response()->json([
+        'timestamp' => now()->format('Y-m-d H:i:s.u'),
+        'timezone' => config('app.timezone')
+    ]);
+})->name('get-server-time');
+
 Route::prefix('kasir')->middleware('auth')->group(function () {
+    // Shift Management Routes
+    Route::get('/shift/check-status', [ShiftController::class, 'checkShiftStatus'])->name('shift.check');
+    Route::post('/shift/start', [ShiftController::class, 'startShift'])->name('shift.start');
+    Route::post('/shift/end', [ShiftController::class, 'endShift'])->name('shift.end');
+
+    // Existing Routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('kasir.dashboard');
-    Route::view('/laporan', 'kasir.laporan')->name('kasir.laporan');
     Route::get('/billing', [BillingPageKasirController::class, 'Devices'])->name('kasir.billing');
+    Route::get('/laporan', [LaporanPageKasirController::class, 'index'])->name('kasir.laporan');
     Route::get('/paket-billing', [BillingPageKasirController::class, 'PaketBillingKasir'])->name('paket.billing');
     Route::post('/billing/start', [BillingPageKasirController::class, 'startBilling'])->name('billing.start');
     Route::post('/billing/add', [BillingPageKasirController::class, 'addBilling'])->name('billing.add');
+    Route::post('/billing/update-status', [BillingPageKasirController::class, 'updateDeviceStatus'])->name('billing.update-status');
+    Route::post('/billing/finish', [BillingPageKasirController::class, 'finishBilling'])->name('billing.finish');
+    Route::post('/billing/restart', [BillingPageKasirController::class, 'restartBilling'])->name('billing.restart');
+    Route::get('/print-receipt/{transaction}', [LaporanPageKasirController::class, 'printReceipt'])->name('kasir.print.receipt');
 });
 
 // ======================= ADMIN ROUTES =======================
@@ -50,6 +69,13 @@ Route::prefix('log-activity')->middleware('auth:sanctum')->controller(LogActivit
     Route::get('/', 'index');
     Route::get('/{id}', 'show');
     Route::post('/', 'store');
+});
+
+// Shift Management Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/shift/status', [ShiftController::class, 'checkShiftStatus']);
+    Route::post('/shift/start', [ShiftController::class, 'startShift'])->middleware('web');
+    Route::post('/shift/end', [ShiftController::class, 'endShift'])->middleware('web');
 });
 
 // =======================================================================================

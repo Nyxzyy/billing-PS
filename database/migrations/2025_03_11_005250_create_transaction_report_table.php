@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('cashier_id')->constrained('users');
             $table->foreignId('device_id')->constrained('devices');
-            $table->unsignedBigInteger('package_id')->nullable(); // Mengacu ke billing_packages.id
-            $table->string('package_time', 20);
+            $table->string('package_type')->nullable();
+            $table->string('package_time', 20)->nullable();
             $table->dateTime('start_time');
-            $table->dateTime('end_time');
-            $table->decimal('total_price', 10, 2);
+            $table->dateTime('end_time')->nullable();
+            $table->decimal('total_price', 10, 2)->default(0);
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaction_report');
+        Schema::dropIfExists('transaction_reports');
     }
 };

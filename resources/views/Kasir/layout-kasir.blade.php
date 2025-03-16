@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
     @vite(['resources/css/app.css', 'resources/css/styles.css', 'resources/js/app.js'])
 </head>
@@ -36,6 +37,28 @@
     </div>
 
     @include('components.popup-kasir')
+
+    <script>
+        function showNotification(type, message) {
+            // You can implement this based on your notification system
+            alert(message);
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('invisible');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('invisible');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check shift status on every page load
+            checkShiftStatus();
+        });
+    </script>
+
+    @stack('scripts')
 </body>
 
 </html>

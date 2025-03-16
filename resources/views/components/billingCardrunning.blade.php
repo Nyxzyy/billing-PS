@@ -1,28 +1,36 @@
 @php
     $device = $device ?? null;
-    
-    $shutdown_time = $device->shutdown_time ? \Carbon\Carbon::parse($device->shutdown_time)->format('H:i') : 'Open Billing';
+    $shutdown_time = $device->shutdown_time ? \Carbon\Carbon::parse($device->shutdown_time)->format('Y-m-d H:i:s') : null;
+    $formatted_time = $device->shutdown_time ? \Carbon\Carbon::parse($device->shutdown_time)->format('H:i') : 'Open Billing';
+    $start_time = $device->last_used_at ? \Carbon\Carbon::parse($device->last_used_at)->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s');
 @endphp
 
-<div class="relative bg-white shadow-md rounded-lg p-4 flex flex-col">
+<div class="relative bg-white shadow-md rounded-lg p-4 flex flex-col billing-card-running" 
+     data-device-id="{{ $device->id }}"
+     data-shutdown-time="{{ $shutdown_time }}"
+     data-status="{{ $device->status }}"
+     id="device-card-{{ $device->id }}">
     <div class="absolute left-0 top-0 h-full w-2 bg-[#3E81AB] rounded-l-lg"></div>
     <div class="pl-2">
         <h2 class="text-[#3E81AB] font-bold text-sm">{{ $device->name ?? 'Tidak Ditemukan' }}</h2>
         <p class="text-[#6F6F6F] text-xs">{{ $device->location ?? 'Tidak Ditemukan' }}</p>
         <p class="text-[#3E81AB] font-bold text-xs mt-2">Sedang Berjalan</p>
-        <p class="text-[#3E81AB] font-bold text-sm mb-2">{{ $shutdown_time }}</p>
+        <p class="text-[#3E81AB] font-bold text-sm mb-2">
+            Selesai: <span class="device-time">{{ $formatted_time }}</span>
+        </p>
     </div>
     <button
         class="text-xs mt-auto bg-[#3E81AB] text-white font-extrabold py-2 rounded-lg w-full cursor-pointer btn-detail-billing"
-        onclick="openModalDetailPaket('{{ $device->id }}', '{{ $device->name }}', '{{ $shutdown_time }}')" 
-        data-device-id="{{ $device->id }}">
+        onclick="openModalDetailPaket('{{ $device->id }}', '{{ $device->name }}', '{{ $formatted_time }}', '{{ $device->package }}', '{{ $shutdown_time }}', '{{ $device->last_used_at }}')" 
+        data-device-id="{{ $device->id }}"
+        data-start-time="{{ $start_time }}">
         DETAIL
     </button>
-    <div class="absolute top-4 right-4 text-[#FB2C36] cursor-pointer" onclick="openModal('modalKendala')">
+    <!-- <div class="absolute top-4 right-4 text-[#FB2C36] cursor-pointer" onclick="openModal('modalKendala')">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
             <line x1="4" y1="22" x2="4" y2="15"></line>
         </svg>
-    </div>
+    </div> -->
 </div>
