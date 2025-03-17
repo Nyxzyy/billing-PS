@@ -266,7 +266,14 @@ class BillingPageKasirController extends Controller
                 // Calculate duration and price for open billing
                 $startTime = Carbon::parse($transaction->start_time);
                 $endTime = Carbon::now();
-                $duration = $endTime->diffInMinutes($startTime);
+                
+                // Pastikan endTime selalu lebih besar dari startTime
+                if ($endTime->lt($startTime)) {
+                    $endTime = $startTime->copy();
+                }
+                
+                // Hitung durasi dalam menit (absolute value)
+                $duration = abs($startTime->diffInMinutes($endTime));
                 
                 // If this is an open billing, calculate the price
                 if ($transaction->package_name === 'Open Billing') {
@@ -377,22 +384,31 @@ class BillingPageKasirController extends Controller
 
             // If changing status to Berjalan from Pending
             if ($request->status === 'Berjalan' && $device->status === 'Pending') {
-                if (!$device->shutdown_time) {
-                    return response()->json([
-                        'message' => 'Tidak dapat melanjutkan billing, waktu telah habis',
-                        'status' => 'error'
-                    ], 400);
-                }
+                // Get latest transaction to check if it's Open Billing
+                $transaction = TransactionReport::where('device_id', $device->id)
+                    ->whereNull('end_time')
+                    ->latest()
+                    ->first();
 
-                $now = Carbon::now();
-                $shutdownTime = Carbon::parse($device->shutdown_time);
-                
-                // If billing time has expired, don't allow restart
-                if ($now->gt($shutdownTime)) {
-                    return response()->json([
-                        'message' => 'Tidak dapat melanjutkan billing, waktu telah habis',
-                        'status' => 'error'
-                    ], 400);
+                // For regular billing, check shutdown_time
+                if (!$transaction || $transaction->package_name !== 'Open Billing') {
+                    if (!$device->shutdown_time) {
+                        return response()->json([
+                            'message' => 'Tidak dapat melanjutkan billing, waktu telah habis',
+                            'status' => 'error'
+                        ], 400);
+                    }
+
+                    $now = Carbon::now();
+                    $shutdownTime = Carbon::parse($device->shutdown_time);
+                    
+                    // If billing time has expired, don't allow restart
+                    if ($now->gt($shutdownTime)) {
+                        return response()->json([
+                            'message' => 'Tidak dapat melanjutkan billing, waktu telah habis',
+                            'status' => 'error'
+                        ], 400);
+                    }
                 }
 
                 $device->status = 'Berjalan';
