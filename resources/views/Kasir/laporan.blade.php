@@ -14,7 +14,7 @@
                     <p>Nama Kasir : <span class="font-bold">{{ Auth::user()->name }}</span></p>
                 </div>
                 <div class="flex space-x-2">
-                    <button class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
+                    <button id="btnDownload" class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                             stroke-linejoin="round">
@@ -113,6 +113,9 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
     <script>
     function endShift() {
         if (!confirm('Apakah anda yakin ingin mengakhiri shift?')) {
@@ -144,7 +147,51 @@
 
     function printReceipt(transactionId) {
         // Add print receipt functionality here
-        window.open(`/print-receipt/${transactionId}`, '_blank', 'width=400,height=600');
+        window.open(`/kasir/print-receipt/${transactionId}`, '_blank', 'width=400,height=600');
     }
+
+    document.getElementById("btnDownload").addEventListener("click", function () {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: "landscape" });
+
+        doc.text("Laporan Daftar Transaksi", 14, 10); // Judul laporan
+
+        // Ambil elemen tabel
+        const table = document.querySelector("table"); 
+
+        // Ambil header tabel, kecuali "Struk"
+        const headers = [];
+        table.querySelectorAll("thead tr th").forEach((th, index) => {
+            if (index !== 6) { // Kolom "Struk" ada di index ke-6 (0-based)
+                headers.push(th.innerText);
+            }
+        });
+
+        // Ambil data dari tabel, kecuali "Struk"
+        const data = [];
+        table.querySelectorAll("tbody tr").forEach(tr => {
+            const rowData = [];
+            tr.querySelectorAll("td").forEach((td, index) => {
+                if (index !== 6) { // Skip kolom ke-6 (Struk)
+                    rowData.push(td.innerText);
+                }
+            });
+            data.push(rowData);
+        });
+
+        // Tambahkan tabel ke PDF tanpa kolom "Struk"
+        doc.autoTable({
+            head: [headers],
+            body: data,
+            startY: 20,
+            theme: "grid",
+            styles: { fontSize: 10 },
+            headStyles: { fillColor: [62, 129, 171] }, // Warna header tabel
+            margin: { top: 15 }
+        });
+
+        doc.save("Laporan_Transaksi.pdf"); // Unduh file PDF
+    });
+
     </script>
 @endsection

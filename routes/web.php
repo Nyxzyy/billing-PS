@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LogActivityController;
 use App\Http\Controllers\BillingPageKasirController;
+use App\Http\Controllers\BillingPackageController;
 use App\Http\Controllers\DevicesController;
 use App\Http\Controllers\LaporanPageKasirController;
 use App\Http\Controllers\ShiftController;
@@ -65,7 +66,7 @@ Route::prefix('kasir')->middleware('auth')->group(function () {
     Route::post('/billing/update-status', [BillingPageKasirController::class, 'updateDeviceStatus'])->name('billing.update-status');
     Route::post('/billing/finish', [BillingPageKasirController::class, 'finishBilling'])->name('billing.finish');
     Route::post('/billing/restart', [BillingPageKasirController::class, 'restartBilling'])->name('billing.restart');
-    Route::get('/print-receipt/{transaction}', [LaporanPageKasirController::class, 'printReceipt'])->name('kasir.print.receipt');
+    Route::get('/print-receipt/{transactionId}', [LaporanPageKasirController::class, 'printReceipt'])->name('kasir.print.receipt');
 });
 
 Route::middleware('auth')->group(function () {
