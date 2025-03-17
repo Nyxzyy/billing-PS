@@ -93,52 +93,6 @@
     </div>
 </div>
 
-<div id="modalKonfirmasiKunci" class="invisible fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md">
-        <h2 class="text-sm font-bold">Konfirmasi Kunci Device</h2>
-        <p class="mt-2 text-sm">Apakah Anda yakin ingin mengunci Device <span id="deviceNameConfirm"
-                class="text-[#FF4747] font-semibold"></span> ini?</p>
-
-        <div class="flex justify-center w-full mt-4 space-x-2">
-            <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs"
-                onclick="closeModal('modalKonfirmasiKunci')">Tidak, Kembali</button>
-            <button onclick="submitKendala()" class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs">Kunci dan Laporkan</button>
-        </div>
-    </div>
-</div>
-
-{{-- Modal Detail Kendala --}}
-<div id="modalDetailKendala" class="invisible fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-    <div class="bg-white p-5 rounded-lg w-full max-w-sm md:max-w-md">
-        <h2 class="text-sm font-bold text-center mb-4">Detail Kendala Device</h2>
-        <input type="hidden" id="detailDeviceId">
-        <input type="hidden" id="detailDeviceName">
-        <label class="text-xs text-[#656565]">Kendala</label>
-        <textarea id="textareaDetailKendala" class="w-full border border-[#C0C0C0] p-2 rounded mt-1" readonly></textarea>
-
-        <div class="flex justify-end mt-4">
-            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs"
-                onclick="closeModal('modalDetailKendala')">Tutup</button>
-            <button class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs"
-                onclick="openModalBukaKunci()">Buka Kunci</button>
-        </div>
-    </div>
-</div>
-
-<div id="modalBukaKunci" class="invisible fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md">
-        <h2 class="text-sm font-bold">Konfirmasi Buka Kunci Device</h2>
-        <p class="mt-2 text-sm">Apakah Anda yakin ingin membuka kunci Device <span id="deviceNameBukaKunci"
-                class="text-[#FF4747] font-semibold"></span> ini?</p>
-
-        <div class="flex justify-center w-full mt-4 space-x-2">
-            <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs"
-                onclick="closeModal('modalBukaKunci')">Tidak, Kembali</button>
-            <button onclick="resolveKendala()" class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs">Buka Kunci</button>
-        </div>
-    </div>
-</div>
-
 <div id="modalDetailPaket" class="invisible fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
     <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md relative">
         <button onclick="closeModal('modalDetailPaket')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
@@ -158,7 +112,7 @@
         <p class="mt-3 text-sm">Apakah Anda yakin ingin memulai billing dengan Paket Ini?</p>
 
         <div class="justify-center w-full mt-4 space-x-2">
-            <button class="w-full bg-[#3E81AB] text-white px-4 py-2 rounded mr-2 text-xs mb-2" id="btnTambahBilling"
+        <button class="w-full bg-[#3E81AB] text-white px-4 py-2 rounded mr-2 text-xs mb-2" id="btnTambahBilling"
                 onclick="closeModal('modalDetailPaket'); openModalPilihPaket(true)">Tambah Billing</button>
             <button id="btnStop" class="w-full bg-[#FB2C36] text-white px-4 py-2 rounded text-xs"
                 onclick="stopDevice()">STOP</button>
@@ -615,7 +569,7 @@
         }
 
         const startTime = new Date(startTimeStr);
-        const now = new Date();
+        const now = getCurrentTime();
         
         // Ensure we're using valid dates
         if (isNaN(startTime.getTime())) {
@@ -654,15 +608,31 @@
             return;
         }
 
-        const shutdownTime = new Date(timer.dataset.shutdown).getTime();
-        const now = new Date().getTime();
+        const shutdownTimeStr = timer.dataset.shutdown;
+        if (!shutdownTimeStr) {
+            console.error('No shutdown time found for device:', deviceId);
+            return;
+        }
 
-        if (shutdownTime < now) {
+        const shutdownTime = new Date(shutdownTimeStr);
+        const now = getCurrentTime();
+        
+        // Log time comparison for debugging
+        console.debug('Time comparison:', {
+            deviceId,
+            shutdownTime: shutdownTime.toISOString(),
+            currentTime: now.toISOString(),
+            remainingTime: shutdownTime.getTime() - now.getTime()
+        });
+
+        // Calculate remaining time
+        const remainingTime = shutdownTime.getTime() - now.getTime();
+
+        // If time is up
+        if (remainingTime <= 0) {
+            console.log(`Device ${deviceId} billing finished at ${now.toISOString()}`);
             timer.innerHTML = 'Sisa Waktu: <span class="font-semibold">Waktu Habis</span>';
-            
-            // Update device status to Pending
             updateDeviceStatus(deviceId, 'Pending');
-            // Clear interval for this device
             if (timerIntervals[deviceId]) {
                 clearInterval(timerIntervals[deviceId]);
                 delete timerIntervals[deviceId];
@@ -671,9 +641,9 @@
         }
 
         // Calculate hours, minutes and seconds
-        const hours = Math.floor((shutdownTime - now) / (1000 * 60 * 60));
-        const minutes = Math.floor(((shutdownTime - now) % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor(((shutdownTime - now) % (1000 * 60)) / 1000);
+        const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+        const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
 
         // Format the time
         let timeString = '';
@@ -688,167 +658,139 @@
         timer.innerHTML = `Sisa Waktu: <span class="font-semibold">${timeString}</span>`;
     }
 
-    // Function to update device status
-    function updateDeviceStatus(deviceId, status) {
-        console.log(`Updating device ${deviceId} status to ${status}...`);
-        
-        if (!deviceId) {
-            console.error('Error: Device ID is missing!');
-            return;
-        }
-        
-        fetch("{{ route('billing.update-status') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                device_id: deviceId,
-                status: status,
-                server_time: getCurrentTime().toISOString() // Tambahkan waktu server
-            })
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('Response data:', data);
-            if (data.status === 'success') {
-                console.log(`Successfully updated device ${deviceId} status to ${status}`);
-                // Tunggu 1 detik sebelum reload untuk memastikan data tersimpan
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                console.error('Error updating device status:', data.message || 'Unknown error');
-            }
-        })
-        .catch(error => {
-            console.error('Error updating device status:', error);
-        });
-    }
-
-    // Fungsi untuk mengecek status device secara real-time
-    function startRealTimeCheck() {
-        // Jalankan pengecekan setiap 5 detik
-        setInterval(() => {
-            document.querySelectorAll('.billing-card-running').forEach(function(card) {
-                const shutdownTimeStr = card.getAttribute('data-shutdown-time');
-                const deviceId = card.getAttribute('data-device-id');
-                
-                if (shutdownTimeStr && shutdownTimeStr !== 'null' && deviceId) {
-                    const shutdownTime = new Date(shutdownTimeStr).getTime();
-                    const now = new Date().getTime();
-
-                    if (shutdownTime < now) {
-                        console.log(`Device ${deviceId} time expired, updating status...`);
-                        updateDeviceStatus(deviceId, 'Pending');
-                    }
-                }
-            });
-        }, 5000); // Check every 5 seconds
-    }
-
-    // Panggil fungsi saat halaman dimuat
-    document.addEventListener('DOMContentLoaded', function() {
-        // Sinkronkan waktu saat halaman dimuat
-        syncTime();
-        
-        // Sinkronkan ulang setiap 5 menit
-        setInterval(syncTime, 300000);
-        
-        // Mulai pengecekan real-time
-        startRealTimeCheck();
-        
-        // Jalankan pengecekan pertama kali
-        checkAllRunningDevices();
-    });
-
-    // Tambahkan fungsi ini setelah fungsi updateDeviceStatus yang sudah ada
+    // Function to check all running devices
     function checkAllRunningDevices() {
-        // Ambil semua device yang sedang berjalan
         document.querySelectorAll('.billing-card-running').forEach(function(card) {
             const shutdownTimeStr = card.getAttribute('data-shutdown-time');
-            if (shutdownTimeStr && shutdownTimeStr !== 'null') {
-                const shutdownTime = new Date(shutdownTimeStr).getTime();
-                const now = new Date().getTime();
-                const deviceId = card.getAttribute('data-device-id');
+            const deviceId = card.getAttribute('data-device-id');
+            
+            if (!shutdownTimeStr || shutdownTimeStr === 'null' || !deviceId) return;
 
-                if (deviceId && shutdownTime < now) {
-                    updateDeviceStatus(deviceId, 'Pending');
-                }
+            const shutdownTime = new Date(shutdownTimeStr);
+            const now = getCurrentTime();
+            
+            // Log time comparison for debugging
+            console.debug('Device status check:', {
+                deviceId,
+                shutdownTime: shutdownTime.toISOString(),
+                currentTime: now.toISOString(),
+                remainingTime: shutdownTime.getTime() - now.getTime()
+            });
+
+            if (shutdownTime.getTime() <= now.getTime()) {
+                console.log(`Device ${deviceId} time expired at ${shutdownTime.toISOString()}, current time: ${now.toISOString()}`);
+                updateDeviceStatus(deviceId, 'Pending');
             }
         });
     }
 
-    // Fungsi untuk mendapatkan waktu server
-    function getServerTime() {
-        return fetch("{{ route('get-server-time') }}")
-            .then(response => response.json())
-            .then(data => new Date(data.timestamp));
-    }
-
-    // Fungsi untuk menghitung offset waktu lokal dengan server
+    // Server time synchronization
     let serverTimeOffset = 0;
+    let lastSyncTime = 0;
 
     async function syncTime() {
         try {
-            const serverTime = await getServerTime();
-            serverTimeOffset = serverTime.getTime() - new Date().getTime();
-            console.log('Time synced with server, offset:', serverTimeOffset);
+            const startTime = Date.now();
+            const response = await fetch('/kasir/server-time');
+            const data = await response.json();
+            const endTime = Date.now();
+            
+            // Calculate network latency (round trip time / 2)
+            const networkLatency = Math.floor((endTime - startTime) / 2);
+            
+            // Parse server time and adjust for network latency
+            const serverTime = new Date(data.timestamp);
+            serverTime.setMilliseconds(serverTime.getMilliseconds() + networkLatency);
+            
+            // Calculate new offset
+            const clientTime = new Date();
+            serverTimeOffset = serverTime.getTime() - clientTime.getTime();
+            
+            console.debug('Time sync completed:', {
+                serverTime: serverTime.toISOString(),
+                clientTime: clientTime.toISOString(),
+                offset: serverTimeOffset,
+                networkLatency,
+                timezone: data.timezone
+            });
+            
+            lastSyncTime = Date.now();
         } catch (error) {
             console.error('Failed to sync time with server:', error);
         }
     }
 
-    // Fungsi untuk mendapatkan waktu yang telah disinkronkan
+    // Get current time adjusted by server offset
     function getCurrentTime() {
-        return new Date(new Date().getTime() + serverTimeOffset);
+        return new Date(Date.now() + serverTimeOffset);
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Initial time sync
+        await syncTime();
+        
+        // Start real-time checking
+        setInterval(checkAllRunningDevices, 5000);
+        
+        // Sync time every minute
+        setInterval(syncTime, 60000);
+        
+        // Initial device check
+        checkAllRunningDevices();
+        
+        // Check shift status
+        checkShiftStatus();
+    });
+
+    function updateDeviceStatus(deviceId, status) {
+        if (!deviceId) {
+            console.error('Device ID is missing!');
+            return;
+        }
+
+        console.log(`Updating device ${deviceId} status to ${status}`);
+        
+        fetch('/kasir/billing/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                device_id: deviceId,
+                status: status,
+                server_time: getCurrentTime().toISOString()
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response:', data);
+            
+            if (data.status === 'success') {
+                console.log(`Successfully updated device ${deviceId} status to ${status}`);
+                location.reload();
+            } else {
+                console.error('Error updating device status:', data.message);
+                alert(data.message || 'Terjadi kesalahan saat mengubah status device');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating device status:', error);
+            alert('Terjadi kesalahan saat mengubah status device');
+        });
     }
 
     function stopDevice() {
         const deviceId = document.getElementById('btnStop').getAttribute('data-device-id');
         if (!deviceId) {
-            console.error('Device ID tidak ditemukan!');
+            console.error('Device ID is missing!');
             alert('Error: Device ID tidak ditemukan!');
             return;
         }
 
-        console.log(`Stopping device ${deviceId}...`);
-        
-        // Directly make the fetch request here to ensure it's completed
-        fetch("{{ route('billing.update-status') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                device_id: deviceId,
-                status: 'Pending',
-                server_time: getCurrentTime().toISOString()
-            })
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('Response data:', data);
-            if (data.status === 'success') {
-                console.log(`Successfully updated device ${deviceId} status to Pending`);
-                closeModal('modalDetailPaket');
-                // Reload the page to show the updated status
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                console.error('Error updating device status:', data.message || 'Unknown error');
-                alert('Error updating device status. Please try again.');
-            }
-        })
-        .catch(error => {
-            console.error('Error updating device status:', error);
-            alert('Error updating device status. Please try again.');
-        });
+        console.log(`Stopping device ${deviceId}`);
+        updateDeviceStatus(deviceId, 'Pending');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -965,7 +907,8 @@
         const checkbox = document.getElementById('konfirmasi');
         const btnKunci = document.getElementById('btnKunci');
         btnKunci.disabled = !checkbox.checked;
-        btnKunci.classList.toggle('cursor-not-allowed', !checkbox.checked);
+        btnKunci.classList.toggle("cursor-not-allowed", !checkbox.checked);
+        btnKunci.classList.toggle("cursor-pointer", checkbox.checked);
     }
 
     function openModalKunci() {

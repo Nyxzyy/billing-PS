@@ -11,14 +11,17 @@ class ShiftController extends Controller
 {
     public function checkShiftStatus()
     {
-        $today = Carbon::now()->format('Y-m-d');
-        $hasActiveShift = CashierReport::where('cashier_id', Auth::id())
-            ->whereDate('work_date', $today)
+        $now = Carbon::now();
+        
+        // Check for active shift within last 24 hours
+        $activeShift = CashierReport::where('cashier_id', Auth::id())
+            ->where('shift_start', '<=', $now)
             ->whereNull('shift_end')
-            ->exists();
+            ->orderBy('shift_start', 'desc')
+            ->first();
 
         return response()->json([
-            'hasActiveShift' => $hasActiveShift
+            'hasActiveShift' => !is_null($activeShift)
         ]);
     }
 
@@ -26,18 +29,16 @@ class ShiftController extends Controller
     {
         try {
             $now = Carbon::now();
-            $today = $now->format('Y-m-d');
 
             // Check if already has active shift
             $existingShift = CashierReport::where('cashier_id', Auth::id())
-                ->whereDate('work_date', $today)
                 ->whereNull('shift_end')
                 ->first();
 
             if ($existingShift) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Anda sudah memulai shift hari ini'
+                    'message' => 'Anda sudah memulai shift'
                 ], 400);
             }
 
@@ -45,7 +46,7 @@ class ShiftController extends Controller
             CashierReport::create([
                 'cashier_id' => Auth::id(),
                 'shift_start' => $now,
-                'work_date' => $today,
+                'work_date' => $now->format('Y-m-d'),
                 'total_transactions' => 0,
                 'total_revenue' => 0,
                 'total_work_hours' => 0
@@ -67,10 +68,7 @@ class ShiftController extends Controller
     public function endShift()
     {
         try {
-            $today = Carbon::now()->format('Y-m-d');
-            
             $currentShift = CashierReport::where('cashier_id', Auth::id())
-                ->whereDate('work_date', $today)
                 ->whereNull('shift_end')
                 ->first();
 

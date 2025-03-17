@@ -38,7 +38,18 @@ Route::get('/get-server-time', function () {
     ]);
 })->name('get-server-time');
 
+// Server time route
+Route::get('/server-time', function() {
+    return response()->json([
+        'timestamp' => now()->format('Y-m-d H:i:s.u'),
+        'timezone' => config('app.timezone')
+    ]);
+})->name('get-server-time');
+
 Route::prefix('kasir')->middleware('auth')->group(function () {
+    // Server time route
+    Route::get('/server-time', [BillingPageKasirController::class, 'getServerTime'])->name('get-server-time');
+    
     // Shift Management Routes
     Route::get('/shift/check-status', [ShiftController::class, 'checkShiftStatus'])->name('shift.check');
     Route::post('/shift/start', [ShiftController::class, 'startShift'])->name('shift.start');

@@ -10,7 +10,25 @@ class Device extends Model
     use HasFactory;
 
     protected $table = 'devices';
-    protected $fillable = ['name', 'ip_address', 'location', 'status', 'package', 'shutdown_time', 'last_used_at'];
+    protected $fillable = [
+        'name',
+        'ip_address',
+        'location',
+        'status',
+        'package',
+        'shutdown_time',
+        'last_used_at'
+    ];
+
+    protected $casts = [
+        'shutdown_time' => 'datetime',
+        'last_used_at' => 'datetime'
+    ];
+
+    protected $dates = [
+        'shutdown_time',
+        'last_used_at'
+    ];
 
     public function kendalaReports()
     {

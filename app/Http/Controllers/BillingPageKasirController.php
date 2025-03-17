@@ -14,7 +14,6 @@ use Carbon\Carbon;
 
 class BillingPageKasirController extends Controller
 {
-
     public function Devices()
     {
         $devices = Device::all()->sortBy(function($device) {
@@ -37,7 +36,6 @@ class BillingPageKasirController extends Controller
             ]);
 
             $device = Device::find($request->device_id);
-
             if (!$device) {
                 return response()->json([
                     'message' => 'Device tidak ditemukan',
@@ -46,9 +44,7 @@ class BillingPageKasirController extends Controller
             }
 
             // Check for active shift
-            $today = Carbon::now()->format('Y-m-d');
             $currentShift = CashierReport::where('cashier_id', Auth::id())
-                ->whereDate('work_date', $today)
                 ->whereNull('shift_end')
                 ->first();
 
@@ -69,10 +65,10 @@ class BillingPageKasirController extends Controller
             }
 
             $additionalMinutes = ($package->duration_hours * 60) + $package->duration_minutes;
-            $currentTime = now();
+            $currentTime = Carbon::now();
             
             if ($device->shutdown_time) {
-                $shutdownTime = \Carbon\Carbon::parse($device->shutdown_time);
+                $shutdownTime = Carbon::parse($device->shutdown_time);
                 
                 if ($request->is_adding && $shutdownTime->isFuture()) {
                     \Log::info('Adding time to existing future shutdown time');
@@ -115,7 +111,7 @@ class BillingPageKasirController extends Controller
                 return response()->json([
                     'message' => 'Billing berhasil ditambahkan',
                     'status' => $device->status,
-                    'shutdown_time' => $newShutdownTime->format('Y-m-d H:i:s')
+                    'shutdown_time' => $newShutdownTime->toIso8601String() // Use ISO format for better precision
                 ]);
 
             } catch (\Exception $e) {
@@ -145,7 +141,6 @@ class BillingPageKasirController extends Controller
             ]);
 
             $device = Device::find($request->device_id);
-            
             if (!$device) {
                 return response()->json([
                     'message' => 'Device tidak ditemukan',
@@ -154,9 +149,7 @@ class BillingPageKasirController extends Controller
             }
 
             // Check for active shift
-            $today = Carbon::now()->format('Y-m-d');
             $currentShift = CashierReport::where('cashier_id', Auth::id())
-                ->whereDate('work_date', $today)
                 ->whereNull('shift_end')
                 ->first();
 
@@ -168,7 +161,7 @@ class BillingPageKasirController extends Controller
                 ], 400);
             }
 
-            $currentTime = now();
+            $currentTime = Carbon::now();
             $newShutdownTime = null;
             $packageName = 'Open Billing';
             $packageTime = null;
@@ -187,11 +180,20 @@ class BillingPageKasirController extends Controller
                 $newShutdownTime = $currentTime->copy()->addMinutes($packageTime);
                 $packageName = $package->package_name;
                 $totalPrice = $package->total_price;
+            } else {
+                // Check if billing_open data exists
+                $billingOpen = BillingOpen::first();
+                if (!$billingOpen) {
+                    return response()->json([
+                        'message' => 'Harga Open Billing belum diatur. Silakan atur harga terlebih dahulu.',
+                        'status' => 'error'
+                    ], 400);
+                }
             }
 
             DB::beginTransaction();
             try {
-                // Create transaction report
+                // Create transaction record
                 $transaction = TransactionReport::create([
                     'device_id' => $device->id,
                     'user_id' => Auth::id(),
@@ -202,7 +204,7 @@ class BillingPageKasirController extends Controller
                     'total_price' => $totalPrice
                 ]);
 
-                // Update device status and last_used_at
+                // Update device status
                 $device->status = 'Berjalan';
                 $device->package = $packageName;
                 $device->shutdown_time = $newShutdownTime;
@@ -218,15 +220,14 @@ class BillingPageKasirController extends Controller
                 return response()->json([
                     'message' => 'Billing berhasil dimulai',
                     'status' => $device->status,
-                    'start_time' => $currentTime->format('Y-m-d H:i:s'),
-                    'shutdown_time' => $newShutdownTime ? $newShutdownTime->format('Y-m-d H:i:s') : null
+                    'shutdown_time' => $newShutdownTime ? $newShutdownTime->toIso8601String() : null
                 ]);
 
             } catch (\Exception $e) {
                 DB::rollback();
                 throw $e;
             }
-            
+
         } catch (\Exception $e) {
             \Log::error('Start Billing Error:', [
                 'message' => $e->getMessage(),
@@ -237,82 +238,6 @@ class BillingPageKasirController extends Controller
                 'status' => 'error'
             ], 500);
         }
-    }
-
-    public function updateDeviceStatus(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'device_id' => 'required|exists:devices,id',
-                'status' => 'required|string'
-            ]);
-
-            $device = Device::find($request->device_id);
-            
-            if (!$device) {
-                return response()->json([
-                    'message' => 'Device tidak ditemukan',
-                    'status' => 'error'
-                ], 404);
-            }
-
-            // Update status but keep shutdown_time and package
-            $device->status = $request->status;
-            $device->save();
-
-            return response()->json([
-                'message' => 'Status berhasil diupdate',
-                'status' => 'success',
-                'device_status' => $device->status
-            ]);
-            
-        } catch (\Exception $e) {
-            \Log::error('Update Status Error:', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return response()->json([
-                'message' => 'Terjadi kesalahan saat mengupdate status',
-                'status' => 'error'
-            ], 500);
-        }
-    }
-
-    private function calculateOpenBillingPrice($minutes)
-    {
-        // Get billing settings from database
-        $billingOpen = DB::table('billing_open')->first();
-        if (!$billingOpen) {
-            \Log::error('Billing Open settings not found in database');
-            return 0;
-        }
-
-        // Calculate full hours and remaining minutes
-        $hours = floor($minutes / 60);
-        $remainingMinutes = $minutes % 60;
-        
-        // Calculate price for full hours
-        $totalPrice = $hours * $billingOpen->price_per_hour;
-
-        // Always charge at least one block, even if time is less than minute_count
-        if ($remainingMinutes > 0 || $hours == 0) {
-            $blocks = max(1, ceil($remainingMinutes / $billingOpen->minute_count));
-            $minutePrice = $blocks * $billingOpen->price_per_minute;
-            $totalPrice += $minutePrice;
-        }
-
-        \Log::info('Price breakdown:', [
-            'total_minutes' => $minutes,
-            'hours' => $hours,
-            'remaining_minutes' => $remainingMinutes,
-            'minute_blocks' => $blocks ?? 0,
-            'hourly_price' => $billingOpen->price_per_hour,
-            'minute_block_price' => $billingOpen->price_per_minute,
-            'minute_block_size' => $billingOpen->minute_count,
-            'total_price' => $totalPrice
-        ]);
-
-        return round($totalPrice); // Round to nearest integer
     }
 
     public function finishBilling(Request $request)
@@ -331,75 +256,96 @@ class BillingPageKasirController extends Controller
                 ], 404);
             }
 
-            $now = now();
+            // Get the latest transaction for this device
+            $transaction = TransactionReport::where('device_id', $device->id)
+                ->whereNull('end_time')
+                ->latest()
+                ->first();
 
-            DB::beginTransaction();
-            try {
-                // Find the latest unfinished transaction for this device
-                $latestTransaction = TransactionReport::where('device_id', $device->id)
-                    ->where(function($query) {
-                        $query->whereNull('end_time')
-                              ->orWhereRaw('end_time > NOW()');
-                    })
-                    ->latest()
-                    ->first();
+            if ($transaction) {
+                // Calculate duration and price for open billing
+                $startTime = Carbon::parse($transaction->start_time);
+                $endTime = Carbon::now();
+                $duration = $endTime->diffInMinutes($startTime);
+                
+                // If this is an open billing, calculate the price
+                if ($transaction->package_name === 'Open Billing') {
+                    // Get the billing settings
+                    $billingOpen = BillingOpen::first();
+                    if (!$billingOpen) {
+                        return response()->json([
+                            'message' => 'Harga Open Billing belum diatur. Silakan hubungi admin untuk mengatur harga terlebih dahulu.',
+                            'status' => 'error'
+                        ], 400);
+                    }
 
-                if ($latestTransaction) {
-                    \Log::info('Found transaction to finish:', [
-                        'transaction_id' => $latestTransaction->id,
-                        'start_time' => $latestTransaction->start_time,
-                        'package_name' => $latestTransaction->package_name
-                    ]);
-
-                    // For Open Billing, calculate the total minutes run and price
-                    if ($latestTransaction->package_name === 'Open Billing') {
-                        $startTime = \Carbon\Carbon::parse($latestTransaction->start_time);
-                        $packageTime = $startTime->diffInMinutes($now);
-                        
-                        \Log::info('Calculating Open Billing duration:', [
-                            'start_time' => $startTime->format('Y-m-d H:i:s'),
-                            'end_time' => $now->format('Y-m-d H:i:s'),
-                            'minutes_run' => $packageTime
-                        ]);
-
-                        $latestTransaction->package_time = $packageTime;
-                        
-                        // Calculate and set the total price
-                        $totalPrice = $this->calculateOpenBillingPrice($packageTime);
-                        $latestTransaction->total_price = $totalPrice;
-
-                        \Log::info('Open Billing price calculated:', [
-                            'minutes_run' => $packageTime,
-                            'total_price' => $totalPrice
-                        ]);
+                    // Calculate total price based on duration
+                    $totalPrice = 0;
+                    
+                    // Jika durasi 0 menit (kurang dari 1 menit), tetap hitung sebagai 1 menit
+                    if ($duration == 0) {
+                        $duration = 1;
                     }
                     
-                    $latestTransaction->end_time = $now;
-                    $latestTransaction->save();
-                } else {
-                    \Log::warning('No active transaction found for device:', [
-                        'device_id' => $device->id
-                    ]);
+                    // If duration is less than or equal to 60 minutes
+                    if ($duration <= 60) {
+                        // Hitung berapa blok yang digunakan, minimal 1 blok
+                        $blocks = max(1, ceil($duration / $billingOpen->minute_count));
+                        $totalPrice = $blocks * $billingOpen->price_per_minute;
+                    } else {
+                        // Calculate full hours
+                        $fullHours = floor($duration / 60);
+                        $totalPrice += $fullHours * $billingOpen->price_per_hour;
+                        
+                        // Calculate remaining minutes
+                        $remainingMinutes = $duration % 60;
+                        if ($remainingMinutes > 0) {
+                            // Hitung berapa blok yang digunakan untuk sisa menit, minimal 1 blok
+                            $blocks = max(1, ceil($remainingMinutes / $billingOpen->minute_count));
+                            $totalPrice += $blocks * $billingOpen->price_per_minute;
+                        }
+                    }
+
+                    // Update transaction with final details
+                    $transaction->package_time = $duration;
+                    $transaction->end_time = $endTime;
+                    $transaction->total_price = $totalPrice;
+                    $transaction->save();
+
+                    // Update shift totals
+                    $currentShift = CashierReport::where('cashier_id', Auth::id())
+                        ->whereNull('shift_end')
+                        ->first();
+
+                    if ($currentShift) {
+                        $currentShift->increment('total_revenue', $totalPrice);
+                    }
                 }
-
-                // Reset device status and clear billing info
-                $device->status = 'Tersedia';
-                $device->package = null;
-                $device->shutdown_time = null;
-                $device->last_used_at = $now;
-                $device->save();
-
-                DB::commit();
-
-                return response()->json([
-                    'message' => 'Billing berhasil diselesaikan',
-                    'status' => 'success'
-                ]);
-            } catch (\Exception $e) {
-                DB::rollback();
-                throw $e;
+                // For regular billing, just update the end time
+                else {
+                    $transaction->end_time = $endTime;
+                    $transaction->save();
+                }
             }
-            
+
+            // Update device status
+            $device->status = 'Tersedia';
+            $device->package = null;
+            $device->shutdown_time = null;
+            $device->last_used_at = null;
+            $device->save();
+
+            return response()->json([
+                'message' => 'Billing berhasil diselesaikan',
+                'status' => 'success',
+                'transaction' => $transaction ? [
+                    'duration' => $duration ?? null,
+                    'total_price' => $transaction->total_price,
+                    'start_time' => $transaction->start_time,
+                    'end_time' => $transaction->end_time
+                ] : null
+            ]);
+
         } catch (\Exception $e) {
             \Log::error('Finish Billing Error:', [
                 'message' => $e->getMessage(),
@@ -412,15 +358,16 @@ class BillingPageKasirController extends Controller
         }
     }
 
-    public function restartBilling(Request $request)
+    public function updateDeviceStatus(Request $request)
     {
         try {
             $validated = $request->validate([
-                'device_id' => 'required|exists:devices,id'
+                'device_id' => 'required|exists:devices,id',
+                'status' => 'required|string|in:Tersedia,Berjalan,Pending,Selesai,Maintenance',
+                'server_time' => 'nullable|date'
             ]);
 
             $device = Device::find($request->device_id);
-            
             if (!$device) {
                 return response()->json([
                     'message' => 'Device tidak ditemukan',
@@ -428,25 +375,89 @@ class BillingPageKasirController extends Controller
                 ], 404);
             }
 
-            // Update device status to Berjalan
-            $device->status = 'Berjalan';
+            // If changing status to Berjalan from Pending
+            if ($request->status === 'Berjalan' && $device->status === 'Pending') {
+                if (!$device->shutdown_time) {
+                    return response()->json([
+                        'message' => 'Tidak dapat melanjutkan billing, waktu telah habis',
+                        'status' => 'error'
+                    ], 400);
+                }
+
+                $now = Carbon::now();
+                $shutdownTime = Carbon::parse($device->shutdown_time);
+                
+                // If billing time has expired, don't allow restart
+                if ($now->gt($shutdownTime)) {
+                    return response()->json([
+                        'message' => 'Tidak dapat melanjutkan billing, waktu telah habis',
+                        'status' => 'error'
+                    ], 400);
+                }
+
+                $device->status = 'Berjalan';
+                $device->save();
+
+                return response()->json([
+                    'message' => 'Status device berhasil diperbarui ke Berjalan',
+                    'status' => 'success',
+                    'device' => [
+                        'id' => $device->id,
+                        'status' => $device->status,
+                        'package' => $device->package,
+                        'shutdown_time' => $device->shutdown_time
+                    ]
+                ]);
+            }
+
+            // Update device status
+            $device->status = $request->status;
+            
+            // Clear billing info if status is Tersedia
+            if ($request->status === 'Tersedia') {
+                $device->package = null;
+                $device->shutdown_time = null;
+                $device->last_used_at = null;
+            }
+            
             $device->save();
 
-            return response()->json([
-                'message' => 'Device berhasil direstart',
-                'status' => 'success',
-                'device_status' => $device->status
+            \Log::info('Device status updated:', [
+                'device_id' => $device->id,
+                'old_status' => $device->getOriginal('status'),
+                'new_status' => $request->status,
+                'shutdown_time' => $device->shutdown_time,
+                'server_time' => $request->server_time
             ]);
-            
+
+            return response()->json([
+                'message' => 'Status device berhasil diperbarui',
+                'status' => 'success',
+                'device' => [
+                    'id' => $device->id,
+                    'status' => $device->status,
+                    'package' => $device->package,
+                    'shutdown_time' => $device->shutdown_time
+                ]
+            ]);
+
         } catch (\Exception $e) {
-            \Log::error('Restart Billing Error:', [
+            \Log::error('Update Device Status Error:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
             return response()->json([
-                'message' => 'Terjadi kesalahan saat merestart device',
+                'message' => 'Terjadi kesalahan saat memperbarui status device',
                 'status' => 'error'
             ], 500);
         }
+    }
+
+    public function getServerTime()
+    {
+        return response()->json([
+            'timestamp' => Carbon::now()->toIso8601String(),
+            'timezone' => config('app.timezone')
+        ]);
     }
 }
