@@ -9,7 +9,7 @@ class KendalaReport extends Model
 {
     use HasFactory;
 
-    protected $table = 'kendala_report';
+    protected $table = 'kendala_reports';
     protected $fillable = ['cashier_id', 'device_id', 'issue', 'time', 'date', 'status'];
 
     public function cashier()

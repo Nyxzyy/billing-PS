@@ -96,8 +96,7 @@ class BillingPageKasirController extends Controller
                     'package_time' => $additionalMinutes,
                     'start_time' => $currentTime,
                     'end_time' => $newShutdownTime,
-                    'total_price' => $package->total_price,
-                    'status' => 'active'
+                    'total_price' => $package->total_price
                 ]);
 
                 // Update device status
@@ -200,8 +199,7 @@ class BillingPageKasirController extends Controller
                     'package_time' => $packageTime,
                     'start_time' => $currentTime,
                     'end_time' => $newShutdownTime,
-                    'total_price' => $totalPrice,
-                    'status' => 'active'
+                    'total_price' => $totalPrice
                 ]);
 
                 // Update device status and last_used_at

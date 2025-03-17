@@ -7,12 +7,12 @@
     <div class="pl-2">
         <h2 class="text-[#A8A8A8] font-bold text-sm">{{ $device->name ?? 'Tidak Ditemukan' }}</h2>
         <p class="text-[#CDCDCD] text-xs">{{ $device->location ?? 'Tidak Ditemukan' }}</p>
-        <p class="text-[#A8A8A8] font-bold text-xs mt-2 mb-4">Terkendala</p>
+        <p class="text-[#A8A8A8] font-bold text-xs mt-2 mb-4">Maintenance</p>
     </div>
     <button class="text-xs mt-auto bg-[#A8A8A8] text-white font-extrabold py-2 rounded-lg w-full">
-        MULAI
+        MAINTENANCE
     </button>
-    <div class="absolute top-4 right-4 text-[#FB2C36] cursor-pointer" onclick="openModal('modalDetailKendala')">
+    <div class="absolute top-4 right-4 text-[#FB2C36] cursor-pointer" onclick="showKendalaDetail('{{ $device->id }}', '{{ $device->name }}')">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>

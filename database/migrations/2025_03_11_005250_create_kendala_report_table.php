@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kendala_report');
+        Schema::dropIfExists('kendala_reports');
     }
 };

@@ -8,6 +8,7 @@ use App\Http\Controllers\BillingPageKasirController;
 use App\Http\Controllers\DevicesController;
 use App\Http\Controllers\LaporanPageKasirController;
 use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\KendalaController;
 
 // Redirect berdasarkan role
 Route::get('/', function () {
@@ -54,6 +55,23 @@ Route::prefix('kasir')->middleware('auth')->group(function () {
     Route::post('/billing/finish', [BillingPageKasirController::class, 'finishBilling'])->name('billing.finish');
     Route::post('/billing/restart', [BillingPageKasirController::class, 'restartBilling'])->name('billing.restart');
     Route::get('/print-receipt/{transaction}', [LaporanPageKasirController::class, 'printReceipt'])->name('kasir.print.receipt');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/kasir/billing', [BillingPageKasirController::class, 'Devices'])->name('kasir.billing');
+    Route::get('/kasir/paket-billing', [BillingPageKasirController::class, 'PaketBillingKasir'])->name('kasir.paket-billing');
+    Route::post('/kasir/add-billing', [BillingPageKasirController::class, 'addBilling'])->name('kasir.add-billing');
+    Route::post('/kasir/start-billing', [BillingPageKasirController::class, 'startBilling'])->name('kasir.start-billing');
+    Route::post('/kasir/finish-billing', [BillingPageKasirController::class, 'finishBilling'])->name('kasir.finish-billing');
+    Route::post('/kasir/restart-billing', [BillingPageKasirController::class, 'restartBilling'])->name('kasir.restart-billing');
+    Route::post('/kasir/update-device-status', [BillingPageKasirController::class, 'updateDeviceStatus'])->name('kasir.update-device-status');
+    Route::post('/kasir/kendala/report', [KendalaController::class, 'store'])->name('kasir.kendala.report');
+    Route::get('/kasir/kendala/{deviceId}/latest', [KendalaController::class, 'getLatest'])->name('kasir.kendala.latest');
+    Route::post('/kasir/kendala/resolve', [KendalaController::class, 'resolve'])->name('kasir.kendala.resolve');
+    
+    Route::get('/kasir/shift/check-status', [ShiftController::class, 'checkShiftStatus'])->name('kasir.shift.check-status');
+    Route::post('/kasir/shift/start', [ShiftController::class, 'startShift'])->name('kasir.shift.start');
+    Route::post('/kasir/shift/end', [ShiftController::class, 'endShift'])->name('kasir.shift.end');
 });
 
 // ======================= ADMIN ROUTES =======================

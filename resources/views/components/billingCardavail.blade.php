@@ -16,7 +16,7 @@
         data-device-id="{{ $device->id }}">
         MULAI
     </button>
-    <div class="absolute top-4 right-4 text-[#FB2C36] cursor-pointer" onclick="openModal('modalKendala')">
+    <div class="absolute top-4 right-4 text-[#FB2C36] cursor-pointer" onclick="openModalKendala('{{ $device->id }}', '{{ $device->name }}')">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
