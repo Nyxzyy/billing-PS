@@ -154,44 +154,113 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: "landscape" });
 
-        doc.text("Laporan Daftar Transaksi", 14, 10); // Judul laporan
+        // Set font size and style
+        doc.setFontSize(16);
+        doc.setFont(undefined, 'bold');
+        doc.text("Laporan Daftar Transaksi", 14, 15);
 
-        // Ambil elemen tabel
-        const table = document.querySelector("table"); 
+        // Reset font
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
 
-        // Ambil header tabel, kecuali "Struk"
-        const headers = [];
-        table.querySelectorAll("thead tr th").forEach((th, index) => {
-            if (index !== 6) { // Kolom "Struk" ada di index ke-6 (0-based)
-                headers.push(th.innerText);
+        // Get cashier info from the page
+        const cashierName = "{{ Auth::user()->name }}";
+        @if($currentShift)
+        const shiftStart = "{{ $currentShift->shift_start ? \Carbon\Carbon::parse($currentShift->shift_start)->format('H:i') : '-' }}";
+        const workHours = {{ $currentShift->shift_start ? \Carbon\Carbon::parse($currentShift->shift_start)->diffInHours(now()) : 0 }};
+        const formattedWorkHours = workHours.toFixed(1);
+        const totalTransactions = "{{ $currentShift->total_transactions }}";
+        const totalRevenue = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format({{ $currentShift->total_revenue }});
+        @else
+        const shiftStart = "-";
+        const formattedWorkHours = "0.0";
+        const totalTransactions = "0";
+        const totalRevenue = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(0);
+        @endif
+        
+        // Get current date and time
+        const now = new Date();
+        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        const downloadTime = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+        // Add cashier info
+        const cashierInfo = [
+            ['Nama Kasir:', cashierName],
+            ['Mulai Shift:', shiftStart],
+            ['Waktu Kerja:', `${formattedWorkHours} jam`],
+            ['Total Transaksi:', totalTransactions],
+            ['Total Pendapatan:', totalRevenue],
+            ['Waktu Download:', downloadTime]
+        ];
+
+        // Add cashier info table
+        doc.autoTable({
+            body: cashierInfo,
+            startY: 20,
+            theme: 'plain',
+            styles: { 
+                fontSize: 10,
+                cellPadding: 1
+            },
+            columnStyles: {
+                0: { fontStyle: 'bold', cellWidth: 40 },
+                1: { cellWidth: 100 }
             }
         });
 
-        // Ambil data dari tabel, kecuali "Struk"
-        const data = [];
-        table.querySelectorAll("tbody tr").forEach(tr => {
-            const rowData = [];
-            tr.querySelectorAll("td").forEach((td, index) => {
-                if (index !== 6) { // Skip kolom ke-6 (Struk)
-                    rowData.push(td.innerText);
+        // Ambil elemen tabel transaksi
+        const table = document.querySelector("table"); 
+
+        // Hanya proses tabel jika ada transaksi
+        if (table) {
+            // Ambil header tabel, kecuali "Struk"
+            const headers = [];
+            table.querySelectorAll("thead tr th").forEach((th, index) => {
+                if (index !== 6) {
+                    headers.push(th.innerText);
                 }
             });
-            data.push(rowData);
-        });
 
-        // Tambahkan tabel ke PDF tanpa kolom "Struk"
-        doc.autoTable({
-            head: [headers],
-            body: data,
-            startY: 20,
-            theme: "grid",
-            styles: { fontSize: 10 },
-            headStyles: { fillColor: [62, 129, 171] }, // Warna header tabel
-            margin: { top: 15 }
-        });
+            // Ambil data dari tabel, kecuali "Struk"
+            const data = [];
+            table.querySelectorAll("tbody tr").forEach(tr => {
+                const rowData = [];
+                tr.querySelectorAll("td").forEach((td, index) => {
+                    if (index !== 6) {
+                        rowData.push(td.innerText);
+                    }
+                });
+                data.push(rowData);
+            });
 
-        doc.save("Laporan_Transaksi.pdf"); // Unduh file PDF
+            // Tambahkan tabel transaksi ke PDF jika ada data
+            if (headers.length > 0 && data.length > 0) {
+                doc.autoTable({
+                    head: [headers],
+                    body: data,
+                    startY: doc.previousAutoTable.finalY + 10,
+                    theme: "grid",
+                    styles: { fontSize: 10 },
+                    headStyles: { fillColor: [62, 129, 171] },
+                    margin: { top: 15 }
+                });
+            }
+        }
+
+        // Save with formatted filename
+        const filename = `Laporan_Transaksi_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}.pdf`;
+        doc.save(filename);
     });
-
     </script>
 @endsection
