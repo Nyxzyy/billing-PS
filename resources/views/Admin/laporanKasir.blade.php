@@ -1,19 +1,17 @@
 @extends('admin.layout-admin')
 
-@section('title', 'Laporan')
+@section('title', 'Laporan Kasir')
 @section('breadcrumb', 'Laporan')
 
 @section('content')
     <div class="max-w-screen-xl mx-auto px-2 md:px-2">
-        <h1 class="text-xl md:text-3xl font-bold">Laporan Device</h1>
-        <p class="text-[#414141] mb-8">Pantau dan analisis laporan device dibawah ini dengan filter harian, mingguan, dan bulanan.</p>
+        <h1 class="text-xl md:text-3xl font-bold">Laporan Kasir</h1>
+        <p class="text-[#414141] mb-8">Pantau dan analisis laporan per kasir dibawah ini dengan filter harian, mingguan, dan bulanan.</p>
 
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-white p-6">
             <div class="flex flex-col md:flex-row md:justify-end md:items-center gap-2">
                 <select class="px-2 py-2 border rounded-lg border-[#C0C0C0] p-2 text-[#969696] text-sm">
-                    <option>Ketik atau Pilih Perangkat 1</option>
-                    <option>Ketik atau Pilih Perangkat 2</option>
-                    <option>Ketik atau Pilih Perangkat 3</option>
+                    <option>Ketik atau Pilih Nama Kasir 1</option>
                 </select>
                 <div class="relative w-full md:w-1/5">
                     <svg class="absolute left-3 top-2.5 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -27,19 +25,16 @@
             <div class="p-4">
                 <div class="bg-white rounded-lg shadow p-4 mb-4">
                     <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-lg font-semibold">Informasi Device</h2>
+                        <h2 class="text-lg font-semibold">Informasi Kasir</h2>
                         <span id="shiftStatus">
                         </span>
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <div>
-                            <p class="text-sm text-gray-600">Error atau Gangguan</p>
+                            <p class="text-sm text-gray-600">Total Waktu Kerja</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-600">Total Waktu Pemakaian</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600">Total Booking</p>
+                            <p class="text-sm text-gray-600">Total Transaksi</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Total Pendapatan</p>
@@ -53,12 +48,11 @@
                             <thead class="bg-[#3E81AB]">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">No</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Nama Perangkat</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Jenis Paket</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Waktu Paket</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Waktu Mulai</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Waktu Berhenti</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Harga (Rp)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Nama Kasir</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Total Transaksi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Total Pendapatan (Rp)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Jam Kerja</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tanggal Kerja</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">

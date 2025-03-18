@@ -88,6 +88,10 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::view('/manage-perangkat', 'admin.managePerangkat')->name('admin.managePerangkat');
     Route::view('/manage-users', 'admin.manageUser')->name('admin.manageUser');
     Route::view('/laporan-device', 'admin.laporan')->name('admin.laporan');
+    Route::view('/laporan-kasir', 'admin.laporanKasir')->name('admin.laporanKasir');
+    Route::view('/laporan-transaksi', 'admin.laporanTransaksi')->name('admin.laporanTransaksi');
+    Route::view('/laporan-kendala', 'admin.laporanKendala')->name('admin.laporanKendala');
+    Route::view('/log-activity', 'admin.logActivity')->name('admin.logActivity');
 });
 
 // ======================= LOG ACTIVITY ROUTES =======================
