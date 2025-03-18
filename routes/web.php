@@ -83,6 +83,11 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     
     // Billing Package Management
     Route::resource('billing-packages', BillingPackageController::class);
+    Route::view('/paket-billing', 'admin.paketBilling')->name('admin.paketBilling');
+    Route::view('/open-billing', 'admin.openBilling')->name('admin.openBilling');
+    Route::view('/manage-perangkat', 'admin.managePerangkat')->name('admin.managePerangkat');
+    Route::view('/manage-users', 'admin.manageUser')->name('admin.manageUser');
+    Route::view('/laporan-device', 'admin.laporan')->name('admin.laporan');
 });
 
 // ======================= LOG ACTIVITY ROUTES =======================
