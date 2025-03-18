@@ -110,8 +110,9 @@ class BillingPageKasirController extends Controller
 
                 return response()->json([
                     'message' => 'Billing berhasil ditambahkan',
-                    'status' => $device->status,
-                    'shutdown_time' => $newShutdownTime->toIso8601String() // Use ISO format for better precision
+                    'status' => 'Berjalan',
+                    'transaction_id' => $transaction->id,
+                    'shutdown_time' => $newShutdownTime->toIso8601String()
                 ]);
 
             } catch (\Exception $e) {
@@ -219,7 +220,8 @@ class BillingPageKasirController extends Controller
 
                 return response()->json([
                     'message' => 'Billing berhasil dimulai',
-                    'status' => $device->status,
+                    'status' => 'Berjalan',
+                    'transaction_id' => $transaction->id,
                     'shutdown_time' => $newShutdownTime ? $newShutdownTime->toIso8601String() : null
                 ]);
 

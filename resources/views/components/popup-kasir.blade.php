@@ -422,78 +422,103 @@
     document.addEventListener("DOMContentLoaded", function() {
         let btnKonfirmasi = document.getElementById("btnKonfirmasi");
 
-        btnKonfirmasi.addEventListener("click", function() {
-            let deviceId = this.getAttribute("data-device-id");
-            let packageId = this.getAttribute("data-package-id");
-            let isOpen = this.getAttribute("data-is-open") === "true";
-            let isAdding = this.getAttribute("data-is-adding") === "true";
+        btnKonfirmasi.addEventListener("click", confirmPackage);
+    });
 
-            if (!deviceId) {
-                alert("Device ID tidak ditemukan!");
-                return;
-            }
+    function confirmPackage() {
+        const deviceId = document.querySelector("#btnKonfirmasi").getAttribute("data-device-id");
+        const packageId = document.querySelector("#btnKonfirmasi").getAttribute("data-package-id");
+        const isOpen = document.querySelector("#btnKonfirmasi").getAttribute("data-is-open") === "true";
+        const isAdding = document.querySelector("#btnKonfirmasi").getAttribute("data-is-adding") === "true";
 
-            if (!isOpen && !packageId) {
-                alert("Pilih paket terlebih dahulu!");
-                return;
-            }
+        if (!deviceId) {
+            alert("Device ID tidak ditemukan!");
+            return;
+        }
 
-            const endpoint = isAdding ? "{{ route('billing.add') }}" : "{{ route('billing.start') }}";
+        // Tentukan URL berdasarkan apakah menambah waktu atau memulai billing baru
+        const url = isAdding ? '/kasir/billing/add' : '/kasir/billing/start';
 
-            console.log('Sending request:', {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
                 device_id: deviceId,
                 package_id: packageId,
                 is_open: isOpen,
                 is_adding: isAdding
-            });
-
-            fetch(endpoint, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        device_id: deviceId,
-                        package_id: packageId,
-                        is_open: isOpen,
-                        is_adding: isAdding
-                    }),
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => {
-                            throw new Error(err.message || 'Network response was not ok');
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'Berjalan') {
-                        let message = isAdding ? "Billing berhasil ditambahkan!" :
-                            "Billing telah dimulai!";
-                        if (data.shutdown_time) {
-                            const shutdownTime = new Date(data.shutdown_time);
-                            const formattedTime = shutdownTime.toLocaleTimeString('id-ID', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: false
-                            });
-                            message += `\nWaktu selesai: ${formattedTime}`;
-                        }
-                        alert(message);
-                        closeModal('modalKonfirmasi');
-                        location.reload();
-                    } else {
-                        alert(data.message || "Gagal memulai billing!");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    alert(error.message ||
-                        "Terjadi kesalahan saat memulai billing. Silakan coba lagi.");
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Network response was not ok');
                 });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'Berjalan') {
+                // Jika bukan Open Billing dan transaksi berhasil dibuat
+                if (!isOpen && data.transaction_id) {
+                    // Buka struk di window baru
+                    const receiptUrl = `/kasir/print-receipt/${data.transaction_id}`;
+                    const receiptWindow = window.open(
+                        receiptUrl,
+                        `receipt_${data.transaction_id}`,
+                        'width=400,height=600,menubar=no,toolbar=no,location=no,status=no'
+                    );
+
+                    if (receiptWindow) {
+                        receiptWindow.focus();
+                    } else {
+                        alert('Popup untuk struk diblokir. Mohon izinkan popup untuk mencetak struk.');
+                    }
+                }
+                
+                // Tutup popup
+                closeModal('modalKonfirmasi');
+                
+                // Tampilkan pesan sukses
+                const message = isAdding ? 
+                    "Billing berhasil ditambahkan!" : 
+                    "Billing berhasil dimulai!";
+                
+                if (data.shutdown_time) {
+                    const shutdownTime = new Date(data.shutdown_time);
+                    const formattedTime = shutdownTime.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+                    alert(`${message}\nWaktu selesai: ${formattedTime}`);
+                } else {
+                    alert(message);
+                }
+
+                // Refresh halaman setelah delay singkat
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                alert(data.message || 'Terjadi kesalahan saat memulai billing');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message || 'Terjadi kesalahan saat memulai billing. Silakan coba lagi.');
         });
+    }
+
+    // Add event listener for confirmation button
+    document.addEventListener("DOMContentLoaded", function() {
+        const btnKonfirmasi = document.getElementById("btnKonfirmasi");
+        if (btnKonfirmasi) {
+            btnKonfirmasi.addEventListener("click", confirmPackage);
+        }
     });
 
     function openModalDetailPaket(deviceId, deviceName, shutdownTime, packageName, fullShutdownTime, lastUsedAt) {
@@ -886,6 +911,72 @@
 
     function closeLogoutModal() {
         closeModal('modalLogoutConfirm');
+    }
+
+    function finishBilling(deviceId) {
+        if (!deviceId) {
+            alert('Device ID tidak ditemukan!');
+            return;
+        }
+
+        fetch('/kasir/billing/finish', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                device_id: deviceId
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Network response was not ok');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                // Jika ada transaksi dan ID transaksi
+                if (data.transaction && data.transaction.id) {
+                    // Buka struk di window baru
+                    const receiptUrl = `/kasir/print-receipt/${data.transaction.id}`;
+                    const receiptWindow = window.open(
+                        receiptUrl,
+                        `receipt_${data.transaction.id}`,
+                        'width=400,height=600,menubar=no,toolbar=no,location=no,status=no'
+                    );
+
+                    if (receiptWindow) {
+                        receiptWindow.focus();
+                    } else {
+                        alert('Popup untuk struk diblokir. Mohon izinkan popup untuk mencetak struk.');
+                    }
+                }
+
+                // Tampilkan pesan sukses dengan detail
+                let message = 'Billing berhasil diselesaikan!';
+                if (data.transaction) {
+                    const formattedPrice = new Intl.NumberFormat('id-ID').format(data.transaction.total_price);
+                    message += `\nDurasi: ${data.transaction.duration} menit`;
+                    message += `\nTotal: Rp ${formattedPrice}`;
+                }
+                alert(message);
+
+                // Refresh halaman setelah delay singkat
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                alert(data.message || 'Terjadi kesalahan saat menyelesaikan billing');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message || 'Terjadi kesalahan saat menyelesaikan billing. Silakan coba lagi.');
+        });
     }
 </script>
 
