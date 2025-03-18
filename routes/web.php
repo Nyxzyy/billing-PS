@@ -60,6 +60,11 @@ Route::prefix('kasir')->middleware('auth')->group(function () {
 // ======================= ADMIN ROUTES =======================
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::view('/dashboard', 'admin.dashboard')->name('admin.dashboard');
+    Route::view('/paket-billing', 'admin.paketBilling')->name('admin.paketBilling');
+    Route::view('/open-billing', 'admin.openBilling')->name('admin.openBilling');
+    Route::view('/manage-perangkat', 'admin.managePerangkat')->name('admin.managePerangkat');
+    Route::view('/manage-users', 'admin.manageUser')->name('admin.manageUser');
+    Route::view('/laporan-device', 'admin.laporan')->name('admin.laporan');
 });
 
 // ======================= BILLING PACKAGE ROUTES =======================
