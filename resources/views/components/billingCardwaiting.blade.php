@@ -29,72 +29,60 @@
 
 <script>
     function finishBilling(deviceId) {
-        if (!confirm('Apakah Anda yakin ingin menyelesaikan billing ini?')) {
+        if (!confirm('Apakah anda yakin ingin menyelesaikan billing ini?')) {
             return;
         }
 
         fetch("{{ route('billing.finish') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    device_id: deviceId
-                })
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                device_id: deviceId
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    let message = 'Billing berhasil diselesaikan!';
-                    
-                    // If transaction data is available (especially for Open Billing)
-                    if (data.transaction) {
-                        const startTime = new Date(data.transaction.start_time);
-                        const endTime = new Date(data.transaction.end_time);
-                        const duration = data.transaction.duration;
-                        const totalPrice = data.transaction.total_price;
-                        
-                        // Format times
-                        const formatTime = (date) => {
-                            return date.toLocaleTimeString('id-ID', { 
-                                hour: '2-digit', 
-                                minute: '2-digit'
-                            });
-                        };
-                        
-                        // Format duration
-                        const hours = Math.floor(duration / 60);
-                        const minutes = duration % 60;
-                        const durationStr = hours > 0 
-                            ? `${hours} jam ${minutes} menit`
-                            : `${minutes} menit`;
-                        
-                        // Format price
-                        const formattedPrice = new Intl.NumberFormat('id-ID', {
-                            style: 'currency',
-                            currency: 'IDR',
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0
-                        }).format(totalPrice);
-                        
-                        message = `Billing selesai!\n\n` +
-                                 `Mulai: ${formatTime(startTime)}\n` +
-                                 `Selesai: ${formatTime(endTime)}\n` +
-                                 `Durasi: ${durationStr}\n` +
-                                 `Total: ${formattedPrice}`;
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if (data.transaction && data.transaction.id) {
+                    // Buka struk di window baru
+                    const receiptUrl = `{{ route('print.receipt', ['transactionId' => ':id']) }}`.replace(':id', data.transaction.id);
+                    const receiptWindow = window.open(
+                        receiptUrl,
+                        `receipt_${data.transaction.id}`,
+                        'width=400,height=600,menubar=no,toolbar=no,location=no,status=no'
+                    );
+
+                    if (receiptWindow) {
+                        receiptWindow.focus();
+                    } else {
+                        alert('Popup untuk struk diblokir. Mohon izinkan popup untuk mencetak struk.');
                     }
-                    
-                    alert(message);
-                    location.reload();
-                } else {
-                    alert(data.message || 'Gagal menyelesaikan billing!');
                 }
-            })
-            .catch(error => {
-                console.error('Error finishing billing:', error);
-                alert('Terjadi kesalahan saat menyelesaikan billing');
-            });
+
+                // Tampilkan pesan sukses dengan detail
+                let message = 'Billing berhasil diselesaikan!';
+                if (data.transaction) {
+                    const formattedPrice = new Intl.NumberFormat('id-ID').format(data.transaction.total_price);
+                    message += `\nDurasi: ${data.transaction.duration} menit`;
+                    message += `\nTotal: Rp ${formattedPrice}`;
+                }
+                alert(message);
+
+                // Refresh halaman setelah delay singkat
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                alert(data.message || 'Terjadi kesalahan saat menyelesaikan billing');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat menyelesaikan billing. Silakan coba lagi.');
+        });
     }
 
     function updateDeviceStatus(deviceId, status) {
@@ -103,7 +91,7 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": '{{ csrf_token() }}'
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({
                     device_id: deviceId,

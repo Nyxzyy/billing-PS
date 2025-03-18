@@ -38,9 +38,11 @@
 
             <div class="p-4">
                 <!-- Shift Information -->
-                <div class="bg-white rounded-lg shadow p-4 mb-4">
+                <div class="bg-white rounded-lg shadow p-4 mb-4" data-shift-active="{{ $currentShift ? '1' : '0' }}">
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="text-lg font-semibold">Informasi Shift</h2>
+                        <span id="shiftStatus" class="{{ $currentShift ? 'text-green-500' : 'text-red-500' }}">
+                        </span>
                     </div>
                     @if($currentShift)
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -122,7 +124,7 @@
             return;
         }
 
-        fetch('/shift/end', {
+        fetch('{{ route("shift.end") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -134,9 +136,11 @@
             if (data.status === 'success') {
                 showNotification('success', 'Shift berhasil diakhiri');
                 // Reload page to update shift information
-                window.location.reload();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
-                showNotification('error', data.message);
+                showNotification('error', data.message || 'Terjadi kesalahan saat mengakhiri shift');
             }
         })
         .catch(error => {
@@ -264,12 +268,26 @@
 
     // Check shift status when page loads to handle server restart case
     document.addEventListener('DOMContentLoaded', function() {
-        fetch('/shift/check')
-            .then(response => response.json())
+        // Cek apakah sudah ada data shift dari server-side
+        const currentShiftElement = document.querySelector('[data-shift-active]');
+        if (currentShiftElement) {
+            // Gunakan data dari server-side
+            const hasActiveShift = currentShiftElement.getAttribute('data-shift-active') === '1';
+            updateShiftStatus(hasActiveShift);
+            return;
+        }
+
+        // Jika tidak ada data dari server-side, baru lakukan fetch
+        fetch('{{ route("shift.check") }}')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.hasActiveShift) {
-                    // Jika ada shift aktif tapi tombol belum muncul (karena server restart)
-                    const endShiftButton = document.querySelector('[onclick="endShift()"]');
+                    const endShiftButton = document.getElementById('btnEndShift');
                     if (!endShiftButton || endShiftButton.style.display === 'none') {
                         window.location.reload();
                     }
@@ -277,6 +295,10 @@
             })
             .catch(error => {
                 console.error('Error:', error);
+                // Hanya tampilkan error jika benar-benar gagal fetch
+                if (error.message !== 'Network response was not ok') {
+                    showNotification('error', 'Terjadi kesalahan saat memeriksa status shift');
+                }
             });
     });
     </script>

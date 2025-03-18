@@ -716,7 +716,7 @@
     async function syncTime() {
         try {
             const startTime = Date.now();
-            const response = await fetch('/kasir/server-time');
+            const response = await fetch('{{ route("server.time") }}');
             const data = await response.json();
             const endTime = Date.now();
             
@@ -776,7 +776,7 @@
 
         console.log(`Updating device ${deviceId} status to ${status}`);
         
-        fetch('/kasir/billing/update-status', {
+        fetch('{{ route("billing.update-status") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -823,7 +823,7 @@
     });
 
     function checkShiftStatus() {
-        fetch('/kasir/shift/check-status')
+        fetch('{{ route("shift.check") }}')
             .then(response => response.json())
             .then(data => {
                 if (!data.hasActiveShift) {
@@ -839,7 +839,7 @@
     }
 
     function startShift() {
-        fetch('/kasir/shift/start', {
+        fetch('{{ route("shift.start") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -867,7 +867,7 @@
     }
 
     function checkShiftBeforeLogout() {
-        fetch('/kasir/shift/check-status')
+        fetch('{{ route("shift.check") }}')
             .then(response => response.json())
             .then(data => {
                 if (data.hasActiveShift) {
@@ -883,7 +883,7 @@
     }
 
     function endShiftAndLogout() {
-        fetch('/kasir/shift/end', {
+        fetch('{{ route("shift.end") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -919,7 +919,7 @@
             return;
         }
 
-        fetch('/kasir/billing/finish', {
+        fetch('{{ route("billing.finish") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1011,14 +1011,14 @@
 
     function submitKendala() {
         const deviceId = document.getElementById('selectedDeviceId').value;
-        const issue = document.getElementById('textareaKendala').value;
-        
-        if (!issue.trim()) {
-            showNotification('error', 'Harap isi kendala terlebih dahulu');
+        const kendalaText = document.getElementById('textareaKendala').value;
+
+        if (!kendalaText.trim()) {
+            alert('Silakan isi kendala terlebih dahulu!');
             return;
         }
 
-        fetch('/kasir/kendala/report', {
+        fetch('{{ route("kendala.report") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1026,22 +1026,22 @@
             },
             body: JSON.stringify({
                 device_id: deviceId,
-                issue: issue
+                issue: kendalaText
             })
         })
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                showNotification('success', 'Kendala berhasil dilaporkan');
                 closeModal('modalKonfirmasiKunci');
-                window.location.reload(); // Reload to update device status
+                alert('Kendala berhasil dilaporkan!');
+                window.location.reload();
             } else {
-                showNotification('error', data.message || 'Terjadi kesalahan saat melaporkan kendala');
+                alert(data.message || 'Terjadi kesalahan saat melaporkan kendala');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showNotification('error', 'Terjadi kesalahan saat melaporkan kendala');
+            alert('Terjadi kesalahan saat melaporkan kendala');
         });
     }
 
@@ -1050,19 +1050,19 @@
         document.getElementById('detailDeviceName').value = deviceName;
         
         // Fetch kendala details
-        fetch(`/kasir/kendala/${deviceId}/latest`)
+        fetch('{{ route("kendala.latest", ["deviceId" => ":deviceId"]) }}'.replace(':deviceId', deviceId))
             .then(response => response.json())
             .then(data => {
                 if (data.kendala) {
                     document.getElementById('textareaDetailKendala').value = data.kendala.issue;
                     openModal('modalDetailKendala');
                 } else {
-                    showNotification('error', 'Tidak dapat menemukan detail kendala');
+                    alert('Tidak ada kendala yang tercatat untuk device ini');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showNotification('error', 'Terjadi kesalahan saat mengambil detail kendala');
+                alert('Terjadi kesalahan saat mengambil detail kendala');
             });
     }
 
@@ -1076,7 +1076,7 @@
     function resolveKendala() {
         const deviceId = document.getElementById('detailDeviceId').value;
         
-        fetch('/kasir/kendala/resolve', {
+        fetch('{{ route("kendala.resolve") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1089,16 +1089,16 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                showNotification('success', 'Device berhasil dibuka');
                 closeModal('modalBukaKunci');
-                window.location.reload(); // Reload to update device status
+                alert('Kendala berhasil diselesaikan!');
+                window.location.reload();
             } else {
-                showNotification('error', data.message || 'Terjadi kesalahan saat membuka device');
+                alert(data.message || 'Terjadi kesalahan saat menyelesaikan kendala');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showNotification('error', 'Terjadi kesalahan saat membuka device');
+            alert('Terjadi kesalahan saat menyelesaikan kendala');
         });
     }
 </script>
