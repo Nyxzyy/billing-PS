@@ -313,19 +313,41 @@ class BillingPageKasirController extends Controller
                         }
                     }
 
-                    // Update transaction with final details
-                    $transaction->package_time = $duration;
-                    $transaction->end_time = $endTime;
-                    $transaction->total_price = $totalPrice;
-                    $transaction->save();
+                    DB::beginTransaction();
+                    try {
+                        // Update transaction with final details
+                        $transaction->package_time = $duration;
+                        $transaction->end_time = $endTime;
+                        $transaction->total_price = $totalPrice;
+                        $transaction->save();
 
-                    // Update shift totals
-                    $currentShift = CashierReport::where('cashier_id', Auth::id())
-                        ->whereNull('shift_end')
-                        ->first();
+                        // Get shift yang memulai billing ini
+                        $startShift = CashierReport::where('cashier_id', $transaction->user_id)
+                            ->where('shift_start', '<=', $transaction->start_time)
+                            ->where(function($query) use ($transaction) {
+                                $query->where('shift_end', '>=', $transaction->start_time)
+                                    ->orWhereNull('shift_end');
+                            })
+                            ->first();
 
-                    if ($currentShift) {
-                        $currentShift->increment('total_revenue', $totalPrice);
+                        // Jika shift awal ditemukan dan berbeda dengan shift saat ini
+                        if ($startShift) {
+                            $startShift->increment('total_revenue', $totalPrice);
+                        } else {
+                            // Jika shift awal tidak ditemukan, tambahkan ke shift yang aktif
+                            $currentShift = CashierReport::where('cashier_id', Auth::id())
+                                ->whereNull('shift_end')
+                                ->first();
+
+                            if ($currentShift) {
+                                $currentShift->increment('total_revenue', $totalPrice);
+                            }
+                        }
+
+                        DB::commit();
+                    } catch (\Exception $e) {
+                        DB::rollback();
+                        throw $e;
                     }
                 }
                 // For regular billing, just update the end time
@@ -349,7 +371,8 @@ class BillingPageKasirController extends Controller
                     'duration' => $duration ?? null,
                     'total_price' => $transaction->total_price,
                     'start_time' => $transaction->start_time,
-                    'end_time' => $transaction->end_time
+                    'end_time' => $transaction->end_time,
+                    'id' => $transaction->id
                 ] : null
             ]);
 

@@ -11,17 +11,27 @@ class ShiftController extends Controller
 {
     public function checkShiftStatus()
     {
-        $now = Carbon::now();
-        
-        // Check for active shift within last 24 hours
+        // Check for any active shift (tanpa batasan waktu)
         $activeShift = CashierReport::where('cashier_id', Auth::id())
-            ->where('shift_start', '<=', $now)
             ->whereNull('shift_end')
             ->orderBy('shift_start', 'desc')
             ->first();
 
+        // Jika ada shift aktif, periksa apakah ada transaksi yang masih berjalan
+        if ($activeShift) {
+            return response()->json([
+                'hasActiveShift' => true,
+                'shiftData' => [
+                    'id' => $activeShift->id,
+                    'start_time' => $activeShift->shift_start,
+                    'total_transactions' => $activeShift->total_transactions,
+                    'total_revenue' => $activeShift->total_revenue
+                ]
+            ]);
+        }
+
         return response()->json([
-            'hasActiveShift' => !is_null($activeShift)
+            'hasActiveShift' => false
         ]);
     }
 

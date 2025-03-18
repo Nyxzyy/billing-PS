@@ -52,6 +52,60 @@
             document.getElementById(modalId).classList.add('invisible');
         }
 
+        function checkShiftStatus() {
+            fetch('/shift/check')
+                .then(response => response.json())
+                .then(data => {
+                    // Jika tidak ada shift aktif, tampilkan modal mulai shift
+                    if (!data.hasActiveShift) {
+                        openModal('modalMulaiShift');
+                    } else {
+                        // Update UI untuk menampilkan info shift aktif
+                        updateShiftInfo(data.shiftData);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function updateShiftInfo(shiftData) {
+            // Tampilkan tombol Tutup Buku jika ada shift aktif
+            const endShiftButton = document.querySelector('[onclick="endShift()"]');
+            if (endShiftButton) {
+                endShiftButton.style.display = 'flex';
+            }
+        }
+
+        function startShift() {
+            fetch('/shift/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    closeModal('modalMulaiShift');
+                    showNotification('success', data.message);
+                    // Reload halaman untuk memperbarui UI
+                    window.location.reload();
+                } else {
+                    showNotification('error', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('error', 'Terjadi kesalahan saat memulai shift');
+            });
+        }
+
+        function closeShiftModal() {
+            closeModal('modalMulaiShift');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Check shift status on every page load
             checkShiftStatus();

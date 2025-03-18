@@ -146,7 +146,6 @@
     }
 
     function printReceipt(transactionId) {
-        // Add print receipt functionality here
         window.open(`/kasir/print-receipt/${transactionId}`, '_blank', 'width=400,height=600');
     }
 
@@ -261,6 +260,24 @@
         // Save with formatted filename
         const filename = `Laporan_Transaksi_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}.pdf`;
         doc.save(filename);
+    });
+
+    // Check shift status when page loads to handle server restart case
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/shift/check')
+            .then(response => response.json())
+            .then(data => {
+                if (data.hasActiveShift) {
+                    // Jika ada shift aktif tapi tombol belum muncul (karena server restart)
+                    const endShiftButton = document.querySelector('[onclick="endShift()"]');
+                    if (!endShiftButton || endShiftButton.style.display === 'none') {
+                        window.location.reload();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     });
     </script>
 @endsection
