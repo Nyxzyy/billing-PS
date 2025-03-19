@@ -10,6 +10,8 @@ use App\Http\Controllers\DevicesController;
 use App\Http\Controllers\LaporanPageKasirController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\KendalaController;
+use App\Http\Controllers\DashboardAdminController;
+use App\Http\Controllers\OpenBillingController;
 
 // Redirect berdasarkan role
 Route::get('/', function () {
@@ -79,12 +81,16 @@ Route::prefix('kasir')->middleware('auth')->group(function () {
 
 // ======================= ADMIN ROUTES =======================
 Route::prefix('admin')->middleware('auth')->group(function () {
-    Route::view('/dashboard', 'admin.dashboard')->name('admin.dashboard');
+    Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/current-time', [DashboardAdminController::class, 'getCurrentTime']);
+    Route::get('/dashboard-stats', [DashboardAdminController::class, 'getDashboardStats']);
+    Route::post('/chart-data', [DashboardAdminController::class, 'updateChartData'])->name('admin.chart-data');
     
     // Billing Package Management
+    Route::get('/paket-billing', [BillingPackageController::class, 'index'])->name('admin.paketBilling');
     Route::resource('billing-packages', BillingPackageController::class);
-    Route::view('/paket-billing', 'admin.paketBilling')->name('admin.paketBilling');
-    Route::view('/open-billing', 'admin.openBilling')->name('admin.openBilling');
+    Route::get('/open-billing', [OpenBillingController::class, 'index'])->name('admin.openBilling');
+    Route::post('/open-billing', [OpenBillingController::class, 'update'])->name('admin.openBilling.update');
     Route::view('/manage-perangkat', 'admin.managePerangkat')->name('admin.managePerangkat');
     Route::view('/manage-users', 'admin.manageUser')->name('admin.manageUser');
     Route::view('/laporan-device', 'admin.laporan')->name('admin.laporan');

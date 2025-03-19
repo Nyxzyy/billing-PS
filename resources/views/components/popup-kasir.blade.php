@@ -13,10 +13,10 @@
         <p class="text-sm text-gray-600 mb-6">Selamat datang, {{ Auth::user()->name }}! Silakan mulai shift untuk memulai transaksi hari ini.</p>
 
         <div class="flex flex-col gap-3">
-            <button onclick="startShift()" class="w-full bg-[#3E81AB] hover:bg-[#2C5F7C] text-white px-4 py-2 rounded text-sm">
+            <button onclick="startShift()" class="w-full bg-[#3E81AB] hover:bg-[#2C5F7C] text-white px-4 py-2 rounded text-sm cursor-pointer">
                 Mulai Shift
             </button>
-            <button onclick="closeShiftModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm">
+            <button onclick="closeShiftModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm cursor-pointer">
                 Nanti Saja
             </button>
         </div>
@@ -39,7 +39,7 @@
         </div>
 
         <div class="flex justify-end mt-4">
-            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs"
+            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs cursor-pointer"
                 onclick="closeModalKendala()">Batal</button>
             <button id="btnKunci" class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs cursor-not-allowed" disabled
                 onclick="openModalKunci()">Kunci</button>
@@ -54,9 +54,9 @@
                 class="text-[#FF4747] font-semibold"></span> ini?</p>
 
         <div class="flex justify-center w-full mt-4 space-x-2">
-            <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs"
+            <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs cursor-pointer"
                 onclick="closeModal('modalKonfirmasiKunci')">Tidak, Kembali</button>
-            <button onclick="submitKendala()" class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs">Kunci dan Laporkan</button>
+            <button onclick="submitKendala()" class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs cursor-pointer">Kunci dan Laporkan</button>
         </div>
     </div>
 </div>
@@ -71,9 +71,9 @@
         <textarea id="textareaDetailKendala" class="w-full border border-[#C0C0C0] p-2 rounded mt-1" readonly></textarea>
 
         <div class="flex justify-end mt-4">
-            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs"
+            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs cursor-pointer"
                 onclick="closeModal('modalDetailKendala')">Tutup</button>
-            <button class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs"
+            <button class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs cursor-pointer"
                 onclick="openModalBukaKunci()">Buka Kunci</button>
         </div>
     </div>
@@ -86,9 +86,9 @@
                 class="text-[#FF4747] font-semibold"></span> ini?</p>
 
         <div class="flex justify-center w-full mt-4 space-x-2">
-            <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs"
+            <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs cursor-pointer"
                 onclick="closeModal('modalBukaKunci')">Tidak, Kembali</button>
-            <button onclick="resolveKendala()" class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs">Buka Kunci</button>
+            <button onclick="resolveKendala()" class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs cursor-pointer">Buka Kunci</button>
         </div>
     </div>
 </div>
@@ -114,7 +114,7 @@
         <div class="justify-center w-full mt-4 space-x-2">
         <button class="w-full bg-[#3E81AB] text-white px-4 py-2 rounded mr-2 text-xs mb-2" id="btnTambahBilling"
                 onclick="closeModal('modalDetailPaket'); openModalPilihPaket(true)">Tambah Billing</button>
-            <button id="btnStop" class="w-full bg-[#FB2C36] text-white px-4 py-2 rounded text-xs"
+            <button id="btnStop" class="w-full bg-[#FB2C36] text-white px-4 py-2 rounded text-xs cursor-pointer"
                 onclick="stopDevice()">STOP</button>
         </div>
     </div>
@@ -135,13 +135,13 @@
         <p class="text-sm text-gray-600 mb-6">Shift anda masih aktif. Anda harus menutup buku terlebih dahulu sebelum keluar.</p>
 
         <div class="flex flex-col gap-3">
-            <button onclick="endShiftAndLogout()" class="w-full bg-[#3E81AB] hover:bg-[#2C5F7C] text-white px-4 py-2 rounded text-sm">
+            <button onclick="endShiftAndLogout()" class="w-full bg-[#3E81AB] hover:bg-[#2C5F7C] text-white px-4 py-2 rounded text-sm cursor-pointer">
                 Tutup Buku & Keluar
             </button>
-            <button onclick="forceLogout()" class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm">
+            <button onclick="forceLogout()" class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm cursor-pointer">
                 Lanjutkan Keluar
             </button>
-            <button onclick="closeLogoutModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm">
+            <button onclick="closeLogoutModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm cursor-pointer">
                 Batal
             </button>
         </div>
@@ -173,9 +173,9 @@
         </div>
 
         <div class="flex justify-end mt-4">
-            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs"
+            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs cursor-pointer"
                 onclick="closeModal('modalPilihPaket')">Batal</button>
-            <button class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs"
+            <button class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs cursor-pointer"
                 onclick="openModalKonfirmasi()">Lanjut</button>
         </div>
     </div>
@@ -195,9 +195,9 @@
         <p class="mt-3 text-sm">Apakah Anda yakin ingin memulai billing dengan Paket Ini?</p>
 
         <div class="flex justify-center w-full mt-4 space-x-2">
-            <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs"
+            <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs cursor-pointer"
                 onclick="closeModal('modalKonfirmasi')">Batal</button>
-            <button id="btnKonfirmasi" class="w-full bg-[#64DF64] text-white px-4 py-2 rounded text-xs">Mulai</button>
+            <button id="btnKonfirmasi" class="w-full bg-[#64DF64] text-white px-4 py-2 rounded text-xs cursor-pointer">Mulai</button>
         </div>
     </div>
 </div>

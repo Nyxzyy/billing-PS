@@ -9,8 +9,8 @@ class BillingPackageController extends Controller
 {
     public function index()
     {
-        $packages = BillingPackage::all();
-        return view('billing_packages.index', compact('packages'));
+        $packages = BillingPackage::paginate(10);
+        return view('Admin.paketBilling', compact('packages'));
     }
 
     public function store(Request $request)

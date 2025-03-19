@@ -14,7 +14,7 @@
                     <p>Nama Kasir : <span class="font-bold">{{ Auth::user()->name }}</span></p>
                 </div>
                 <div class="flex space-x-2">
-                    <button id="btnDownload" class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
+                    <button id="btnDownload" class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                             stroke-linejoin="round">
@@ -23,7 +23,7 @@
                         Download Laporan
                     </button>
                     @if($currentShift && !$currentShift->shift_end)
-                        <button onclick="endShift()" class="bg-[#FB2C36] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
+                        <button onclick="endShift()" class="bg-[#FB2C36] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2 cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
@@ -96,7 +96,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $transaction['end_time'] }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">Rp {{ number_format($transaction['total_price'], 0, ',', '.') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <button onclick="printReceipt({{ $transaction['id'] }})" class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1">
+                                        <button onclick="printReceipt({{ $transaction['id'] }})" class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1 cursor-pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <polyline points="6 9 6 2 18 2 18 9"></polyline>
                                                 <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>

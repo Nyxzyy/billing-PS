@@ -10,21 +10,43 @@
 
         <div class="p-5 bg-white shadow-md rounded-lg mb-6">
             <h2 class="text-lg font-semibold mb-3">Pengaturan Open Time</h2>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Harga per Jam (Rp)</label>
-                <input type="text" placeholder="Contoh: 6000" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div class="flex gap-2 mb-4">
-                <div class="w-1/2">
-                    <label class="block text-sm font-medium text-gray-700">Harga per Menit (Rp)</label>
-                    <input type="text" placeholder="Menit (misal: 10)" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                    {{ session('success') }}
                 </div>
-                <div class="w-1/2">
-                    <label class="block text-sm font-medium text-gray-700">Harga (Rp)</label>
-                    <input type="text" placeholder="Harga (Rp)" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            @endif
+            <form action="{{ route('admin.openBilling.update') }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Harga per Jam (Rp)</label>
+                    <input type="number" name="price_per_hour" value="{{ old('price_per_hour', $openBilling->price_per_hour ?? 0) }}" 
+                        placeholder="Contoh: 6000" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    @error('price_per_hour')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-            </div>
-            <button class="w-full bg-[#39C65B] text-white py-2 rounded-lg hover:bg-green-600">Simpan Pengaturan</button>
+                <div class="flex gap-2 mb-4">
+                    <div class="w-1/2">
+                        <label class="block text-sm font-medium text-gray-700">Durasi (Menit)</label>
+                        <input type="number" name="minute_count" value="{{ old('minute_count', $openBilling->minute_count ?? 0) }}" 
+                            placeholder="Menit (misal: 10)" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        @error('minute_count')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block text-sm font-medium text-gray-700">Harga per Menit (Rp)</label>
+                        <input type="number" name="price_per_minute" value="{{ old('price_per_minute', $openBilling->price_per_minute ?? 0) }}" 
+                            placeholder="Harga (Rp)" class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        @error('price_per_minute')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-[#39C65B] text-white py-2 rounded-lg hover:bg-green-600 cursor-pointer">
+                    Simpan Pengaturan
+                </button>
+            </form>
         </div>
 
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-white p-6 mb-2">

@@ -10,7 +10,7 @@
         <ul>
             <li class="mb-4">
                 <a href="{{ route('kasir.dashboard') }}"
-                    class="text-lg md:text-xl font-medium flex items-center gap-2 p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white">
+                    class="font-medium flex items-center gap-2 p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -24,7 +24,7 @@
             </li>
             <li class="mb-4">
                 <a href="{{ route('kasir.billing') }}"
-                    class="text-lg md:text-xl font-medium flex items-center gap-2 p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white">
+                    class="font-medium flex items-center gap-2 p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -36,7 +36,7 @@
             </li>
             <li class="mb-4">
                 <a href="{{ route('kasir.laporan') }}"
-                    class="group text-lg md:text-xl font-medium flex items-center gap-2 p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white">
+                    class="group font-medium flex items-center gap-2 p-2 rounded text-black hover:bg-[#3E81AB] hover:text-white">
                     <img src="{{ asset('assets/icon/report_svgrepo.com.svg') }}" 
                     alt="Laporan" 
                     class="w-6 h-6 transition duration-200 group-hover:hidden">
