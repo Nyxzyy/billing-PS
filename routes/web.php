@@ -43,7 +43,7 @@ Route::middleware('auth')->get('/server-time', function() {
 })->name('server.time');
 
 // ======================= KASIR ROUTES =======================
-Route::prefix('kasir')->middleware('auth')->group(function () {
+Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('kasir.dashboard');
     
@@ -80,7 +80,7 @@ Route::prefix('kasir')->middleware('auth')->group(function () {
 });
 
 // ======================= ADMIN ROUTES =======================
-Route::prefix('admin')->middleware('auth')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/current-time', [DashboardAdminController::class, 'getCurrentTime']);
     Route::get('/dashboard-stats', [DashboardAdminController::class, 'getDashboardStats']);
