@@ -14,6 +14,7 @@ use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\OpenBillingController;
 use App\Http\Controllers\DeviceManagementController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\LaporanTransaksiController;
 
 // Redirect berdasarkan role
 Route::get('/', function () {
@@ -112,7 +113,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/open-billing', [OpenBillingController::class, 'index'])->name('admin.openBilling.index');
     Route::view('/laporan-device', 'admin.laporan')->name('admin.laporan');
     Route::view('/laporan-kasir', 'admin.laporanKasir')->name('admin.laporanKasir');
-    Route::view('/laporan-transaksi', 'admin.laporanTransaksi')->name('admin.laporanTransaksi');
+    Route::get('/laporan-transaksi', [LaporanTransaksiController::class, 'index'])->name('admin.laporanTransaksi');
+    Route::get('/laporan-transaksi/download', [LaporanTransaksiController::class, 'download'])->name('admin.laporanTransaksi.download');
     Route::view('/laporan-kendala', 'admin.laporanKendala')->name('admin.laporanKendala');
     Route::get('/log-activity', [LogActivityController::class, 'adminIndex'])->name('admin.logActivity');
 });
