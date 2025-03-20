@@ -35,6 +35,11 @@
         </div>
     </div>
 
+    @include('components-admin.popup-managePerangkat')
+    @include('components-admin.popup-manageUser')
+    @include('components-admin.popup-openBilling')
+    @include('components-admin.popup-paketBilling')
+
     <script>
         function showNotification(type, message) {
             // You can implement this based on your notification system

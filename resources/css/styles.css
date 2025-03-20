@@ -19,3 +19,16 @@ body {
 #pilihPaket option:disabled {
     color: #DBDBDB;
 }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+.date-placeholder::before {
+    content: attr(data-placeholder);
+    color: #6D717F;
+    position: absolute;
+    left: 48px; /* Sesuaikan posisi */
+    pointer-events: none;
+}
