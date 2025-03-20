@@ -38,7 +38,7 @@
         </div>
         
         <div class="flex justify-between mt-4">
-            <button onclick="openModal('modalKonfirmasi', 'modalEditPerangkat')" class="bg-[#FF4747] text-white px-4 py-2 rounded text-sm">Hapus</button>
+            <button onclick="openModal('modalKonfirmasiPerangkat', 'modalEditPerangkat')" class="bg-[#FF4747] text-white px-4 py-2 rounded text-sm">Hapus</button>
             <div class="flex gap-2">
                 <button onclick="closeModal('modalEditPerangkat')" class="bg-[#C6C6C6] text-[#4F4F4F] px-4 py-2 rounded text-sm">Batal</button>
                 <button onclick="savePackage()" class="bg-[#3E81AB] text-white px-4 py-2 rounded text-sm">Simpan</button>
@@ -48,7 +48,7 @@
 </div>
 
 {{-- Konfirmasi --}}
-<div id="modalKonfirmasi" class="invisible fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+<div id="modalKonfirmasiPerangkat" class="invisible fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
     <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md">
         <h2 class="text-sm font-bold">Konfirmasi Hapus Data Perangkat</h2>
         <p class="mt-2 text-sm">Apakah Anda yakin ingin menghapus data perangkat <span class="text-[#FF4747] font-semibold">
@@ -56,7 +56,7 @@
 
         <div class="flex justify-center w-full mt-4 space-x-2">
             <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs"
-                onclick="closeModal('modalKonfirmasi')">Tidak, Kembali</button>
+                onclick="closeModal('modalKonfirmasiPerangkat')">Tidak, Kembali</button>
             <button onclick="" class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs">Ya, Hapus Perangkat Ini</button>
         </div>
     </div>

@@ -78,7 +78,8 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm"></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">Menit</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm"></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">2</td>

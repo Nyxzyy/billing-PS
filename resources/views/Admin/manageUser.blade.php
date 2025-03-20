@@ -40,6 +40,11 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">Menit</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm"></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <button onclick="openModal('modalEditPengguna')" class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1">
+                                            EDIT
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
