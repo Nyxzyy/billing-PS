@@ -21,7 +21,21 @@ class BillingPageKasirController extends Controller
             return $matches[1] ?? $device->name;
         });
         
-        $packages = BillingPackage::all();
+        $dayNames = [
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu',
+            7 => 'Minggu'
+        ];
+        
+        $currentDay = Carbon::now()->dayOfWeek;
+        if ($currentDay == 0) $currentDay = 7;
+        $currentDayName = $dayNames[$currentDay];
+        
+        $packages = BillingPackage::whereRaw("FIND_IN_SET(?, active_days) > 0", [$currentDayName])->get();
         
         return view('kasir.billing', compact('devices', 'packages'));
     }
