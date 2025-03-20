@@ -12,6 +12,8 @@ use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\KendalaController;
 use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\OpenBillingController;
+use App\Http\Controllers\DeviceManagementController;
+use App\Http\Controllers\UserManagementController;
 
 // Redirect berdasarkan role
 Route::get('/', function () {
@@ -86,18 +88,32 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard-stats', [DashboardAdminController::class, 'getDashboardStats']);
     Route::post('/chart-data', [DashboardAdminController::class, 'updateChartData'])->name('admin.chart-data');
     
+    // Device Management
+    Route::controller(DeviceManagementController::class)->group(function () {
+        Route::get('/manage-perangkat', 'index')->name('admin.managePerangkat');
+        Route::post('/devices', 'store')->name('admin.devices.store');
+        Route::put('/devices/{device}', 'update')->name('admin.devices.update');
+        Route::delete('/devices/{device}', 'destroy')->name('admin.devices.destroy');
+    });
+
+    // User Management
+    Route::controller(UserManagementController::class)->group(function () {
+        Route::get('/manage-users', 'index')->name('admin.manageUser');
+        Route::post('/users', 'store')->name('admin.users.store');
+        Route::put('/users/{user}', 'update')->name('admin.users.update');
+        Route::delete('/users/{user}', 'destroy')->name('admin.users.destroy');
+    });
+    
     // Billing Package Management
     Route::get('/paket-billing', [BillingPackageController::class, 'index'])->name('admin.paketBilling');
     Route::resource('billing-packages', BillingPackageController::class);
     Route::get('/open-billing', [OpenBillingController::class, 'index'])->name('admin.openBilling');
     Route::post('/open-billing', [OpenBillingController::class, 'update'])->name('admin.openBilling.update');
-    Route::view('/manage-perangkat', 'admin.managePerangkat')->name('admin.managePerangkat');
-    Route::view('/manage-users', 'admin.manageUser')->name('admin.manageUser');
     Route::view('/laporan-device', 'admin.laporan')->name('admin.laporan');
     Route::view('/laporan-kasir', 'admin.laporanKasir')->name('admin.laporanKasir');
     Route::view('/laporan-transaksi', 'admin.laporanTransaksi')->name('admin.laporanTransaksi');
     Route::view('/laporan-kendala', 'admin.laporanKendala')->name('admin.laporanKendala');
-    Route::view('/log-activity', 'admin.logActivity')->name('admin.logActivity');
+    Route::get('/log-activity', [LogActivityController::class, 'adminIndex'])->name('admin.logActivity');
 });
 
 // ======================= LOG ACTIVITY ROUTES =======================

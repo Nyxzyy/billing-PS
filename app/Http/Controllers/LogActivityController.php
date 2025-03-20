@@ -12,18 +12,54 @@ class LogActivityController extends Controller
     {
         $log = LogActivity::create([
             'timestamp'       => now(),
-            'user_id'         => Auth::id(),
-            'device_id'       => $request->device_id ?? null,
-            'transaction_id'  => $request->transaction_id ?? null,
-            'activity'        => $request->activity,
+            'user_id'        => Auth::id(),
+            'device_id'      => $request->device_id ?? null,
+            'transaction_id' => $request->transaction_id ?? null,
+            'activity'       => $request->activity,
         ]);
 
         return response()->json(['message' => 'Log activity saved', 'data' => $log], 201);
     }
 
+    /**
+     * Display activity logs in admin view
+     */
+    public function adminIndex(Request $request)
+    {
+        $query = LogActivity::with(['user', 'device', 'transaction'])
+            ->orderBy('timestamp', 'desc');
+
+        // Handle search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('activity', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('device', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Get paginated results
+        $logs = $query->paginate(15);
+
+        return view('admin.logActivity', [
+            'logs' => $logs
+        ]);
+    }
+
+    /**
+     * Display user-specific logs (for API)
+     */
     public function index()
     {
-        $logs = LogActivity::where('user_id', Auth::id())->latest()->get();
+        $logs = LogActivity::where('user_id', Auth::id())
+            ->with(['device', 'transaction'])
+            ->latest()
+            ->get();
         return response()->json(['data' => $logs], 200);
     }
 
