@@ -18,6 +18,7 @@
                     Pages / <span id="breadcrumb" class="font-normal text-black">@yield('breadcrumb')</span>
                 </div>
                 <div class="flex items-center text-black mt-2 md:mt-0">
+                    {{ Auth::user()->name ?? 'Guest' }}
                     <span class="ml-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                             fill="none" stroke="#818181" stroke-width="2" stroke-linecap="round"
@@ -37,7 +38,6 @@
 
     <script>
         function showNotification(type, message) {
-            // You can implement this based on your notification system
             alert(message);
         }
     </script>

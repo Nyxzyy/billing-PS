@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\BillingOpen;
 use Illuminate\Http\Request;
+use App\Models\OpenBillingPromo;
 
 class OpenBillingController extends Controller
 {
     public function index()
     {
         $openBilling = BillingOpen::first();
-        return view('Admin.openBilling', compact('openBilling'));
+        $promos = OpenBillingPromo::paginate(10); 
+        return view('Admin.openBilling', compact('openBilling', 'promos'));
     }
 
     public function update(Request $request)

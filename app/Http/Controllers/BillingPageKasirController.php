@@ -8,6 +8,7 @@ use App\Models\BillingPackage;
 use App\Models\TransactionReport;
 use App\Models\BillingOpen;
 use App\Models\CashierReport;
+use App\Models\OpenBillingPromo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -327,6 +328,27 @@ class BillingPageKasirController extends Controller
                             $blocks = max(1, ceil($remainingMinutes / $billingOpen->minute_count));
                             $totalPrice += $blocks * $billingOpen->price_per_minute;
                         }
+                    }
+
+                    // Cek apakah ada promo yang berlaku
+                    $hours = floor($duration / 60);
+                    $minutes = $duration % 60;
+                    
+                    $applicablePromo = OpenBillingPromo::where(function($query) use ($hours, $minutes) {
+                        $query->where('min_hours', '<=', $hours)
+                              ->where(function($q) use ($hours, $minutes) {
+                                  $q->where('min_minutes', '<=', $minutes)
+                                    ->orWhere('min_hours', '<', $hours);
+                              });
+                    })
+                    ->orderBy('discount_price', 'desc')
+                    ->first();
+
+                    // Terapkan diskon jika ada
+                    if ($applicablePromo) {
+                        $totalPrice -= $applicablePromo->discount_price;
+                        // Pastikan harga tidak minus
+                        $totalPrice = max(0, $totalPrice);
                     }
 
                     DB::beginTransaction();

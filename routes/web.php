@@ -109,6 +109,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('billing-packages', BillingPackageController::class);
     Route::get('/open-billing', [OpenBillingController::class, 'index'])->name('admin.openBilling');
     Route::post('/open-billing', [OpenBillingController::class, 'update'])->name('admin.openBilling.update');
+    Route::get('/admin/open-billing', [OpenBillingController::class, 'index'])->name('admin.openBilling.index');
     Route::view('/laporan-device', 'admin.laporan')->name('admin.laporan');
     Route::view('/laporan-kasir', 'admin.laporanKasir')->name('admin.laporanKasir');
     Route::view('/laporan-transaksi', 'admin.laporanTransaksi')->name('admin.laporanTransaksi');
