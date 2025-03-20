@@ -12,6 +12,35 @@
         .total { font-size: 14px; font-weight: bold; }
         .logo { max-width: 60px; margin-bottom: 5px; }
         .company-info { font-size: 11px; font-weight: bold; line-height: 1.2; margin: 2px 0; }
+        .transaction-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Membuat semua elemen ke tengah */
+            width: 100%;
+        }
+
+        .transaction-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 80%; /* Atur lebar agar tidak terlalu melebar */
+            max-width: 400px; /* Batas maksimum agar tetap proporsional */
+            margin: 2px 0;
+        }
+
+        .transaction-row p {
+            margin: 0;
+            padding: 2px 0;
+            width: 80%; /* Agar teks di kiri dan kanan tetap sejajar */
+        }
+
+        .transaction-row p:first-child {
+            text-align: left;
+        }
+
+        .transaction-row p:last-child {
+            text-align: right;
+        }
     </style>
 </head>
 <body onload="window.print(); setTimeout(() => window.close(), 500);">
@@ -26,12 +55,32 @@
         <h2>Struk Pembayaran</h2>
         <p>{{ $transaction['date'] }}</p>
         <div class="line"></div>
-        <p><strong>Kasir:</strong> {{ $transaction['cashier_name'] }}</p>
-        <p><strong>Device:</strong> {{ $transaction['device_name'] }}</p>
-        <p><strong>Paket:</strong> {{ $transaction['package_name'] }}</p>
-        <p><strong>Durasi:</strong> {{ $transaction['package_time'] }} Menit</p>
-        <p><strong>Mulai:</strong> {{ $transaction['start_time'] }}</p>
-        <p><strong>Selesai:</strong> {{ $transaction['end_time'] }}</p>
+        <div class="transaction-info">
+            <div class="transaction-row">
+                <p><strong>Kasir:</strong></p>
+                <p>{{ $transaction['cashier_name'] }}</p>
+            </div>
+            <div class="transaction-row">
+                <p><strong>Device:</strong></p>
+                <p>{{ $transaction['device_name'] }}</p>
+            </div>
+            <div class="transaction-row">
+                <p><strong>Paket:</strong></p>
+                <p>{{ $transaction['package_name'] }}</p>
+            </div>
+            <div class="transaction-row">
+                <p><strong>Durasi:</strong></p>
+                <p>{{ $transaction['package_time'] }} Menit</p>
+            </div>
+            <div class="transaction-row">
+                <p><strong>Mulai:</strong></p>
+                <p>{{ $transaction['start_time'] }}</p>
+            </div>
+            <div class="transaction-row">
+                <p><strong>Selesai:</strong></p>
+                <p>{{ $transaction['end_time'] }}</p>
+            </div>
+        </div>
         <div class="line"></div>
         <p class="total">Total: Rp {{ number_format($transaction['total_price'], 0, ',', '.') }}</p>
         <div class="line"></div>
