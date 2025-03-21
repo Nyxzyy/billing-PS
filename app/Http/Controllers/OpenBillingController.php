@@ -15,6 +15,20 @@ class OpenBillingController extends Controller
         return view('Admin.openBilling', compact('openBilling', 'promos'));
     }
 
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $packages = BillingPackage::where('min_hours', 'LIKE', "%{$query}%")
+            ->orWhere('min_minutes', 'LIKE', "%{$query}%")
+            ->orWhere('discount_price', 'LIKE', "%{$query}%")
+            ->paginate(10);
+
+        return response()->json([
+            'html' => view('Admin.partials.paketBilling-table', compact('packages'))->render()
+        ]);
+    }
+
     public function update(Request $request)
     {
         $request->validate([
@@ -34,5 +48,40 @@ class OpenBillingController extends Controller
         $openBilling->save();
 
         return redirect()->back()->with('success', 'Pengaturan open billing berhasil disimpan');
+    }
+
+    public function storePromo(Request $request)
+    {
+        $request->validate([
+            'min_hours' => 'required|integer|min:0',
+            'min_minutes' => 'required|integer|min:0',
+            'discount_price' => 'required|numeric|min:0',
+        ]);
+
+        OpenBillingPromo::create($request->only('min_hours', 'min_minutes', 'discount_price'));
+
+        return redirect()->back()->with('success', 'Promo berhasil ditambahkan');
+    }
+
+    public function updatePromo(Request $request, $id)
+    {
+        $request->validate([
+            'min_hours' => 'required|integer|min:0',
+            'min_minutes' => 'required|integer|min:0',
+            'discount_price' => 'required|numeric|min:0',
+        ]);
+
+        $promo = OpenBillingPromo::findOrFail($id);
+        $promo->update($request->only('min_hours', 'min_minutes', 'discount_price'));
+
+        return redirect()->back()->with('success', 'Promo berhasil diperbarui');
+    }
+
+    public function deletePromo($id)
+    {
+        $promo = OpenBillingPromo::findOrFail($id);
+        $promo->delete();
+
+        return redirect()->back()->with('success', 'Promo berhasil dihapus');
     }
 }

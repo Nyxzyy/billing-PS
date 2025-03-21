@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('duration_hours');
             $table->integer('duration_minutes');
             $table->decimal('total_price', 10, 2);
-            $table->set('active_days', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']);
+            $table->text('active_days'); // Ubah dari SET ke TEXT
             $table->timestamps();
         });
     }

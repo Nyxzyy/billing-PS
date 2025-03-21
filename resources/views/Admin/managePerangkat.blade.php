@@ -24,7 +24,7 @@
                     </form>
                 </div>
                 <button onclick="openModal('modalAddPerangkat')"
-                    class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
+                    class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2 hover:bg-[#2C5F7C] cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -35,12 +35,12 @@
                 </button>
             </div>
             <div class="p-4">
-                @if (session('success'))
+                {{-- @if (session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
                         role="alert">
                         <span class="block sm:inline">{{ session('success') }}</span>
                     </div>
-                @endif
+                @endif --}}
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -67,8 +67,8 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $device->location }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $device->ip_address }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm flex gap-2">
-                                            <button onclick="openModal('modalEditPerangkat')"
-                                                class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1 cursor-pointer">
+                                            <button onclick="openDeviceEditModal({{ $device }})"
+                                                class="text-[#3E81AB] hover:text-[#2C5F7C] cursor-pointer">
                                                 Edit
                                             </button>
                                         </td>

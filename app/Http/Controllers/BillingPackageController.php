@@ -13,6 +13,19 @@ class BillingPackageController extends Controller
         return view('Admin.paketBilling', compact('packages'));
     }
 
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $packages = BillingPackage::where('package_name', 'LIKE', "%{$query}%")
+            ->orWhere('total_price', 'LIKE', "%{$query}%")
+            ->paginate(10);
+
+        return response()->json([
+            'html' => view('Admin.partials.paketBilling-table', compact('packages'))->render()
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -29,10 +42,18 @@ class BillingPackageController extends Controller
             'duration_hours'   => $request->duration_hours,
             'duration_minutes' => $request->duration_minutes,
             'total_price'      => $request->total_price,
-            'active_days'      => implode(',', $request->active_days),
+            'active_days'      => $request->active_days,
         ]);
 
-        return redirect()->route('billing-packages.index')->with('success', 'Billing Package created successfully.');
+        return redirect()->route('admin.paketBilling')
+            ->with('success', 'Paket berhasil ditambahkan.');
+    }
+
+    public function edit($id)
+    {
+        $packages = BillingPackage::paginate(10);
+        $editPackage = BillingPackage::findOrFail($id);
+        return view('Admin.paketBilling', compact('packages', 'editPackage'));
     }
 
     public function update(Request $request, $id)
@@ -53,10 +74,11 @@ class BillingPackageController extends Controller
             'duration_hours'   => $request->duration_hours,
             'duration_minutes' => $request->duration_minutes,
             'total_price'      => $request->total_price,
-            'active_days'      => implode(',', $request->active_days),
+            'active_days'      => $request->active_days,
         ]);
 
-        return redirect()->route('billing-packages.index')->with('success', 'Billing Package updated successfully.');
+        return redirect()->route('admin.paketBilling')
+            ->with('success', 'Paket berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -64,6 +86,7 @@ class BillingPackageController extends Controller
         $package = BillingPackage::findOrFail($id);
         $package->delete();
 
-        return redirect()->route('billing-packages.index')->with('success', 'Billing Package deleted successfully.');
+        return redirect()->route('admin.paketBilling')
+            ->with('success', 'Paket berhasil dihapus.');
     }
 }

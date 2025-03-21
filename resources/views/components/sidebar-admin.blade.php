@@ -36,7 +36,7 @@
                     <li><a href="{{ route('admin.paketBilling') }}"
                             class="flex items-center gap-2 p-1 rounded text-black hover:bg-[#3E81AB] hover:text-white"><i
                                 class="fas fa-file-invoice"></i> Paket Billing</a></li>
-                    <li><a href="{{ route('admin.openBilling') }}"
+                    <li><a href="{{ route('admin.openBilling.index') }}"
                             class="flex items-center gap-2 p-1 rounded text-black hover:bg-[#3E81AB] hover:text-white"><i
                                 class="fas fa-folder-open"></i> Open Billing</a></li>
                 </ul>

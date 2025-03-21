@@ -10,11 +10,11 @@
 
         <div class="p-5 bg-white shadow-md rounded-lg mb-6">
             <h2 class="text-lg font-semibold mb-3">Pengaturan Open Time</h2>
-            @if (session('success'))
+            {{-- @if (session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
                     {{ session('success') }}
                 </div>
-            @endif
+            @endif --}}
             <form action="{{ route('admin.openBilling.update') }}" method="POST">
                 @csrf
                 <div class="mb-4">
@@ -57,7 +57,7 @@
 
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-white p-6 mb-2">
             <div class="flex flex-col md:flex-row md:justify-end md:items-center gap-2">
-                <div class="relative w-full md:w-1/5">
+                {{-- <div class="relative w-full md:w-1/5">
                     <svg class="absolute left-3 top-2.5 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg"
                         width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -66,9 +66,9 @@
                     </svg>
                     <input type="text" placeholder="Ketik untuk mencari"
                         class="text-[#6D717F] text-sm w-full pl-8 py-2 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+                </div> --}}
                 <button onclick="openModal('modalAddPromo')"
-                    class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
+                    class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2 cursor-pointer hover:bg-[#2C5F7C] hover:shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -104,14 +104,20 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">Rp
                                             {{ number_format($promo->discount_price, 0, ',', '.') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                            <button onclick="openModal('modalEditPromo')"
-                                                class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1 cursor-pointer">Edit</button>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <div class="flex items-center space-x-4">
+                                                <button onclick="openEditModal({{ json_encode($promo) }})"
+                                                    class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1 cursor-pointer">EDIT</button>
+                                                <button onclick="openDeleteModal({{ $promo->id }})"
+                                                    class="text-[#FF4747] hover:text-[#CC3A3A] font-medium flex items-center gap-1 cursor-pointer">HAPUS</button>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm" colspan="4">Tidak ada data</td>
+                                        <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">
+                                            Tidak ada data Promo open billing
+                                        </td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -119,14 +125,20 @@
                     </div>
                 </div>
                 <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
-                    <p>Showing 1 - 10 of 1000</p>
+                    <p>Showing {{ $promos->firstItem() ?? 0 }} - {{ $promos->lastItem() ?? 0 }} of
+                        {{ $promos->total() ?? 0 }}</p>
                     <div class="flex space-x-2">
-                        <button class="px-3 py-1 border rounded-md">Previous</button>
-                        <span class="px-3 py-1 border bg-blue-100 rounded-md">1</span>
-                        <button class="px-3 py-1 border rounded-md">Next</button>
+                        {{ $promos->links() }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
+<script>
+    function openDeleteModal(promoId) {
+        document.getElementById('formDeletePromo').action = `/admin/openBilling/deletePromo/${promoId}`;
+        openModal('modalKonfirmasiPromo');
+    }
+</script>

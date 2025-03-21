@@ -17,11 +17,11 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" placeholder="Ketik untuk mencari"
+                    <input type="text" id="search" placeholder="Ketik untuk mencari"
                         class="text-[#6D717F] text-sm w-full pl-8 py-2 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <button onclick="openModal('modalAddPaket')"
-                    class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
+                    class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2 hover:bg-[#2c5e7a] cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -34,50 +34,9 @@
             <div class="p-4">
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-[#3E81AB]">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        No</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Nama Paket Billing</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Durasi</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Harga (Rp)</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse($packages as $index => $package)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ $packages->firstItem() + $index }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $package->package_name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            @if ($package->duration_hours > 0)
-                                                {{ $package->duration_hours }} Jam
-                                            @endif
-                                            @if ($package->duration_minutes > 0)
-                                                {{ $package->duration_minutes }} Menit
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ number_format($package->total_price, 0, ',', '.') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                            <button onclick="openModal('modalEditPaket')"
-                                                class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1 cursor-pointer">Edit</button>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-center">Tidak ada
-                                            paket billing</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                        <div id="billingTable">
+                            @include('Admin.partials.paketBilling-table', ['packages' => $packages])
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
@@ -91,3 +50,22 @@
         </div>
     </div>
 @endsection
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#search').on('keyup', function() {
+            let query = $(this).val();
+            $.ajax({
+                url: "{{ route('billing-packages.search') }}",
+                type: "GET",
+                data: {
+                    query: query
+                },
+                success: function(response) {
+                    $('#billingTable').html(response.html);
+                }
+            });
+        });
+    });
+</script>

@@ -41,7 +41,6 @@
         </tbody>
     </table>
 </div>
-
 <!-- Pagination section -->
 <div class="flex items-center justify-between mt-8 text-sm text-gray-600 p-6">
     <div class="text-sm text-gray-700">
@@ -58,3 +57,4 @@
         {{ $transactions->appends(request()->query())->links() }}
     </div>
 </div>
+

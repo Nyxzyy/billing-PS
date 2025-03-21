@@ -36,7 +36,7 @@ class BillingPageKasirController extends Controller
         if ($currentDay == 0) $currentDay = 7;
         $currentDayName = $dayNames[$currentDay];
         
-        $packages = BillingPackage::whereRaw("FIND_IN_SET(?, active_days) > 0", [$currentDayName])->get();
+        $packages = BillingPackage::whereJsonContains('active_days', $currentDayName)->get();
         
         return view('kasir.billing', compact('devices', 'packages'));
     }

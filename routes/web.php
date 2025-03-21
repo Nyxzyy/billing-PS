@@ -92,6 +92,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     // Device Management
     Route::controller(DeviceManagementController::class)->group(function () {
         Route::get('/manage-perangkat', 'index')->name('admin.managePerangkat');
+        Route::get('/device/search', [BillingPackageController::class, 'search'])->name('admin.device.search');
         Route::post('/devices', 'store')->name('admin.devices.store');
         Route::put('/devices/{device}', 'update')->name('admin.devices.update');
         Route::delete('/devices/{device}', 'destroy')->name('admin.devices.destroy');
@@ -106,22 +107,36 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     });
     
     // Billing Package Management
-    Route::get('/paket-billing', [BillingPackageController::class, 'index'])->name('admin.paketBilling');
-    Route::resource('billing-packages', BillingPackageController::class);
-    Route::get('/open-billing', [OpenBillingController::class, 'index'])->name('admin.openBilling');
-    Route::post('/open-billing', [OpenBillingController::class, 'update'])->name('admin.openBilling.update');
-    Route::get('/admin/open-billing', [OpenBillingController::class, 'index'])->name('admin.openBilling.index');
+    Route::prefix('billingPackages')->group(function () {
+        Route::get('/', [BillingPackageController::class, 'index'])->name('admin.paketBilling');
+        Route::get('/billing-packages/search', [BillingPackageController::class, 'search'])->name('billing-packages.search');
+        Route::post('/billing-packages', [BillingPackageController::class, 'store'])->name('billing-packages.store');
+        Route::get('/billing-packages/{id}/edit', [BillingPackageController::class, 'edit'])->name('billing-packages.edit');
+        Route::put('/billing-packages/{id}', [BillingPackageController::class, 'update'])->name('billing-packages.update');
+        Route::delete('/billing-packages/{id}', [BillingPackageController::class, 'destroy'])->name('billing-packages.destroy');
+    });
+    
+    // Open Billing Package Management
+    Route::prefix('openBilling')->name('admin.openBilling.')->group(function () {
+        Route::get('/', [OpenBillingController::class, 'index'])->name('index');
+        Route::post('/update', [OpenBillingController::class, 'update'])->name('update');
+        Route::post('/storePromo', [OpenBillingController::class, 'storePromo'])->name('storePromo');
+        Route::put('/updatePromo/{id}', [OpenBillingController::class, 'updatePromo'])->name('updatePromo');
+        Route::delete('/deletePromo/{id}', [OpenBillingController::class, 'deletePromo'])->name('deletePromo');
+    });
+
+    // Laporan Management
     Route::view('/laporan-device', 'admin.laporan')->name('admin.laporan');
     Route::view('/laporan-kasir', 'admin.laporanKasir')->name('admin.laporanKasir');
     Route::get('/laporan-transaksi', [LaporanTransaksiController::class, 'index'])->name('admin.laporanTransaksi');
     Route::get('/laporan-transaksi/download', [LaporanTransaksiController::class, 'download'])->name('admin.laporanTransaksi.download');
     Route::view('/laporan-kendala', 'admin.laporanKendala')->name('admin.laporanKendala');
-    Route::get('/log-activity', [LogActivityController::class, 'adminIndex'])->name('admin.logActivity');
 });
 
 // ======================= LOG ACTIVITY ROUTES =======================
-Route::prefix('log-activity')->middleware('auth:sanctum')->controller(LogActivityController::class)->group(function () {
+Route::prefix('log-activity')->middleware('auth')->controller(LogActivityController::class)->group(function () {
     Route::get('/', 'index')->name('log.index');
     Route::get('/{id}', 'show')->name('log.show');
     Route::post('/', 'store')->name('log.store');
+    Route::get('/', 'adminIndex')->name('admin.logActivity');
 });
