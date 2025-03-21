@@ -11,17 +11,14 @@
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-white p-6">
             <div class="flex flex-col md:flex-row md:justify-end md:items-center gap-2">
                 <div class="relative w-full md:w-1/5">
-                    <form action="{{ route('admin.managePerangkat') }}" method="GET" class="m-0">
-                        <svg class="absolute left-3 top-2.5 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Ketik untuk mencari"
-                            class="text-[#6D717F] text-sm w-full pl-8 py-2 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </form>
+                    <svg class="absolute left-3 top-2.5 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg"
+                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" name="searchDevices" id="searchDevices" placeholder="Ketik untuk mencari"
+                        class="text-[#6D717F] text-sm w-full pl-8 py-2 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <button onclick="openModal('modalAddPerangkat')"
                     class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2 hover:bg-[#2C5F7C] cursor-pointer">
@@ -43,44 +40,9 @@
                 @endif --}}
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-[#3E81AB]">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        No</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Nama Device</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Lokasi Device</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        IP Address Device</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse($devices as $index => $device)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $devices->firstItem() + $index }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $device->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $device->location }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $device->ip_address }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm flex gap-2">
-                                            <button onclick="openDeviceEditModal({{ $device }})"
-                                                class="text-[#3E81AB] hover:text-[#2C5F7C] cursor-pointer">
-                                                Edit
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">Tidak ada perangkat
-                                            yang ditemukan</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                        <div id="deviceTable">
+                            @include('Admin.partials.managePerangkat-table', ['devices' => $devices])
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
@@ -94,3 +56,23 @@
         </div>
     </div>
 @endsection
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#searchDevices').on('keyup', function() {
+            let query = $(this).val();
+            $.ajax({
+                url: "{{ route('admin.device.search') }}",
+                type: "GET",
+                data: {
+                    query: query
+                },
+                success: function(response) {
+                    $('#deviceTable').html(response.html);
+                }
+            });
+        });
+    });
+</script>

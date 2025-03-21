@@ -92,7 +92,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     // Device Management
     Route::controller(DeviceManagementController::class)->group(function () {
         Route::get('/manage-perangkat', 'index')->name('admin.managePerangkat');
-        Route::get('/device/search', [BillingPackageController::class, 'search'])->name('admin.device.search');
+        Route::get('/device/search', 'search')->name('admin.device.search');
         Route::post('/devices', 'store')->name('admin.devices.store');
         Route::put('/devices/{device}', 'update')->name('admin.devices.update');
         Route::delete('/devices/{device}', 'destroy')->name('admin.devices.destroy');

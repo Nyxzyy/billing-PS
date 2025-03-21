@@ -13,23 +13,24 @@ class DeviceManagementController extends Controller
     public function index(Request $request)
     {
         $query = Device::query();
-
-        // Handle search
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('location', 'like', "%{$search}%")
-                  ->orWhere('ip_address', 'like', "%{$search}%");
-            });
-        }
-
-        // Get paginated results
         $devices = $query->paginate(10);
 
         return view('admin.managePerangkat', [
             'devices' => $devices
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->get('query');
+        $devices = Device::where('name', 'LIKE', "%{$query}%")
+                        ->orWhere('location', 'LIKE', "%{$query}%")
+                        ->orWhere('ip_address', 'LIKE', "%{$query}%")
+                        ->paginate(10);
+    
+        $html = view('Admin.partials.managePerangkat-table', compact('devices'))->render();
+        
+        return response()->json(['html' => $html]);
     }
 
     /**

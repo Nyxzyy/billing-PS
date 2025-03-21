@@ -48,8 +48,10 @@
                 class="border rounded p-2 w-full text-sm text-black" required>
 
             <div class="flex justify-between mt-4">
-                <button type="button" onclick="openDeviceDeleteModal({{ $device }})"
-                    class="bg-[#FF4747] text-white px-4 py-2 rounded text-sm hover:bg-[#E03E3E] cursor-pointer">Hapus</button>
+                <button type="button" id="deleteButton" onclick="handleDeleteFromEdit()"
+                    class="bg-[#FF4747] text-white px-4 py-2 rounded text-sm hover:bg-[#E03E3E] cursor-pointer">
+                    Hapus
+                </button>
                 <div class="flex gap-2">
                     <button type="button" onclick="closeModal('modalEditPerangkat')"
                         class="bg-[#C6C6C6] text-[#4F4F4F] px-4 py-2 rounded text-sm hover:bg-[#B5B5B5] cursor-pointer">Batal</button>
@@ -96,5 +98,24 @@
         document.getElementById('deleteDeviceForm').action = `/admin/devices/${device.id}`;
         document.getElementById('deleteDeviceName').textContent = `"${device.name}"`;
         openModal('modalKonfirmasiPerangkat');
+    }
+
+    function handleDelete(element) {
+        const id = element.dataset.id;
+        const name = element.dataset.name;
+        openDeviceDeleteModal({
+            id,
+            name
+        });
+    }
+
+    function handleDeleteFromEdit() {
+        const id = document.getElementById('editDeviceForm').action.split('/').pop();
+        const name = document.getElementById('editDeviceName').value;
+        closeModal('modalEditPerangkat');
+        openDeviceDeleteModal({
+            id,
+            name
+        });
     }
 </script>
