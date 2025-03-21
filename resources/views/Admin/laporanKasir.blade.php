@@ -10,12 +10,29 @@
 
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-white p-6">
             <div class="flex flex-col md:flex-row md:justify-end md:items-center gap-2">
-                <select class="px-2 py-2 border rounded-lg border-[#C0C0C0] p-2 text-[#969696] text-sm">
+                <div class="relative w-full md:w-1/5 flex items-center border rounded-lg text-[#6D717F] border-[#C0C0C0] px-3 py-1.5">
+                    <button type="button" onclick="document.getElementById('dateInput').showPicker()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </button>
+                    <input type="date" id="dateInput" placeholder="Pilih Tanggal" class="text-[#6D717F] text-sm w-full px-3 outline-none bg-transparent border-none appearance-none">
+                    <button type="button" onclick="document.getElementById('dateInput').value = ''" class="text-[#6D717F] pl-2 border-l border-[#C0C0C0]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2.5 2v6h6M21.5 22v-6h-6"/>
+                            <path d="M22 11.5A10 10 0 0 0 3.2 7.2M2 12.5a10 10 0 0 0 18.8 4.2"/>
+                        </svg>
+                    </button>
+                </div>
+                <select class="px-2 border rounded-lg border-[#C0C0C0] py-2 text-[#969696] text-sm">
                     <option>Ketik atau Pilih Nama Kasir 1</option>
                 </select>
                 <div class="relative w-full md:w-1/5">
-                    <svg class="absolute left-3 top-2.5 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" placeholder="Ketik untuk mencari di tabel" class="text-[#6D717F] text-sm w-full pl-8 py-2 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <svg class="absolute left-3 top-2 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" placeholder="Ketik untuk mencari di tabel" class="text-[#6D717F] text-sm w-full pl-8 py-1.5 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <button class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/></svg>
@@ -61,7 +78,8 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm"></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">Menit</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm"></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">2</td>

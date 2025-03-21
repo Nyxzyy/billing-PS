@@ -67,7 +67,8 @@
                     <input type="text" placeholder="Ketik untuk mencari"
                         class="text-[#6D717F] text-sm w-full pl-8 py-2 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                <button class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
+                <button onclick="openModal('modalAddPromo')"
+                    class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -104,7 +105,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">Rp
                                             {{ number_format($promo->discount_price, 0, ',', '.') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                            <button
+                                            <button onclick="openModal('modalEditPromo')"
                                                 class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1 cursor-pointer">Edit</button>
                                         </td>
                                     </tr>

@@ -12,24 +12,38 @@
             <div class="flex flex-col md:flex-row md:justify-end md:items-center gap-2">
                 <div class="relative w-full md:w-1/5">
                     <form action="{{ route('admin.manageUser') }}" method="GET" class="m-0">
-                        <svg class="absolute left-3 top-2.5 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Ketik untuk mencari" 
+                        <svg class="absolute left-3 top-2.5 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Ketik untuk mencari"
                             class="text-[#6D717F] text-sm w-full pl-8 py-2 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </form>
                 </div>
-                <button onclick="openAddUserModal()" class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                <button onclick="openModal('modalAddPengguna')"
+                    class="bg-[#3E81AB] text-white px-4 py-1.5 rounded text-sm flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
                     Tambah Pengguna
                 </button>
             </div>
             <div class="p-4">
-                @if(session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                @if (session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+                        role="alert">
                         <span class="block sm:inline">{{ session('success') }}</span>
                     </div>
                 @endif
-                @if(session('error'))
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                @if (session('error'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                        role="alert">
                         <span class="block sm:inline">{{ session('error') }}</span>
                     </div>
                 @endif
@@ -38,31 +52,40 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-[#3E81AB]">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">No</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Nama Pengguna</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">No. Telp</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Alamat</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        Nama Pengguna</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        No. Telp</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        Alamat</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse($users as $index => $user)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $users->firstItem() + $index }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $users->firstItem() + $index }}
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $user->name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $user->email }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $user->phone_number }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $user->address }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm flex gap-2">
-                                            <button onclick="openEditUserModal({{ $user->id }})" class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1 cursor-pointer">
+                                            <button onclick="openModal('modalEditPengguna')"
+                                                class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1 cursor-pointer">
                                                 Edit
                                             </button>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">Tidak ada pengguna yang ditemukan</td>
+                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">Tidak ada pengguna
+                                            yang ditemukan</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -70,7 +93,8 @@
                     </div>
                 </div>
                 <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
-                    <p>Showing {{ $users->firstItem() ?? 0 }} - {{ $users->lastItem() ?? 0 }} of {{ $users->total() ?? 0 }}</p>
+                    <p>Showing {{ $users->firstItem() ?? 0 }} - {{ $users->lastItem() ?? 0 }} of
+                        {{ $users->total() ?? 0 }}</p>
                     <div class="flex space-x-2">
                         {{ $users->links() }}
                     </div>
