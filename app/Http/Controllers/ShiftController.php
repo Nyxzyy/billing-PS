@@ -24,6 +24,7 @@ class ShiftController extends Controller
                 'shiftData' => [
                     'id' => $activeShift->id,
                     'start_time' => $activeShift->shift_start,
+                    'end_time' => $activeShift->shift_end,
                     'total_transactions' => $activeShift->total_transactions,
                     'total_revenue' => $activeShift->total_revenue
                 ]

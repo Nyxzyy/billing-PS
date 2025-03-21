@@ -16,4 +16,11 @@ class CashierReport extends Model
     {
         return $this->belongsTo(User::class, 'cashier_id');
     }
+
+    public function getActiveShiftAttribute()
+    {
+        return $this->where('cashier_id', auth()->id())
+            ->whereNull('shift_end')
+            ->first();
+    }
 }
