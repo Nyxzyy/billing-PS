@@ -67,7 +67,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $device->location }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $device->ip_address }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm flex gap-2">
-                                            <button onclick="openEditDeviceModal({{ $device->id }})"
+                                            <button onclick="openModal('modalEditPerangkat')"
                                                 class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1 cursor-pointer">
                                                 Edit
                                             </button>
