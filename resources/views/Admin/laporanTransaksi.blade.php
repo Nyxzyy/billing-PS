@@ -12,17 +12,36 @@
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-white p-6">
             <div class="flex flex-col md:flex-row md:justify-end md:items-center gap-2">
                 <!-- Date Range Filters -->
-                <div class="flex gap-2 w-full md:w-auto">
-                    <div class="relative">
-                        <input type="date" name="filter_start_date" id="filter_start_date"
-                            value="{{ request('filter_start_date') }}"
-                            class="text-[#6D717F] text-sm w-full pl-4 py-2 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div class="relative">
-                        <input type="date" name="filter_end_date" id="filter_end_date"
-                            value="{{ request('filter_end_date') }}"
-                            class="text-[#6D717F] text-sm w-full pl-4 py-2 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
+                <div
+                    class="relative w-full md:w-1/5 flex items-center border rounded-lg text-[#6D717F] border-[#C0C0C0] px-3 py-1.5">
+                    <button type="button" onclick="document.getElementById('start_date').showPicker()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </button>
+                    <input type="date" id="start_date" name="filter_start_date" placeholder="Tanggal Mulai"
+                        class="text-[#6D717F] text-sm w-full px-3 outline-none bg-transparent border-none appearance-none">
+                </div>
+
+                <div
+                    class="relative w-full md:w-1/5 flex items-center border rounded-lg text-[#6D717F] border-[#C0C0C0] px-3 py-1.5">
+                    <button type="button" onclick="document.getElementById('end_date').showPicker()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </button>
+                    <input type="date" id="end_date" name="filter_end_date" placeholder="Tanggal Akhir"
+                        class="text-[#6D717F] text-sm w-full px-3 outline-none bg-transparent border-none appearance-none">
                 </div>
 
                 <!-- Existing Search Field -->
@@ -58,13 +77,51 @@
                                 <div class="space-y-3 mb-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
-                                        <input type="date" name="start_date"
-                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 cursor-pointer">
+                                        <div class="relative">
+                                            <input type="date" id="download_start_date" name="start_date"
+                                                class="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:ring-blue-500 cursor-pointer appearance-none">
+                                            <button type="button"
+                                                onclick="document.getElementById('download_start_date').showPicker()"
+                                                class="absolute right-2 top-1/2 transform -translate-y-1/2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                    class="text-gray-500">
+                                                    <rect x="3" y="4" width="18" height="18" rx="2"
+                                                        ry="2"></rect>
+                                                    <line x1="16" y1="2" x2="16" y2="6">
+                                                    </line>
+                                                    <line x1="8" y1="2" x2="8" y2="6">
+                                                    </line>
+                                                    <line x1="3" y1="10" x2="21" y2="10">
+                                                    </line>
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Akhir</label>
-                                        <input type="date" name="end_date"
-                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 cursor-pointer">
+                                        <div class="relative">
+                                            <input type="date" id="download_end_date" name="end_date"
+                                                class="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:ring-blue-500 cursor-pointer appearance-none">
+                                            <button type="button"
+                                                onclick="document.getElementById('download_end_date').showPicker()"
+                                                class="absolute right-2 top-1/2 transform -translate-y-1/2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                    class="text-gray-500">
+                                                    <rect x="3" y="4" width="18" height="18" rx="2"
+                                                        ry="2"></rect>
+                                                    <line x1="16" y1="2" x2="16" y2="6">
+                                                    </line>
+                                                    <line x1="8" y1="2" x2="8" y2="6">
+                                                    </line>
+                                                    <line x1="3" y1="10" x2="21" y2="10">
+                                                    </line>
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -117,8 +174,8 @@
     <script>
         let searchTimer;
         const searchInput = document.querySelector('input[name="search"]');
-        const startDateInput = document.getElementById('filter_start_date');
-        const endDateInput = document.getElementById('filter_end_date');
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
 
         // Function to update data
         function updateData() {

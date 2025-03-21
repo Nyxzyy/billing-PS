@@ -35,9 +35,12 @@ class LaporanTransaksiController extends Controller
             });
         }
 
-        $transactions = $query->paginate(20);
-        $totalTransactions = $transactions->total();
+        // Get totals before pagination
         $totalRevenue = $query->sum('total_price');
+        $totalTransactions = $query->count();
+
+        // Get paginated data
+        $transactions = $query->paginate(10);
 
         if ($request->ajax()) {
             return response()->json([
