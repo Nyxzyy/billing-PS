@@ -27,7 +27,10 @@ class LaporanPageKasirController extends Controller
         if ($currentShift) {
             $transactions = TransactionReport::with(['device', 'user'])
                 ->where('user_id', Auth::id())
-                ->where('created_at', '>=', $currentShift->shift_start)
+                ->whereBetween('created_at', [
+                    $currentShift->shift_start,
+                    $currentShift->shift_end ?? now()
+                ])
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($transaction) {

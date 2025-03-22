@@ -15,6 +15,7 @@ use App\Http\Controllers\OpenBillingController;
 use App\Http\Controllers\DeviceManagementController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\LaporanTransaksiController;
+use App\Http\Controllers\LaporanKendalaController;
 
 // Redirect berdasarkan role
 Route::get('/', function () {
@@ -100,10 +101,11 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
     // User Management
     Route::controller(UserManagementController::class)->group(function () {
-        Route::get('/manage-users', 'index')->name('admin.manageUser');
-        Route::post('/users', 'store')->name('admin.users.store');
-        Route::put('/users/{user}', 'update')->name('admin.users.update');
-        Route::delete('/users/{user}', 'destroy')->name('admin.users.destroy');
+        Route::get('/manage-users', [UserManagementController::class, 'index'])->name('admin.manageUser');
+        Route::get('/manage-users/search', [UserManagementController::class, 'search'])->name('admin.manageUser.search');
+        Route::post('/manage-users', [UserManagementController::class, 'store'])->name('admin.manageUser.store');
+        Route::put('/manage-users/{user}', [UserManagementController::class, 'update'])->name('admin.manageUser.update');
+        Route::delete('/manage-users/{user}', [UserManagementController::class, 'destroy'])->name('admin.manageUser.destroy');
     });
     
     // Billing Package Management
@@ -125,12 +127,18 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         Route::delete('/deletePromo/{id}', [OpenBillingController::class, 'deletePromo'])->name('deletePromo');
     });
 
+    // Laporan Kendala Management (Ditambahkan di sini)
+    Route::controller(LaporanKendalaController::class)->group(function () {
+        Route::get('/laporan-kendala', 'index')->name('admin.laporan-kendala');
+        Route::get('/laporan-kendala/download', 'downloadPdf')->name('admin.laporan-kendala.download-pdf');
+    });
+
     // Laporan Management
     Route::view('/laporan-device', 'admin.laporan')->name('admin.laporan');
     Route::view('/laporan-kasir', 'admin.laporanKasir')->name('admin.laporanKasir');
     Route::get('/laporan-transaksi', [LaporanTransaksiController::class, 'index'])->name('admin.laporanTransaksi');
     Route::get('/laporan-transaksi/download', [LaporanTransaksiController::class, 'download'])->name('admin.laporanTransaksi.download');
-    Route::view('/laporan-kendala', 'admin.laporanKendala')->name('admin.laporanKendala');
+    // Route::view('/laporan-kendala', 'admin.laporanKendala')->name('admin.laporanKendala');
 });
 
 // ======================= LOG ACTIVITY ROUTES =======================

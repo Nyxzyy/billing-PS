@@ -73,19 +73,19 @@
         sidebar.classList.toggle('-translate-x-full');
     }
 
-    function checkShiftBeforeLogout() {
-        fetch('/kasir/shift/check-status')
-            .then(response => response.json())
-            .then(data => {
-                if (data.hasActiveShift) {
-                    openModal('modalLogoutConfirm');
-                } else {
-                    document.getElementById('logout-form').submit();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('error', 'Terjadi kesalahan saat memeriksa status shift');
-            });
-    }
+    // function checkShiftBeforeLogout() {
+    //     fetch('/kasir/shift/check-status')
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (data.hasActiveShift) {
+    //                 openModal('modalLogoutConfirm');
+    //             } else {
+    //                 document.getElementById('logout-form').submit();
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //             showNotification('error', 'Terjadi kesalahan saat memeriksa status shift');
+    //         });
+    // }
 </script>

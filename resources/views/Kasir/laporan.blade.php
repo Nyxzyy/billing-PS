@@ -104,7 +104,7 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($transactions->whereBetween('start_time', [$currentShift->shift_start, $currentShift->shift_end ?? now()]) as $transaction)
+                                @foreach ($transactions as $transaction)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $transaction['device_name'] }}
                                         </td>
@@ -314,40 +314,40 @@
             doc.save(filename);
         });
 
-        // Check shift status when page loads to handle server restart case
-        document.addEventListener('DOMContentLoaded', function() {
-            // Cek apakah sudah ada data shift dari server-side
-            const currentShiftElement = document.querySelector('[data-shift-active]');
-            if (currentShiftElement) {
-                // Gunakan data dari server-side
-                const hasActiveShift = currentShiftElement.getAttribute('data-shift-active') === '1';
-                updateShiftStatus(hasActiveShift);
-                return;
-            }
+        // // Check shift status when page loads to handle server restart case
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     // Cek apakah sudah ada data shift dari server-side
+        //     const currentShiftElement = document.querySelector('[data-shift-active]');
+        //     if (currentShiftElement) {
+        //         // Gunakan data dari server-side
+        //         const hasActiveShift = currentShiftElement.getAttribute('data-shift-active') === '1';
+        //         updateShiftStatus(hasActiveShift);
+        //         return;
+        //     }
 
-            // Jika tidak ada data dari server-side, baru lakukan fetch
-            fetch('{{ route('shift.check') }}')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.hasActiveShift) {
-                        const endShiftButton = document.getElementById('btnEndShift');
-                        if (!endShiftButton || endShiftButton.style.display === 'none') {
-                            window.location.reload();
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    // Hanya tampilkan error jika benar-benar gagal fetch
-                    if (error.message !== 'Network response was not ok') {
-                        showNotification('error', 'Terjadi kesalahan saat memeriksa status shift');
-                    }
-                });
-        });
+        //     // Jika tidak ada data dari server-side, baru lakukan fetch
+        //     fetch('{{ route('shift.check') }}')
+        //         .then(response => {
+        //             if (!response.ok) {
+        //                 throw new Error('Network response was not ok');
+        //             }
+        //             return response.json();
+        //         })
+        //         .then(data => {
+        //             if (data.hasActiveShift) {
+        //                 const endShiftButton = document.getElementById('btnEndShift');
+        //                 if (!endShiftButton || endShiftButton.style.display === 'none') {
+        //                     window.location.reload();
+        //                 }
+        //             }
+        //         })
+        //         .catch(error => {
+        //             console.error('Error:', error);
+        //             // Hanya tampilkan error jika benar-benar gagal fetch
+        //             if (error.message !== 'Network response was not ok') {
+        //                 showNotification('error', 'Terjadi kesalahan saat memeriksa status shift');
+        //             }
+        //         });
+        // });
     </script>
 @endsection
