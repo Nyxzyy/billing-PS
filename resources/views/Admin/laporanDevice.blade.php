@@ -42,8 +42,12 @@
                     <input type="date" id="end_date" name="filter_end_date" placeholder="Tanggal Akhir"
                         class="text-[#6D717F] text-sm w-full px-3 outline-none bg-transparent border-none appearance-none">
                 </div>
-                <select class="px-6 border rounded-lg border-[#C0C0C0] py-2 text-[#969696] text-sm">
-                    <option>Ketik atau Pilih Perangkat</option>
+                <select name="device_id" id="device_id"
+                    class="px-2 border rounded-lg border-[#C0C0C0] py-2 text-[#969696] text-sm">
+                    <option value="">Tampilkan Semua Perangkat</option>
+                    @foreach ($devices as $device)
+                        <option value="{{ $device->id }}">{{ $device->name }}</option>
+                    @endforeach
                 </select>
                 <div class="relative w-full md:w-1/5">
                     <svg class="absolute left-3 top-2 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg"
@@ -52,7 +56,7 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" placeholder="Ketik untuk mencari di tabel"
+                    <input type="text" name="searchDevice" id="searchDevice" placeholder="Ketik untuk mencari di tabel"
                         class="text-[#6D717F] text-sm w-full pl-8 py-1.5 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="relative" x-data="{ isOpen: false }">
@@ -71,7 +75,19 @@
                         class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50">
                         <div class="p-4">
                             <h3 class="text-sm font-medium text-gray-900 mb-3">Filter Laporan</h3>
-                            <form action="{{ route('admin.laporan-kendala.download-pdf') }}" method="GET">
+                            <form action="{{ route('admin.laporan-device.download-pdf') }}" method="GET">
+                                <!-- Device Filter -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Perangkat</label>
+                                    <select name="device_id"
+                                        class="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="">Semua Perangkat</option>
+                                        @foreach ($devices as $device)
+                                            <option value="{{ $device->id }}">{{ $device->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
                                 <!-- Date Range -->
                                 <div class="space-y-3 mb-4">
                                     <div>
@@ -169,53 +185,9 @@
 
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-[#3E81AB]">
-                                <tr>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        No</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Nama Perangkat</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Jenis Paket</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Waktu Paket</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Waktu Mulai</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Waktu Berhenti</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Harga (Rp)</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($transactions as $index => $transaction)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $loop->iteration }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $transaction->device->name }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $transaction->package_name }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $transaction->package_time }}
-                                            Menit</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ $transaction->start_time->format('H:i:s') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ $transaction->end_time ? $transaction->end_time->format('H:i:s') : 'Berjalan' }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ number_format($transaction->total_price, 0, ',', '.') }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                        <div id="deviceTable" class="bg-white rounded-lg shadow">
+                            @include('admin.partials.device-table', ['transactions' => $transactions])
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
@@ -229,3 +201,128 @@
         </div>
     </div>
 @endsection
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Search function
+        function performSearch(page = 1) {
+            let query = $('#searchDevice').val();
+
+            $.ajax({
+                url: "{{ route('admin.laporan-device.search') }}",
+                type: "GET",
+                data: {
+                    query: query,
+                    page: page
+                },
+                success: function(response) {
+                    $('#deviceTable').html(response.html);
+                    updateSummaryAndPagination(response);
+                },
+                error: function(xhr) {
+                    console.error("Terjadi kesalahan:", xhr);
+                }
+            });
+        }
+
+        // Date filter function
+        function fetchFilteredData(page = 1) {
+            let startDate = $('#start_date').val();
+            let endDate = $('#end_date').val();
+            let deviceId = $('#device_id').val();
+
+            $.ajax({
+                url: "{{ route('admin.laporan-device.filterByDate') }}",
+                type: "GET",
+                data: {
+                    start_date: startDate,
+                    end_date: endDate,
+                    device_id: deviceId,
+                    page: page
+                },
+                success: function(response) {
+                    $('#deviceTable').html(response.html);
+                    updateSummaryAndPagination(response);
+                },
+                error: function(xhr) {
+                    console.error("Terjadi kesalahan:", xhr);
+                }
+            });
+        }
+
+        // Device filter function
+        function filterByDevice(page = 1) {
+            let deviceId = $('#device_id').val();
+            let startDate = $('#start_date').val();
+            let endDate = $('#end_date').val();
+
+            $.ajax({
+                url: "{{ route('admin.laporan-device.filterByDevice') }}",
+                type: "GET",
+                data: {
+                    device_id: deviceId,
+                    start_date: startDate,
+                    end_date: endDate,
+                    page: page
+                },
+                success: function(response) {
+                    $('#deviceTable').html(response.html);
+                    updateSummaryAndPagination(response);
+                },
+                error: function(xhr) {
+                    console.error("Terjadi kesalahan:", xhr);
+                }
+            });
+        }
+
+        // Helper function to update summary and pagination
+        function updateSummaryAndPagination(response) {
+            // Update summary information
+            $('.font-semibold').eq(1).text(response.summary.total_kendala + ' Kali');
+            $('.font-semibold').eq(2).text(response.summary.total_waktu_pakai);
+            $('.font-semibold').eq(3).text(response.summary.total_booking + ' Transaksi');
+            $('.font-semibold').eq(4).text('Rp ' + new Intl.NumberFormat('id-ID').format(response.summary
+                .total_pendapatan));
+
+            // Update pagination info
+            $('.flex.items-center.justify-between.mt-4').html(`
+                <p>Showing ${response.first_item} - ${response.last_item} of ${response.total}</p>
+                <div class="flex space-x-2">
+                    ${response.pagination}
+                </div>
+            `);
+        }
+
+        // Event handlers
+        $('#searchDevice').on('keyup', function() {
+            performSearch();
+        });
+
+        $('#start_date, #end_date').on('change', function() {
+            fetchFilteredData();
+        });
+
+        $('#device_id').on('change', function() {
+            filterByDevice();
+        });
+
+        // Pagination click handler
+        $(document).on('click', '.flex.space-x-2 a', function(e) {
+            e.preventDefault();
+            let page = $(this).attr('href').split('page=')[1];
+            let startDate = $('#start_date').val();
+            let endDate = $('#end_date').val();
+            let deviceId = $('#device_id').val();
+            let searchQuery = $('#searchDevice').val();
+
+            if (searchQuery) {
+                performSearch(page);
+            } else if (startDate || endDate || deviceId) {
+                fetchFilteredData(page);
+            } else {
+                fetchFilteredData(page);
+            }
+        });
+    });
+</script>

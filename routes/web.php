@@ -150,6 +150,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     
     // Laporan Perangkat
     Route::get('/laporan-device', [LaporanDeviceController::class, 'index'])->name('admin.laporanDevice');
+    Route::get('/laporan-device/download', [LaporanDeviceController::class, 'downloadPdf'])->name('admin.laporan-device.download-pdf');
+    Route::get('/laporan-device/search', [LaporanDeviceController::class, 'search'])->name('admin.laporan-device.search');
+    Route::get('/laporan-device/filterbydate', [LaporanDeviceController::class, 'filterByDate'])->name('admin.laporan-device.filterByDate');
+    Route::get('/laporan-device/filter-by-device', [LaporanDeviceController::class, 'filterByDevice'])->name('admin.laporan-device.filterByDevice');
 });
 
 // ======================= LOG ACTIVITY ROUTES =======================
