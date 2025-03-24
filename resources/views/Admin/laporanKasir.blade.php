@@ -189,53 +189,20 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#searchKasir').on('keyup', function() {
-            let query = $(this).val();
+        // Search function
+        function performSearch(page = 1) {
+            let query = $('#searchKasir').val();
 
             $.ajax({
                 url: "{{ route('admin.laporan-kasir.search') }}",
                 type: "GET",
                 data: {
-                    query: query
-                },
-                success: function(response) {
-                    $('#kasirTable').html(response.html);
-
-                    $('.flex.items-center.justify-between.mt-4').html(`
-                        <p>Showing ${response.first_item} - ${response.last_item} of ${response.total}</p>
-                        <div class="flex space-x-2">
-                            ${response.pagination}
-                        </div>
-                    `);
-                },
-                error: function(xhr) {
-                    console.error("Terjadi kesalahan:", xhr);
-                }
-            });
-        });
-    });
-
-    $(document).ready(function() {
-        function fetchFilteredData(page = 1) {
-            let startDate = $('#start_date').val();
-            let endDate = $('#end_date').val();
-
-            $.ajax({
-                url: "{{ route('admin.laporan-kasir.filterByDate') }}",
-                type: "GET",
-                data: {
-                    start_date: startDate,
-                    end_date: endDate,
+                    query: query,
                     page: page
                 },
                 success: function(response) {
                     $('#kasirTable').html(response.html);
-                    $('#total-kendala').text(response.total_kendala);
-                    $('#pagination-container').html(response.pagination);
-
-                    $('#showing-info').text(
-                        `Showing ${response.first_item} - ${response.last_item} of ${response.total}`
-                    );
+                    updateSummaryAndPagination(response);
                 },
                 error: function(xhr) {
                     console.error("Terjadi kesalahan:", xhr);
@@ -243,20 +210,34 @@
             });
         }
 
-        $('#start_date, #end_date').on('change', function() {
-            fetchFilteredData();
-        });
+        // Date filter function
+        function fetchFilteredData(page = 1) {
+            let startDate = $('#start_date').val();
+            let endDate = $('#end_date').val();
+            let cashierId = $('#cashier_id').val();
 
-        $(document).on('click', '#pagination-container a', function(e) {
-            e.preventDefault();
-            let page = $(this).attr('href').split('page=')[1];
-            fetchFilteredData(page);
-        });
-    });
+            $.ajax({
+                url: "{{ route('admin.laporan-kasir.filterByDate') }}",
+                type: "GET",
+                data: {
+                    start_date: startDate,
+                    end_date: endDate,
+                    cashier_id: cashierId,
+                    page: page
+                },
+                success: function(response) {
+                    $('#kasirTable').html(response.html);
+                    updateSummaryAndPagination(response);
+                },
+                error: function(xhr) {
+                    console.error("Terjadi kesalahan:", xhr);
+                }
+            });
+        }
 
-    $(document).ready(function() {
-        $('#cashier_id').on('change', function() {
-            let cashierId = $(this).val();
+        // Cashier filter function
+        function filterByCashier(page = 1) {
+            let cashierId = $('#cashier_id').val();
             let startDate = $('#start_date').val();
             let endDate = $('#end_date').val();
 
@@ -266,31 +247,61 @@
                 data: {
                     cashier_id: cashierId,
                     start_date: startDate,
-                    end_date: endDate
+                    end_date: endDate,
+                    page: page
                 },
                 success: function(response) {
-                    // Update table content
                     $('#kasirTable').html(response.html);
-
-                    // Update summary information
-                    $('.font-semibold').eq(1).text(response.summary.total_work_hours +
-                        ' Jam');
-                    $('.font-semibold').eq(2).text(response.summary.total_transactions);
-                    $('.font-semibold').eq(3).text('Rp ' + new Intl.NumberFormat('id-ID')
-                        .format(response.summary.total_revenue));
-
-                    // Update pagination
-                    $('.flex.items-center.justify-between.mt-4').html(`
-                        <p>Showing ${response.first_item} - ${response.last_item} of ${response.total}</p>
-                        <div class="flex space-x-2">
-                            ${response.pagination}
-                        </div>
-                    `);
+                    updateSummaryAndPagination(response);
                 },
                 error: function(xhr) {
                     console.error("Terjadi kesalahan:", xhr);
                 }
             });
+        }
+
+        // Helper function to update summary and pagination
+        function updateSummaryAndPagination(response) {
+            // Update summary information
+            $('.font-semibold').eq(0).text(response.summary.total_work_hours + ' Jam');
+            $('.font-semibold').eq(1).text(response.summary.total_transactions);
+            $('.font-semibold').eq(2).text('Rp ' + new Intl.NumberFormat('id-ID').format(response.summary
+                .total_revenue));
+
+            // Update pagination info
+            $('.flex.items-center.justify-between.mt-4').html(`
+            <p>Showing ${response.first_item} - ${response.last_item} of ${response.total}</p>
+            <div class="flex space-x-2">
+                ${response.pagination}
+            </div>
+        `);
+        }
+
+        // Event handlers
+        $('#searchKasir').on('keyup', function() {
+            performSearch();
+        });
+
+        $('#start_date, #end_date').on('change', function() {
+            fetchFilteredData();
+        });
+
+        $('#cashier_id').on('change', function() {
+            filterByCashier();
+        });
+
+        // Pagination click handler
+        $(document).on('click', '.flex.space-x-2 a', function(e) {
+            e.preventDefault();
+            let page = $(this).attr('href').split('page=')[1];
+
+            if ($('#searchKasir').val()) {
+                performSearch(page);
+            } else if ($('#cashier_id').val()) {
+                filterByCashier(page);
+            } else {
+                fetchFilteredData(page);
+            }
         });
     });
 </script>

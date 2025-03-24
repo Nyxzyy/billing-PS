@@ -42,23 +42,24 @@ class LaporanKasirController extends Controller
 
     public function filterByDate(Request $request)
     {
-        $startDate = $request->start_date;
-        $endDate = $request->end_date;
-
         $query = CashierReport::with('cashier');
 
-        if ($startDate) {
-            $query->whereDate('work_date', '>=', $startDate);
+        if ($request->start_date) {
+            $query->whereDate('work_date', '>=', $request->start_date);
+        }
+        if ($request->end_date) {
+            $query->whereDate('work_date', '<=', $request->end_date);
+        }
+        if ($request->cashier_id) {
+            $query->where('cashier_id', $request->cashier_id);
         }
 
-        if ($endDate) {
-            $query->whereDate('work_date', '<=', $endDate);
-        }
-
+        // Clone the query for summary calculation
+        $summaryQuery = clone $query;
         $summary = [
-            'total_work_hours' => $query->sum('total_work_hours'),
-            'total_transactions' => $query->sum('total_transactions'),
-            'total_revenue' => $query->sum('total_revenue'),
+            'total_work_hours' => $summaryQuery->sum('total_work_hours'),
+            'total_transactions' => $summaryQuery->sum('total_transactions'),
+            'total_revenue' => $summaryQuery->sum('total_revenue'),
         ];
 
         $reports = $query->orderBy('work_date', 'desc')->paginate(10);
@@ -66,7 +67,7 @@ class LaporanKasirController extends Controller
         return response()->json([
             'html' => view('Admin.partials.kasir-table', compact('reports'))->render(),
             'summary' => $summary,
-            'pagination' => (string) $reports->appends(['start_date' => $startDate, 'end_date' => $endDate])->links(),
+            'pagination' => $reports->appends($request->all())->links()->render(),
             'first_item' => $reports->firstItem() ?? 0,
             'last_item' => $reports->lastItem() ?? 0,
             'total' => $reports->total()
@@ -112,7 +113,7 @@ class LaporanKasirController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-
+        
         $filteredReports = CashierReport::with('cashier')
             ->where(function ($q) use ($query) {
                 $q->whereHas('cashier', function ($subQuery) use ($query) {
@@ -124,19 +125,20 @@ class LaporanKasirController extends Controller
                 ->orWhere('total_revenue', 'LIKE', "%{$query}%");
             });
 
-        $reports = $filteredReports->paginate(10);
-        
-        // Calculate summary for filtered data
+        // Clone the query for summary calculation
+        $summaryQuery = clone $filteredReports;
         $summary = [
-            'total_work_hours' => $filteredReports->sum('total_work_hours'),
-            'total_transactions' => $filteredReports->sum('total_transactions'),
-            'total_revenue' => $filteredReports->sum('total_revenue'),
+            'total_work_hours' => $summaryQuery->sum('total_work_hours'),
+            'total_transactions' => $summaryQuery->sum('total_transactions'),
+            'total_revenue' => $summaryQuery->sum('total_revenue'),
         ];
+
+        $reports = $filteredReports->paginate(10);
 
         return response()->json([
             'html' => view('Admin.partials.kasir-table', compact('reports'))->render(),
             'summary' => $summary,
-            'pagination' => $reports->links()->render(),
+            'pagination' => $reports->appends(['query' => $query])->links()->render(),
             'first_item' => $reports->firstItem() ?? 0,
             'last_item' => $reports->lastItem() ?? 0,
             'total' => $reports->total()
