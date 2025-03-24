@@ -54,8 +54,18 @@ class LaporanKasirController extends Controller
             $query->where('cashier_id', $request->cashier_id);
         }
 
-        // Clone the query for summary calculation
-        $summaryQuery = clone $query;
+        // Perbaikan: Gunakan query builder baru dengan kondisi yang sama
+        $summaryQuery = CashierReport::with('cashier');
+        if ($request->start_date) {
+            $summaryQuery->whereDate('work_date', '>=', $request->start_date);
+        }
+        if ($request->end_date) {
+            $summaryQuery->whereDate('work_date', '<=', $request->end_date);
+        }
+        if ($request->cashier_id) {
+            $summaryQuery->where('cashier_id', $request->cashier_id);
+        }
+
         $summary = [
             'total_work_hours' => $summaryQuery->sum('total_work_hours'),
             'total_transactions' => $summaryQuery->sum('total_transactions'),
@@ -149,13 +159,16 @@ class LaporanKasirController extends Controller
     {
         $query = CashierReport::with('cashier')->orderBy('work_date', 'desc');
 
-        // Apply date filters if download_type is 'filtered'
+        // Apply filters if download_type is 'filtered'
         if ($request->download_type === 'filtered') {
             if ($request->start_date) {
                 $query->whereDate('work_date', '>=', $request->start_date);
             }
             if ($request->end_date) {
                 $query->whereDate('work_date', '<=', $request->end_date);
+            }
+            if ($request->cashier_id) {
+                $query->where('cashier_id', $request->cashier_id);
             }
         }
 
@@ -167,18 +180,34 @@ class LaporanKasirController extends Controller
             'total_revenue' => $reports->sum('total_revenue'),
         ];
 
+        // Get cashier name if filtered by specific cashier
+        $cashierName = '';
+        if ($request->cashier_id) {
+            $cashier = User::find($request->cashier_id);
+            $cashierName = $cashier ? $cashier->name : '';
+        }
+
         $data = [
             'title' => 'Laporan Kasir',
             'reports' => $reports,
             'summary' => $summary,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
+            'cashier_name' => $cashierName,
             'tanggalDownload' => Carbon::now()->isoFormat('dddd, D MMMM Y HH:mm')
         ];
 
         $filename = 'laporan_kasir_' . Carbon::now()->format('YmdHis');
         if ($request->download_type === 'filtered') {
-            $filename .= '_' . $request->start_date . '_' . $request->end_date;
+            if ($request->cashier_id) {
+                $filename .= '_' . str_replace(' ', '_', strtolower($cashierName));
+            }
+            if ($request->start_date) {
+                $filename .= '_' . $request->start_date;
+            }
+            if ($request->end_date) {
+                $filename .= '_' . $request->end_date;
+            }
         }
         $filename .= '.pdf';
 

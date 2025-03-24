@@ -76,7 +76,19 @@
                         class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50">
                         <div class="p-4">
                             <h3 class="text-sm font-medium text-gray-900 mb-3">Filter Laporan</h3>
-                            <form action="{{ route('admin.laporan-kendala.download-pdf') }}" method="GET">
+                            <form action="{{ route('admin.laporan-kasir.download-pdf') }}" method="GET">
+                                <!-- Cashier Filter -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Kasir</label>
+                                    <select name="cashier_id"
+                                        class="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="">Semua Kasir</option>
+                                        @foreach ($cashiers as $cashier)
+                                            <option value="{{ $cashier->id }}">{{ $cashier->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
                                 <!-- Date Range -->
                                 <div class="space-y-3 mb-4">
                                     <div>
@@ -294,11 +306,15 @@
         $(document).on('click', '.flex.space-x-2 a', function(e) {
             e.preventDefault();
             let page = $(this).attr('href').split('page=')[1];
+            let startDate = $('#start_date').val();
+            let endDate = $('#end_date').val();
+            let cashierId = $('#cashier_id').val();
+            let searchQuery = $('#searchKasir').val();
 
-            if ($('#searchKasir').val()) {
+            if (searchQuery) {
                 performSearch(page);
-            } else if ($('#cashier_id').val()) {
-                filterByCashier(page);
+            } else if (startDate || endDate || cashierId) {
+                fetchFilteredData(page);
             } else {
                 fetchFilteredData(page);
             }
