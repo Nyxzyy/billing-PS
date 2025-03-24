@@ -139,6 +139,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
     // Laporan Kasir
     Route::get('/laporan-kasir', [LaporanKasirController::class, 'index'])->name('admin.laporanKasir');
+    Route::get('/laporan-kasir/download', [LaporanKasirController::class, 'downloadPdf'])->name('admin.laporan-kasir.download-pdf');
+    Route::get('/laporan-kasir/search', [LaporanKasirController::class, 'search'])->name('admin.laporan-kasir.search');
+    Route::get('/laporan-kasir/filterbydate', [LaporanKasirController::class, 'filterByDate'])->name('admin.laporan-kasir.filterByDate');
+    Route::get('/laporan-kasir/filter-by-cashier', [LaporanKasirController::class, 'filterByCashier'])->name('admin.laporan-kasir.filterByCashier');
     
     // Laporan Transaksi
     Route::get('/laporan-transaksi', [LaporanTransaksiController::class, 'index'])->name('admin.laporanTransaksi');

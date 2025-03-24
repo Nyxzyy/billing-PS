@@ -28,21 +28,21 @@ class LaporanKendalaController extends Controller
     {
         $startDate = $request->start_date;
         $endDate = $request->end_date;
-    
+        
         $query = KendalaReport::with(['cashier', 'device']);
-    
+        
         if ($startDate) {
             $query->whereDate('date', '>=', $startDate);
         }
-    
+        
         if ($endDate) {
             $query->whereDate('date', '<=', $endDate);
         }
-    
+        
         $totalKendala = $query->count();
-    
+        
         $kendalaReports = $query->paginate(10);
-    
+        
         return response()->json([
             'html' => view('Admin.partials.kendala-table', compact('kendalaReports'))->render(),
             'total_kendala' => $totalKendala,
@@ -52,12 +52,11 @@ class LaporanKendalaController extends Controller
             'total' => $totalKendala
         ]);
     }
-    
-    
+
     public function search(Request $request)
     {
         $query = $request->input('query');
-    
+        
         $kendalaReports = KendalaReport::with(['cashier', 'device'])
             ->where(function ($q) use ($query) {
                 $q->whereHas('cashier', function ($subQuery) use ($query) {
@@ -72,7 +71,7 @@ class LaporanKendalaController extends Controller
                 ->orWhere('status', 'LIKE', "%{$query}%");
             })
             ->paginate(10);
-    
+            
         return response()->json([
             'html' => view('Admin.partials.kendala-table', compact('kendalaReports'))->render()
         ]);
@@ -81,8 +80,7 @@ class LaporanKendalaController extends Controller
     public function downloadPdf(Request $request)
     {
         $query = KendalaReport::with(['cashier', 'device'])->orderBy('date', 'desc')->orderBy('time', 'desc');
-    
-        // Terapkan filter tanggal jika download_type = 'filtered'
+        
         if ($request->download_type === 'filtered') {
             if ($request->start_date) {
                 $query->whereDate('date', '>=', $request->start_date);
@@ -91,12 +89,12 @@ class LaporanKendalaController extends Controller
                 $query->whereDate('date', '<=', $request->end_date);
             }
         }
-    
+        
         $kendalaReports = $query->get();
         $totalKendala = $kendalaReports->count();
         $pendingCount = $kendalaReports->where('status', 'Pending')->count();
         $selesaiCount = $kendalaReports->where('status', 'Selesai')->count();
-    
+        
         $data = [
             'title' => 'Laporan Kendala',
             'kendalaReports' => $kendalaReports,
@@ -107,17 +105,16 @@ class LaporanKendalaController extends Controller
             'end_date' => $request->end_date,
             'tanggalDownload' => Carbon::now()->isoFormat('dddd, D MMMM Y HH:mm')
         ];
-    
+        
         $filename = 'laporan_kendala_' . Carbon::now()->format('YmdHis');
         if ($request->download_type === 'filtered') {
             $filename .= '_' . $request->start_date . '_' . $request->end_date;
         }
         $filename .= '.pdf';
-    
+        
         $pdf = PDF::loadView('admin.pdf.laporan-kendala', $data);
         $pdf->setPaper('a4', 'landscape');
-    
+        
         return $pdf->download($filename);
     }
-    
 }

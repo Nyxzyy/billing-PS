@@ -43,8 +43,12 @@
                     <input type="date" id="end_date" name="filter_end_date" placeholder="Tanggal Akhir"
                         class="text-[#6D717F] text-sm w-full px-3 outline-none bg-transparent border-none appearance-none">
                 </div>
-                <select name="cashier_id" class="px-2 border rounded-lg border-[#C0C0C0] py-2 text-[#969696] text-sm">
-                    <option value="">Pilih Nama Kasir</option>
+                <select name="cashier_id" id="cashier_id"
+                    class="px-2 border rounded-lg border-[#C0C0C0] py-2 text-[#969696] text-sm">
+                    <option value="">Tampilkan Semua Kasir</option>
+                    @foreach ($cashiers as $cashier)
+                        <option value="{{ $cashier->id }}">{{ $cashier->name }}</option>
+                    @endforeach
                 </select>
                 <div class="relative w-full md:w-1/5">
                     <svg class="absolute left-3 top-2 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +57,7 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" placeholder="Ketik untuk mencari di tabel"
+                    <input type="text" name="searchKasir" id="searchKasir" placeholder="Ketik untuk mencari di tabel"
                         class="text-[#6D717F] text-sm w-full pl-8 py-1.5 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="relative" x-data="{ isOpen: false }">
@@ -166,57 +170,9 @@
 
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-[#3E81AB]">
-                                <tr>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        No</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Nama Kasir</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Total Transaksi</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Total Pendapatan (Rp)</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Jam Kerja</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Tanggal Kerja</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Shift Mulai Kerja</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Shift Selesai Kerja</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($reports as $index => $report)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ $reports->firstItem() + $index }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $report->cashier->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ number_format($report->total_transactions) }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ number_format($report->total_revenue, 0, ',', '.') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ number_format($report->total_work_hours, 1) }} Jam</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ \Carbon\Carbon::parse($report->work_date)->format('d/m/Y') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ \Carbon\Carbon::parse($report->shift_start)->format('d/m/Y H:i:s') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ \Carbon\Carbon::parse($report->shift_end)->format('d/m/Y H:i:s') }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                        <div id="kasirTable" class="bg-white rounded-lg shadow">
+                            @include('admin.partials.kasir-table', ['reports' => $reports])
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
@@ -229,3 +185,112 @@
         </div>
     </div>
 @endsection
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#searchKasir').on('keyup', function() {
+            let query = $(this).val();
+
+            $.ajax({
+                url: "{{ route('admin.laporan-kasir.search') }}",
+                type: "GET",
+                data: {
+                    query: query
+                },
+                success: function(response) {
+                    $('#kasirTable').html(response.html);
+
+                    $('.flex.items-center.justify-between.mt-4').html(`
+                        <p>Showing ${response.first_item} - ${response.last_item} of ${response.total}</p>
+                        <div class="flex space-x-2">
+                            ${response.pagination}
+                        </div>
+                    `);
+                },
+                error: function(xhr) {
+                    console.error("Terjadi kesalahan:", xhr);
+                }
+            });
+        });
+    });
+
+    $(document).ready(function() {
+        function fetchFilteredData(page = 1) {
+            let startDate = $('#start_date').val();
+            let endDate = $('#end_date').val();
+
+            $.ajax({
+                url: "{{ route('admin.laporan-kasir.filterByDate') }}",
+                type: "GET",
+                data: {
+                    start_date: startDate,
+                    end_date: endDate,
+                    page: page
+                },
+                success: function(response) {
+                    $('#kasirTable').html(response.html);
+                    $('#total-kendala').text(response.total_kendala);
+                    $('#pagination-container').html(response.pagination);
+
+                    $('#showing-info').text(
+                        `Showing ${response.first_item} - ${response.last_item} of ${response.total}`
+                    );
+                },
+                error: function(xhr) {
+                    console.error("Terjadi kesalahan:", xhr);
+                }
+            });
+        }
+
+        $('#start_date, #end_date').on('change', function() {
+            fetchFilteredData();
+        });
+
+        $(document).on('click', '#pagination-container a', function(e) {
+            e.preventDefault();
+            let page = $(this).attr('href').split('page=')[1];
+            fetchFilteredData(page);
+        });
+    });
+
+    $(document).ready(function() {
+        $('#cashier_id').on('change', function() {
+            let cashierId = $(this).val();
+            let startDate = $('#start_date').val();
+            let endDate = $('#end_date').val();
+
+            $.ajax({
+                url: "{{ route('admin.laporan-kasir.filterByCashier') }}",
+                type: "GET",
+                data: {
+                    cashier_id: cashierId,
+                    start_date: startDate,
+                    end_date: endDate
+                },
+                success: function(response) {
+                    // Update table content
+                    $('#kasirTable').html(response.html);
+
+                    // Update summary information
+                    $('.font-semibold').eq(1).text(response.summary.total_work_hours +
+                        ' Jam');
+                    $('.font-semibold').eq(2).text(response.summary.total_transactions);
+                    $('.font-semibold').eq(3).text('Rp ' + new Intl.NumberFormat('id-ID')
+                        .format(response.summary.total_revenue));
+
+                    // Update pagination
+                    $('.flex.items-center.justify-between.mt-4').html(`
+                        <p>Showing ${response.first_item} - ${response.last_item} of ${response.total}</p>
+                        <div class="flex space-x-2">
+                            ${response.pagination}
+                        </div>
+                    `);
+                },
+                error: function(xhr) {
+                    console.error("Terjadi kesalahan:", xhr);
+                }
+            });
+        });
+    });
+</script>
