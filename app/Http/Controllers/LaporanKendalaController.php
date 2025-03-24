@@ -12,11 +12,71 @@ class LaporanKendalaController extends Controller
 {
     public function index(Request $request)
     {
-        $kendalaReports = KendalaReport::with(['cashier', 'device'])->paginate(10);
-        $totalKendala = KendalaReport::count();
+        $query = KendalaReport::with(['cashier', 'device']);
+    
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $query->whereBetween('date', [$request->start_date, $request->end_date]);
+        }
+    
+        $kendalaReports = $query->paginate(10);
+        $totalKendala = $query->count();
     
         return view('admin.laporanKendala', compact('kendalaReports', 'totalKendala'));
-    }    
+    }
+    
+    public function filterByDate(Request $request)
+    {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+    
+        $query = KendalaReport::with(['cashier', 'device']);
+    
+        if ($startDate) {
+            $query->whereDate('date', '>=', $startDate);
+        }
+    
+        if ($endDate) {
+            $query->whereDate('date', '<=', $endDate);
+        }
+    
+        $totalKendala = $query->count();
+    
+        $kendalaReports = $query->paginate(10);
+    
+        return response()->json([
+            'html' => view('Admin.partials.kendala-table', compact('kendalaReports'))->render(),
+            'total_kendala' => $totalKendala,
+            'pagination' => (string) $kendalaReports->appends(['start_date' => $startDate, 'end_date' => $endDate])->links(),
+            'first_item' => $kendalaReports->firstItem() ?? 0,
+            'last_item' => $kendalaReports->lastItem() ?? 0,
+            'total' => $totalKendala
+        ]);
+    }
+    
+    
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+    
+        $kendalaReports = KendalaReport::with(['cashier', 'device'])
+            ->where(function ($q) use ($query) {
+                $q->whereHas('cashier', function ($subQuery) use ($query) {
+                    $subQuery->where('name', 'LIKE', "%{$query}%");
+                })
+                ->orWhereHas('device', function ($subQuery) use ($query) {
+                    $subQuery->where('name', 'LIKE', "%{$query}%");
+                })
+                ->orWhere('issue', 'LIKE', "%{$query}%")
+                ->orWhere('time', 'LIKE', "%{$query}%")
+                ->orWhere('date', 'LIKE', "%{$query}%")
+                ->orWhere('status', 'LIKE', "%{$query}%");
+            })
+            ->paginate(10);
+    
+        return response()->json([
+            'html' => view('Admin.partials.kendala-table', compact('kendalaReports'))->render()
+        ]);
+    }
 
     public function downloadPdf(Request $request)
     {

@@ -16,6 +16,8 @@ use App\Http\Controllers\DeviceManagementController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\LaporanTransaksiController;
 use App\Http\Controllers\LaporanKendalaController;
+use App\Http\Controllers\LaporanKasirController;
+use App\Http\Controllers\LaporanDeviceController;
 
 // Redirect berdasarkan role
 Route::get('/', function () {
@@ -127,18 +129,23 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         Route::delete('/deletePromo/{id}', [OpenBillingController::class, 'deletePromo'])->name('deletePromo');
     });
 
-    // Laporan Kendala Management (Ditambahkan di sini)
+    // Laporan Kendala Management 
     Route::controller(LaporanKendalaController::class)->group(function () {
         Route::get('/laporan-kendala', 'index')->name('admin.laporan-kendala');
         Route::get('/laporan-kendala/download', 'downloadPdf')->name('admin.laporan-kendala.download-pdf');
+        Route::get('/laporan-kendala/search', [LaporanKendalaController::class, 'search'])->name('admin.laporan-kendala.search');
+        Route::get('/laporan-kendala/filterbydate', [LaporanKendalaController::class, 'filterByDate'])->name('admin.laporan-kendala.filterByDate');
     });
 
-    // Laporan Management
-    Route::view('/laporan-device', 'admin.laporan')->name('admin.laporan');
-    Route::view('/laporan-kasir', 'admin.laporanKasir')->name('admin.laporanKasir');
+    // Laporan Kasir
+    Route::get('/laporan-kasir', [LaporanKasirController::class, 'index'])->name('admin.laporanKasir');
+    
+    // Laporan Transaksi
     Route::get('/laporan-transaksi', [LaporanTransaksiController::class, 'index'])->name('admin.laporanTransaksi');
     Route::get('/laporan-transaksi/download', [LaporanTransaksiController::class, 'download'])->name('admin.laporanTransaksi.download');
-    // Route::view('/laporan-kendala', 'admin.laporanKendala')->name('admin.laporanKendala');
+    
+    // Laporan Perangkat
+    Route::get('/laporan-device', [LaporanDeviceController::class, 'index'])->name('admin.laporanDevice');
 });
 
 // ======================= LOG ACTIVITY ROUTES =======================

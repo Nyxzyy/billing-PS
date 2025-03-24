@@ -71,8 +71,11 @@
                 <th>Jenis Paket</th>
                 <th>Waktu Paket</th>
                 <th>Waktu Mulai</th>
+                <th>Waktu Selesai</th>
                 <th>Waktu Berhenti</th>
+                <th>Harga Total(Rp)</th>
                 <th>Harga (Rp)</th>
+                <th>Diskon(Rp)</th>
             </tr>
         </thead>
         <tbody>
@@ -87,7 +90,12 @@
                     </td>
                     <td>{{ $transaction->end_time ? \Carbon\Carbon::parse($transaction->end_time)->format('d/m/Y H:i:s') : '-' }}
                     </td>
+                    <td>{{ $transaction->updated_at ? \Carbon\Carbon::parse($transaction->updated_at)->format('d/m/Y H:i:s') : '-' }}
+                    </td>
                     <td>{{ number_format($transaction->total_price, 0, ',', '.') }}</td>
+                    <td>{{ $transaction->original_price > 0 ? number_format($transaction->original_price, 0, ',', '.') : number_format($transaction->total_price, 0, ',', '.') }}
+                    </td>
+                    <td>{{ number_format($transaction->discount_amount, 0, ',', '.') }}</td>
                 </tr>
             @endforeach
         </tbody>

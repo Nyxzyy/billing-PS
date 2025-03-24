@@ -8,9 +8,16 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Jenis Paket</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Waktu Paket</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Waktu Mulai</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Waktu Selesai
+                </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Waktu Berhenti
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Harga (Rp)</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Harga Total(Rp)
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Harga(Rp)
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Diskon(Rp)
+                </th>
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -28,7 +35,16 @@
                         {{ $transaction->end_time ? \Carbon\Carbon::parse($transaction->end_time)->format('d/m/Y H:i:s') : '-' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        {{ $transaction->updated_at ? \Carbon\Carbon::parse($transaction->updated_at)->format('d/m/Y H:i:s') : '-' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
                         {{ number_format($transaction->total_price, 0, ',', '.') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        {{ $transaction->original_price > 0 ? number_format($transaction->original_price, 0, ',', '.') : number_format($transaction->total_price, 0, ',', '.') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        {{ number_format($transaction->discount_amount, 0, ',', '.') }}
                     </td>
                 </tr>
             @empty
@@ -57,4 +73,3 @@
         {{ $transactions->appends(request()->query())->links() }}
     </div>
 </div>
-

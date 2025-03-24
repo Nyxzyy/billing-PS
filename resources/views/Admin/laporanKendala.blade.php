@@ -50,8 +50,7 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" name="search" value="{{ $search ?? '' }}"
-                        placeholder="Ketik untuk mencari di tabel"
+                    <input type="text" name="searchKendala" id="searchKendala" placeholder="Ketik untuk mencari di tabel"
                         class="text-[#6D717F] text-sm w-full pl-8 py-1.5 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="relative" x-data="{ isOpen: false }">
@@ -147,87 +146,23 @@
                     <div class="flex justify-center">
                         <div>
                             <p class="text-sm text-gray-600">Total Kendala atau Gangguan</p>
-                            <p class="text-3xl font-bold text-center mt-2">{{ $totalKendala }}</p>
+                            <p id="total-kendala" class="text-3xl font-bold text-center mt-2">{{ $totalKendala }}</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-[#3E81AB]">
-                                <tr>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        No</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Nama Kasir</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Nama Device</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Kendala</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Jam</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Tanggal</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Status</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Waktu Selesai</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse($kendalaReports as $index => $report)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $index + 1 }}</td>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $report->cashier->name ?? '-' }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $report->device->name ?? '-' }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $report->issue }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $report->time }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ \Carbon\Carbon::parse($report->date)->format('d/m/Y') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            <span
-                                                class="px-2 py-1 rounded-full text-xs {{ $report->status == 'Pending'
-                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                    : ($report->status == 'Proses'
-                                                        ? 'bg-blue-100 text-blue-800'
-                                                        : 'bg-green-100 text-green-800') }}">
-                                                {{ $report->status }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            @if ($report->status == 'Selesai')
-                                                {{ \Carbon\Carbon::parse($report->updated_at)->format('d/m/Y H:i:s') }}
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">Tidak ada data
-                                            kendala yang ditemukan</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                        <div id="kendalaTable" class="bg-white rounded-lg shadow">
+                            @include('admin.partials.kendala-table', ['kendalaReports' => $kendalaReports])
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
-                    <p>Showing {{ $kendalaReports->firstItem() ?? 0 }} - {{ $kendalaReports->lastItem() ?? 0 }} of
+                    <p id="showing-info">Showing {{ $kendalaReports->firstItem() ?? 0 }} -
+                        {{ $kendalaReports->lastItem() ?? 0 }} of
                         {{ $kendalaReports->total() ?? 0 }}</p>
-                    <div class="flex space-x-2">
+                    <div id="pagination-container" class="flex space-x-2">
                         {{ $kendalaReports->links() }}
                     </div>
                 </div>
@@ -235,3 +170,61 @@
         </div>
     </div>
 @endsection
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#searchKendala').on('keyup', function() {
+            let query = $(this).val();
+            $.ajax({
+                url: "{{ route('admin.laporan-kendala.search') }}",
+                type: "GET",
+                data: {
+                    query: query
+                },
+                success: function(response) {
+                    $('#kendalaTable').html(response.html);
+                }
+            });
+        });
+    });
+
+    $(document).ready(function() {
+        function fetchFilteredData(page = 1) {
+            let startDate = $('#start_date').val();
+            let endDate = $('#end_date').val();
+
+            $.ajax({
+                url: "{{ route('admin.laporan-kendala.filterByDate') }}",
+                type: "GET",
+                data: {
+                    start_date: startDate,
+                    end_date: endDate,
+                    page: page
+                },
+                success: function(response) {
+                    $('#kendalaTable').html(response.html);
+                    $('#total-kendala').text(response.total_kendala);
+                    $('#pagination-container').html(response.pagination);
+
+                    $('#showing-info').text(
+                        `Showing ${response.first_item} - ${response.last_item} of ${response.total}`
+                    );
+                },
+                error: function(xhr) {
+                    console.error("Terjadi kesalahan:", xhr);
+                }
+            });
+        }
+
+        $('#start_date, #end_date').on('change', function() {
+            fetchFilteredData();
+        });
+
+        $(document).on('click', '#pagination-container a', function(e) {
+            e.preventDefault();
+            let page = $(this).attr('href').split('page=')[1];
+            fetchFilteredData(page);
+        });
+    });
+</script>

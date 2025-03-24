@@ -30,8 +30,9 @@
 
             <div class="flex justify-end mt-4">
                 <button type="button" onclick="closeModal('modalAddPengguna')"
-                    class="bg-[#C6C6C6] text-[#4F4F4F] px-4 py-2 rounded text-sm mr-2">Batal</button>
-                <button type="submit" class="bg-[#3E81AB] text-white px-4 py-2 rounded text-sm">Simpan</button>
+                    class="bg-[#C6C6C6] text-[#4F4F4F] px-4 py-2 rounded text-sm mr-2 hover:bg-[#B5B5B5] cursor-pointer">Batal</button>
+                <button type="submit"
+                    class="bg-[#3E81AB] text-white px-4 py-2 rounded text-sm hover:bg-[#337399] cursor-pointer">Simpan</button>
             </div>
         </form>
     </div>
@@ -70,11 +71,12 @@
 
             <div class="flex justify-between mt-4">
                 <button type="button" onclick="openDeleteConfirmation()"
-                    class="bg-[#FF4747] text-white px-4 py-2 rounded text-sm">Hapus</button>
+                    class="bg-[#FF4747] text-white px-4 py-2 rounded text-sm hover:bg-[#E03E3E] cursor-pointer">Hapus</button>
                 <div class="flex gap-2">
                     <button type="button" onclick="closeModal('modalEditPengguna')"
-                        class="bg-[#C6C6C6] text-[#4F4F4F] px-4 py-2 rounded text-sm">Batal</button>
-                    <button type="submit" class="bg-[#3E81AB] text-white px-4 py-2 rounded text-sm">Simpan</button>
+                        class="bg-[#C6C6C6] text-[#4F4F4F] px-4 py-2 rounded text-sm hover:bg-[#B5B5B5] cursor-pointer">Batal</button>
+                    <button type="submit"
+                        class="bg-[#3E81AB] text-white px-4 py-2 rounded text-sm hover:bg-[#337399] cursor-pointer">Simpan</button>
                 </div>
             </div>
         </form>
@@ -93,9 +95,9 @@
             @csrf
             @method('DELETE')
             <div class="flex justify-center w-full mt-4 space-x-2">
-                <button type="button" class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs"
+                <button type="button" class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs hover:bg-[#B5B5B5] cursor-pointer"
                     onclick="closeModal('modalKonfirmasiPengguna')">Tidak, Kembali</button>
-                <button type="submit" class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs">Ya, Hapus
+                <button type="submit" class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs hover:bg-[#E03E3E] cursor-pointer">Ya, Hapus
                     Pengguna Ini</button>
             </div>
         </form>

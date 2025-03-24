@@ -17,7 +17,9 @@ class TransactionReport extends Model
         'start_time',
         'end_time',
         'total_price',
-        'status'
+        'status',
+        'original_price',
+        'discount_amount'
     ];
 
     protected $casts = [

@@ -393,6 +393,61 @@ class BillingPageKasirController extends Controller
                     $transaction->end_time = $endTime;
                     $transaction->save();
                 }
+
+                // For Open Billing, calculate original price and discount before existing flow
+                if ($transaction->package_name === 'Open Billing') {
+                    $billingOpen = BillingOpen::first();
+                    $duration = Carbon::parse($transaction->start_time)->diffInMinutes(now());
+                    
+                    // Calculate original price
+                    $originalPrice = 0;
+                    if ($duration <= 60) {
+                        $blocks = max(1, ceil($duration / $billingOpen->minute_count));
+                        $originalPrice = $blocks * $billingOpen->price_per_minute;
+                    } else {
+                        $fullHours = floor($duration / 60);
+                        $originalPrice = $fullHours * $billingOpen->price_per_hour;
+                        
+                        $remainingMinutes = $duration % 60;
+                        if ($remainingMinutes > 0) {
+                            $blocks = max(1, ceil($remainingMinutes / $billingOpen->minute_count));
+                            $originalPrice += $blocks * $billingOpen->price_per_minute;
+                        }
+                    }
+
+                    $promo = OpenBillingPromo::where(function($query) use ($hours, $minutes) {
+                        $query->where(function($q) use ($hours, $minutes) {
+                            $q->whereRaw('(min_hours * 60 + min_minutes) <= ?', [($hours * 60 + $minutes)]);
+                        });
+                    })
+                    ->orderBy('discount_price', 'desc') // Order by highest discount first
+                    ->first();
+
+                    $discountAmount = $promo ? $promo->discount_price : 0;
+
+                    // Update transaction with price details
+                    $transaction->update([
+                        'original_price' => $originalPrice,
+                        'discount_amount' => $discountAmount
+                    ]);
+
+                    // Add debug logging
+                    \Log::info('Open Billing Promo Details:', [
+                        'duration_hours' => $hours,
+                        'duration_minutes' => $minutes,
+                        'total_minutes' => ($hours * 60 + $minutes),
+                        'selected_promo' => $promo,
+                        'discount_amount' => $discountAmount
+                    ]);
+
+                    // Log for debugging
+                    \Log::info('Open Billing Price Details:', [
+                        'duration' => $duration,
+                        'original_price' => $originalPrice,
+                        'discount_amount' => $discountAmount,
+                        'final_price' => $transaction->total_price
+                    ]);
+                }
             }
 
             // Update device status

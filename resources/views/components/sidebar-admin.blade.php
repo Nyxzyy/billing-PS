@@ -75,7 +75,7 @@
                     Laporan
                 </a>
                 <ul class="ml-8">
-                    <li><a href="{{ route('admin.laporan') }}"
+                    <li><a href="{{ route('admin.laporanDevice') }}"
                             class="flex items-center gap-2 p-1 rounded hover:bg-[#3E81AB] hover:text-white"><svg
                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"

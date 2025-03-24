@@ -840,21 +840,21 @@
             checkShiftStatus();
         });
 
-        // function checkShiftStatus() {
-        //     fetch('{{ route('shift.check') }}')
-        //         .then(response => response.json())
-        //         .then(data => {
-        //             if (!data.hasActiveShift) {
-        //                 openModal('modalMulaiShift');
-        //             } else {
-        //                 closeModal('modalMulaiShift');
-        //             }
-        //         })
-        //         .catch(error => {
-        //             console.error('Error:', error);
-        //             showNotification('error', 'Terjadi kesalahan saat memeriksa status shift');
-        //         });
-        // }
+        function checkShiftStatus() {
+            fetch('{{ route('shift.check') }}')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.hasActiveShift) {
+                        openModal('modalMulaiShift');
+                    } else {
+                        closeModal('modalMulaiShift');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('error', 'Terjadi kesalahan saat memeriksa status shift');
+                });
+        }
 
         function startShift() {
             fetch('{{ route('shift.start') }}', {

@@ -1,17 +1,16 @@
 @extends('admin.layout-admin')
 
-@section('title', 'Laporan Kasir')
+@section('title', 'Laporan')
 @section('breadcrumb', 'Laporan')
 
 @section('content')
     <div class="max-w-screen-xl mx-auto px-2 md:px-2">
-        <h1 class="text-xl md:text-3xl font-bold">Laporan Kasir</h1>
-        <p class="text-[#414141] mb-8">Pantau dan analisis laporan per kasir dibawah ini dengan filter harian, mingguan, dan
+        <h1 class="text-xl md:text-3xl font-bold">Laporan Device</h1>
+        <p class="text-[#414141] mb-8">Pantau dan analisis laporan device dibawah ini dengan filter harian, mingguan, dan
             bulanan.</p>
 
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-white p-6">
             <div class="flex flex-col md:flex-row md:justify-end md:items-center gap-2">
-                <!-- Date Range Filters -->
                 <div
                     class="relative w-full md:w-1/5 flex items-center border rounded-lg text-[#6D717F] border-[#C0C0C0] px-3 py-1.5">
                     <button type="button" onclick="document.getElementById('start_date').showPicker()">
@@ -43,8 +42,8 @@
                     <input type="date" id="end_date" name="filter_end_date" placeholder="Tanggal Akhir"
                         class="text-[#6D717F] text-sm w-full px-3 outline-none bg-transparent border-none appearance-none">
                 </div>
-                <select name="cashier_id" class="px-2 border rounded-lg border-[#C0C0C0] py-2 text-[#969696] text-sm">
-                    <option value="">Pilih Nama Kasir</option>
+                <select class="px-6 border rounded-lg border-[#C0C0C0] py-2 text-[#969696] text-sm">
+                    <option>Ketik atau Pilih Perangkat</option>
                 </select>
                 <div class="relative w-full md:w-1/5">
                     <svg class="absolute left-3 top-2 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg"
@@ -144,22 +143,26 @@
             <div class="p-4">
                 <div class="bg-white rounded-lg shadow p-4 mb-4">
                     <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-lg font-semibold">Informasi Kasir</h2>
+                        <h2 class="text-lg font-semibold">Informasi Device</h2>
                         <span id="shiftStatus">
                         </span>
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
-                            <p class="text-sm text-gray-600">Total Waktu Kerja</p>
-                            <p class="font-semibold">{{ number_format($summary['total_work_hours']) }} Jam</p>
+                            <p class="text-sm text-gray-600">Kendala Pada Perangkat</p>
+                            <p class="font-semibold">{{ $summary['total_kendala'] }} Kali</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-600">Total Transaksi</p>
-                            <p class="font-semibold">{{ number_format($summary['total_transactions']) }}</p>
+                            <p class="text-sm text-gray-600">Total Waktu Pemakaian</p>
+                            <p class="font-semibold">{{ $summary['total_waktu_pakai'] }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Total Booking</p>
+                            <p class="font-semibold">{{ $summary['total_booking'] }} Transaksi</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Total Pendapatan</p>
-                            <p class="font-semibold">Rp {{ number_format($summary['total_revenue'], 0, ',', '.') }}</p>
+                            <p class="font-semibold">Rp {{ number_format($summary['total_pendapatan'], 0, ',', '.') }}</p>
                         </div>
                     </div>
                 </div>
@@ -174,45 +177,41 @@
                                         No</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Nama Kasir</th>
+                                        Nama Perangkat</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Total Transaksi</th>
+                                        Jenis Paket</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Total Pendapatan (Rp)</th>
+                                        Waktu Paket</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Jam Kerja</th>
+                                        Waktu Mulai</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Tanggal Kerja</th>
+                                        Waktu Berhenti</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Shift Mulai Kerja</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                                        Shift Selesai Kerja</th>
+                                        Harga (Rp)</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($reports as $index => $report)
+                                @foreach ($transactions as $index => $transaction)
                                     <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $loop->iteration }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $transaction->device->name }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $transaction->package_name }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $transaction->package_time }}
+                                            Menit</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ $reports->firstItem() + $index }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $report->cashier->name }}</td>
+                                            {{ $transaction->start_time->format('H:i:s') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ number_format($report->total_transactions) }}</td>
+                                            {{ $transaction->end_time ? $transaction->end_time->format('H:i:s') : 'Berjalan' }}
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ number_format($report->total_revenue, 0, ',', '.') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ number_format($report->total_work_hours, 1) }} Jam</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ \Carbon\Carbon::parse($report->work_date)->format('d/m/Y') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ \Carbon\Carbon::parse($report->shift_start)->format('d/m/Y H:i:s') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            {{ \Carbon\Carbon::parse($report->shift_end)->format('d/m/Y H:i:s') }}</td>
+                                            {{ number_format($transaction->total_price, 0, ',', '.') }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -220,9 +219,10 @@
                     </div>
                 </div>
                 <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
-                    <p>Showing {{ $reports->firstItem() }} - {{ $reports->lastItem() }} of {{ $reports->total() }}</p>
+                    <p>Showing {{ $transactions->firstItem() }} - {{ $transactions->lastItem() }} of
+                        {{ $transactions->total() }}</p>
                     <div class="flex space-x-2">
-                        {{ $reports->links() }}
+                        {{ $transactions->links() }}
                     </div>
                 </div>
             </div>

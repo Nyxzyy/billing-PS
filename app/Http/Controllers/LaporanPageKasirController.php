@@ -12,25 +12,19 @@ class LaporanPageKasirController extends Controller
 {
     public function index()
     {
-        $today = Carbon::now()->format('Y-m-d');
-        
-        // Get current shift info
+        // Hapus filter berdasarkan today
         $currentShift = CashierReport::where('cashier_id', Auth::id())
-            ->whereDate('work_date', $today)
             ->whereNull('shift_end')
             ->first();
 
-        // Get transactions for current shift
         $transactions = collect([]);
         $totalRevenue = 0;
         
         if ($currentShift) {
+            // Ubah query untuk mengambil transaksi berdasarkan shift_start saja
             $transactions = TransactionReport::with(['device', 'user'])
                 ->where('user_id', Auth::id())
-                ->whereBetween('created_at', [
-                    $currentShift->shift_start,
-                    $currentShift->shift_end ?? now()
-                ])
+                ->where('created_at', '>=', $currentShift->shift_start)
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($transaction) {
@@ -41,14 +35,15 @@ class LaporanPageKasirController extends Controller
                         'package_time' => $transaction->package_time,
                         'start_time' => Carbon::parse($transaction->start_time)->format('H:i'),
                         'end_time' => $transaction->end_time ? Carbon::parse($transaction->end_time)->format('H:i') : '-',
+                        'original_price' => $transaction->original_price,
+                        'discount_amount' => $transaction->discount_amount,
                         'total_price' => $transaction->total_price
                     ];
                 });
 
-            // Calculate total revenue for current shift
             $totalRevenue = $transactions->sum('total_price');
 
-            // Update shift report with latest totals
+            // Update shift report
             $currentShift->update([
                 'total_transactions' => $transactions->count(),
                 'total_revenue' => $totalRevenue,
@@ -71,6 +66,14 @@ class LaporanPageKasirController extends Controller
             abort(403, 'Unauthorized');
         }
 
+        // Tambahkan debug logging
+        \Log::info('Transaction Data:', [
+            'package_name' => $transaction->package_name,
+            'original_price' => $transaction->original_price,
+            'discount_amount' => $transaction->discount_amount,
+            'total_price' => $transaction->total_price
+        ]);
+
         return view('Kasir.receipt', [
             'transaction' => [
                 'id' => $transaction->id,
@@ -80,6 +83,8 @@ class LaporanPageKasirController extends Controller
                 'start_time' => Carbon::parse($transaction->start_time)->format('H:i'),
                 'end_time' => $transaction->end_time ? Carbon::parse($transaction->end_time)->format('H:i') : '-',
                 'total_price' => $transaction->total_price,
+                'original_price' => $transaction->original_price ?? $transaction->total_price, // Fallback ke total_price
+                'discount_amount' => $transaction->discount_amount ?? 0,
                 'cashier_name' => $transaction->user->name,
                 'date' => Carbon::parse($transaction->created_at)->format('d/m/Y')
             ]
