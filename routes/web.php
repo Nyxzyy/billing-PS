@@ -52,7 +52,7 @@ Route::middleware('auth')->get('/server-time', function() {
 Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('kasir.dashboard');
-    
+
     // Billing Management
     Route::controller(BillingPageKasirController::class)->group(function () {
         Route::get('/billing', 'Devices')->name('kasir.billing');
@@ -63,21 +63,21 @@ Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->group(function () {
         Route::post('/billing/restart', 'restartBilling')->name('billing.restart');
         Route::post('/billing/update-status', 'updateDeviceStatus')->name('billing.update-status');
     });
-    
+
     // Shift Management
     Route::controller(ShiftController::class)->group(function () {
         Route::get('/shift/check-status', 'checkShiftStatus')->name('shift.check');
         Route::post('/shift/start', 'startShift')->name('shift.start');
         Route::post('/shift/end', 'endShift')->name('shift.end');
     });
-    
+
     // Kendala Management
     Route::controller(KendalaController::class)->prefix('kendala')->name('kendala.')->group(function () {
         Route::post('/report', 'store')->name('report');
         Route::get('/{deviceId}/latest', 'getLatest')->name('latest');
         Route::post('/resolve', 'resolve')->name('resolve');
     });
-    
+
     // Laporan & Receipt
     Route::controller(LaporanPageKasirController::class)->group(function () {
         Route::get('/laporan', 'index')->name('kasir.laporan');
@@ -91,7 +91,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/current-time', [DashboardAdminController::class, 'getCurrentTime']);
     Route::get('/dashboard-stats', [DashboardAdminController::class, 'getDashboardStats']);
     Route::post('/chart-data', [DashboardAdminController::class, 'updateChartData'])->name('admin.chart-data');
-    
+
     // Device Management
     Route::controller(DeviceManagementController::class)->group(function () {
         Route::get('/manage-perangkat', 'index')->name('admin.managePerangkat');
@@ -109,7 +109,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         Route::put('/manage-users/{user}', [UserManagementController::class, 'update'])->name('admin.manageUser.update');
         Route::delete('/manage-users/{user}', [UserManagementController::class, 'destroy'])->name('admin.manageUser.destroy');
     });
-    
+
     // Billing Package Management
     Route::prefix('billingPackages')->group(function () {
         Route::get('/', [BillingPackageController::class, 'index'])->name('admin.paketBilling');
@@ -119,7 +119,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         Route::put('/billing-packages/{id}', [BillingPackageController::class, 'update'])->name('billing-packages.update');
         Route::delete('/billing-packages/{id}', [BillingPackageController::class, 'destroy'])->name('billing-packages.destroy');
     });
-    
+
     // Open Billing Package Management
     Route::prefix('openBilling')->name('admin.openBilling.')->group(function () {
         Route::get('/', [OpenBillingController::class, 'index'])->name('index');
@@ -129,7 +129,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         Route::delete('/deletePromo/{id}', [OpenBillingController::class, 'deletePromo'])->name('deletePromo');
     });
 
-    // Laporan Kendala Management 
+    // Laporan Kendala Management
     Route::controller(LaporanKendalaController::class)->group(function () {
         Route::get('/laporan-kendala', 'index')->name('admin.laporan-kendala');
         Route::get('/laporan-kendala/download', 'downloadPdf')->name('admin.laporan-kendala.download-pdf');
@@ -143,11 +143,11 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/laporan-kasir/search', [LaporanKasirController::class, 'search'])->name('admin.laporan-kasir.search');
     Route::get('/laporan-kasir/filterbydate', [LaporanKasirController::class, 'filterByDate'])->name('admin.laporan-kasir.filterByDate');
     Route::get('/laporan-kasir/filter-by-cashier', [LaporanKasirController::class, 'filterByCashier'])->name('admin.laporan-kasir.filterByCashier');
-    
+
     // Laporan Transaksi
     Route::get('/laporan-transaksi', [LaporanTransaksiController::class, 'index'])->name('admin.laporanTransaksi');
     Route::get('/laporan-transaksi/download', [LaporanTransaksiController::class, 'download'])->name('admin.laporanTransaksi.download');
-    
+
     // Laporan Perangkat
     Route::get('/laporan-device', [LaporanDeviceController::class, 'index'])->name('admin.laporanDevice');
     Route::get('/laporan-device/download', [LaporanDeviceController::class, 'downloadPdf'])->name('admin.laporan-device.download-pdf');
@@ -162,4 +162,5 @@ Route::prefix('log-activity')->middleware('auth')->controller(LogActivityControl
     Route::get('/{id}', 'show')->name('log.show');
     Route::post('/', 'store')->name('log.store');
     Route::get('/', 'adminIndex')->name('admin.logActivity');
+    Route::get('/admin/log-activity/search', [LogActivityController::class, 'search'])->name('admin.logActivity.search');
 });

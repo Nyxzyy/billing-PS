@@ -51,6 +51,39 @@ class LogActivityController extends Controller
         ]);
     }
 
+    public function search(Request $request)
+    {
+        $query = LogActivity::with(['user', 'device', 'transaction'])
+            ->orderBy('timestamp', 'desc');
+
+        if ($request->get('query')) {
+            $search = $request->get('query');
+            $query->where(function($q) use ($search) {
+                $q->where('activity', 'LIKE', "%{$search}%")
+                  ->orWhereHas('user', function($q) use ($search) {
+                      $q->where('name', 'LIKE', "%{$search}%");
+                  })
+                  ->orWhereHas('device', function($q) use ($search) {
+                      $q->where('name', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        $logs = $query->paginate(15);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.partials.log-table', ['logs' => $logs])->render(),
+                'first_item' => $logs->firstItem() ?? 0,
+                'last_item' => $logs->lastItem() ?? 0,
+                'total' => $logs->total(),
+                'pagination' => $logs->links()->render()
+            ]);
+        }
+
+        return view('admin.logActivity', compact('logs'));
+    }
+
     /**
      * Display user-specific logs (for API)
      */
