@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Events\DeviceStatusChanged;
 
 class Device extends Model
 {
@@ -29,6 +30,19 @@ class Device extends Model
         'shutdown_time',
         'last_used_at'
     ];
+
+    protected static function booted()
+    {
+        static::updating(function ($device) {
+            if ($device->isDirty('status')) {
+                event(new DeviceStatusChanged(
+                    $device,
+                    $device->getOriginal('status'),
+                    $device->status
+                ));
+            }
+        });
+    }
 
     public function kendalaReports()
     {
