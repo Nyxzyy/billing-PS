@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Events\TransactionCreated;
 
 class TransactionReport extends Model
 {
@@ -28,6 +29,13 @@ class TransactionReport extends Model
         'package_time' => 'integer',
         'total_price' => 'decimal:2'
     ];
+
+    protected static function booted()
+    {
+        static::created(function ($transaction) {
+            event(new TransactionCreated($transaction));
+        });
+    }
 
     public function device()
     {

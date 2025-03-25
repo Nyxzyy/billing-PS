@@ -10,6 +10,8 @@ use App\Listeners\LogLoginActivity;
 use App\Listeners\LogLogoutActivity;
 use App\Events\DeviceStatusChanged;
 use App\Listeners\LogDeviceStatusChange;
+use App\Events\TransactionCreated;
+use App\Listeners\LogTransactionActivity;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         DeviceStatusChanged::class => [
             LogDeviceStatusChange::class,
+        ],
+        TransactionCreated::class => [
+            LogTransactionActivity::class,
         ],
     ];
 
