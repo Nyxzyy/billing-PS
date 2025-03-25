@@ -174,23 +174,46 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#searchKendala').on('keyup', function() {
-            let query = $(this).val();
-            $.ajax({
+        let currentSearchQuery = '';
+        let currentRequest = null;
+        let isSearchMode = false;
+
+        function performSearch(query, page = 1) {
+            if (currentRequest) {
+                currentRequest.abort();
+            }
+
+            isSearchMode = !!query;
+            currentSearchQuery = query;
+
+            currentRequest = $.ajax({
                 url: "{{ route('admin.laporan-kendala.search') }}",
                 type: "GET",
                 data: {
-                    query: query
+                    query: query,
+                    page: page
+                },
+                beforeSend: function() {
+                    $('#kendalaTable').addClass('opacity-50');
                 },
                 success: function(response) {
                     $('#kendalaTable').html(response.html);
+                    $('#pagination-container').html(response.pagination);
+                    $('#showing-info').text(
+                        `Showing ${response.first_item} - ${response.last_item} of ${response.total}`
+                    );
+                    $('#total-kendala').text(response.total);
+                },
+                complete: function() {
+                    currentRequest = null;
+                    $('#kendalaTable').removeClass('opacity-50');
                 }
             });
-        });
-    });
+        }
 
-    $(document).ready(function() {
         function fetchFilteredData(page = 1) {
+            if (isSearchMode) return; // Skip if in search mode
+
             let startDate = $('#start_date').val();
             let endDate = $('#end_date').val();
 
@@ -202,29 +225,47 @@
                     end_date: endDate,
                     page: page
                 },
+                beforeSend: function() {
+                    $('#kendalaTable').addClass('opacity-50');
+                },
                 success: function(response) {
                     $('#kendalaTable').html(response.html);
                     $('#total-kendala').text(response.total_kendala);
                     $('#pagination-container').html(response.pagination);
-
                     $('#showing-info').text(
                         `Showing ${response.first_item} - ${response.last_item} of ${response.total}`
                     );
                 },
                 error: function(xhr) {
                     console.error("Terjadi kesalahan:", xhr);
+                },
+                complete: function() {
+                    $('#kendalaTable').removeClass('opacity-50');
                 }
             });
         }
 
-        $('#start_date, #end_date').on('change', function() {
-            fetchFilteredData();
+        $('#searchKendala').on('keyup', function() {
+            let query = $(this).val();
+            performSearch(query);
         });
 
+        $('#start_date, #end_date').on('change', function() {
+            if (!isSearchMode) {
+                fetchFilteredData();
+            }
+        });
+
+        // Single event handler for pagination
         $(document).on('click', '#pagination-container a', function(e) {
             e.preventDefault();
             let page = $(this).attr('href').split('page=')[1];
-            fetchFilteredData(page);
+
+            if (isSearchMode) {
+                performSearch(currentSearchQuery, page);
+            } else {
+                fetchFilteredData(page);
+            }
         });
     });
 </script>
