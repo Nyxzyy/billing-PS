@@ -13,23 +13,22 @@
 <body class="bg-white">
     <div class="flex flex-col md:flex-row h-screen">
         <!-- Left side with background image - modified for mobile view -->
-        <div class="relative bg-cover bg-center flex items-center justify-center h-32 sm:h-40 md:h-auto md:w-1/2 lg:w-3/5"
+        <div class="relative flex items-center justify-center w-full md:w-1/2 lg:w-3/5 bg-cover bg-center h-40 md:h-auto"
             style="background-image: url('{{ asset('assets/images/Background (1).png') }}');">
             <div class="absolute inset-0 bg-black opacity-50"></div>
-            <div class="relative p-6 text-center text-white">
-                <h1 class="text-3xl md:text-4xl font-semibold italic underline" style="font-family: Roboto, sans-serif">
-                    "INILOGONYA"</h1>
-            </div>
+            <h1 class="relative text-white text-3xl md:text-4xl font-semibold italic underline text-center px-4" 
+                style="font-family: Roboto, sans-serif">
+                "INILOGONYA"
+            </h1>
         </div>
 
         <!-- Right side with login form -->
         <div
-            class="w-full md:w-1/2 lg:w-2/5 bg-white p-6 sm:p-8 md:px-10 lg:px-16 shadow-lg flex flex-col justify-center flex-grow">
+            class="w-full md:w-1/2 lg:w-2/5 bg-white px-6 sm:px-8 md:px-12 lg:px-16 py-8 flex flex-col justify-center shadow-lg">
             <!-- Welcome message container with stylish top border -->
             <div class="border-t-4 border-[#004a6a] pt-4 mb-6 md:border-t-0 md:pt-0">
-                <h2 class="text-2xl sm:text-3xl font-semibold" style="font-family: Roboto, sans-serif">Selamat Datang!
-                </h2>
-                <p class="text-[#606060] mt-1 text-sm" style="font-family: Roboto, sans-serif">
+                <h2 class="text-2xl sm:text-3xl font-semibold text-center md:text-left">Selamat Datang!</h2>
+                <p class="text-[#606060] mt-1 text-sm text-center md:text-left">
                     Silakan masuk untuk mengelola transaksi dan pelanggan dengan mudah.
                 </p>
             </div>
@@ -51,10 +50,10 @@
             <div id="alert-message" class="hidden text-center text-red-600 font-semibold mb-4"></div>
 
             <!-- Card container for the form on mobile -->
-            <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-100">
+            <div class="bg-white rounded-lg shadow-md p-5 sm:p-6 border border-gray-100 max-w-md md:max-w-lg mx-auto w-full">
                 <form id="loginForm" action="{{ route('login') }}" method="POST" class="w-full max-w mt-2">
                     @csrf
-                    <div class="mb-5 relative w-full">
+                    <div class="mb-4">
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                         <div class="relative">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
@@ -71,7 +70,7 @@
                                 value="{{ old('email') }}">
                         </div>
                     </div>
-                    <div class="mb-6 relative w-full">
+                    <div class="mb-5">
                         <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                         <div class="relative">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
