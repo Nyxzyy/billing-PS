@@ -1,0 +1,34 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+@media (max-width: 768px) {
+    .hide-on-mobile {
+        display: none;
+    }
+}
+
+/* Ubah warna teks jika dropdown disabled */
+#pilihPaket:disabled {
+    color: #e9e9e9; /* Warna abu-abu */
+    background-color: #ffffff; /* Opsional: ubah background */
+    border-color: #e9e9e9;
+}
+
+/* Pastikan option yang disabled juga berubah warna */
+#pilihPaket option:disabled {
+    color: #DBDBDB;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+.date-placeholder::before {
+    content: attr(data-placeholder);
+    color: #6D717F;
+    position: absolute;
+    left: 48px; /* Sesuaikan posisi */
+    pointer-events: none;
+}

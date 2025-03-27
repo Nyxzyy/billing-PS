@@ -1,0 +1,37 @@
+<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_859_2)">
+<path d="M46 31H44V34H46V31Z" fill="black"/>
+<path d="M2 14H13C13.6 14 14 13.6 14 13V2H44V5H46V1C46 0.4 45.6 0 45 0H13C12.9 0 12.8 0 12.7 0.1H12.6C12.5 0.2 12.4 0.2 12.3 0.3L0.3 12.3C0.2 12.4 0.2 12.5 0.1 12.6V12.7C0.1 12.8 0 12.9 0 13V59C0 59.6 0.4 60 1 60H37V58H2V14ZM12 12H3.4L7.7 7.7L12 3.4V12Z" fill="black"/>
+<path d="M49 29C55.1 29 60 24.1 60 18C60 11.9 55.1 7 49 7C42.9 7 38 11.9 38 18C38 24.1 42.9 29 49 29ZM49 9C54 9 58 13 58 18C58 23 54 27 49 27C44 27 40 23 40 18C40 13 44 9 49 9Z" fill="black"/>
+<path d="M47 23H48V25H50V23H51C52.2 23 53 22.2 53 21V19C53 17.8 52.2 17 51 17H47V15H51V16H53V15C53 13.8 52.2 13 51 13H50V11H48V13H47C45.8 13 45 13.8 45 15V17C45 18.2 45.8 19 47 19H51V21H47V20H45V21C45 22.2 45.8 23 47 23Z" fill="black"/>
+<path d="M59 36H41C40.4 36 40 36.4 40 37V59C40 59.6 40.4 60 41 60H59C59.6 60 60 59.6 60 59V37C60 36.4 59.6 36 59 36ZM58 38V42H42V38H58ZM42 58V44H58V58H42Z" fill="black"/>
+<path d="M47 46H45V48H47V46Z" fill="black"/>
+<path d="M51 46H49V48H51V46Z" fill="black"/>
+<path d="M55 46H53V48H55V46Z" fill="black"/>
+<path d="M47 50H45V52H47V50Z" fill="black"/>
+<path d="M51 50H49V52H51V50Z" fill="black"/>
+<path d="M55 50H53V52H55V50Z" fill="black"/>
+<path d="M47 54H45V56H47V54Z" fill="black"/>
+<path d="M51 54H49V56H51V54Z" fill="black"/>
+<path d="M55 54H53V56H55V54Z" fill="black"/>
+<path d="M45 39H43V41H45V39Z" fill="black"/>
+<path d="M48 39H46V41H48V39Z" fill="black"/>
+<path d="M51 39H49V41H51V39Z" fill="black"/>
+<path d="M54 39H52V41H54V39Z" fill="black"/>
+<path d="M57 39H55V41H57V39Z" fill="black"/>
+<path d="M25 5H19V7H25V5Z" fill="black"/>
+<path d="M34 10H19V12H34V10Z" fill="black"/>
+<path d="M9.29999 18.3L6.29999 21.3L7.69999 22.7L8.99999 21.4V35H11V21.4L12.3 22.7L13.7 21.3L10.7 18.3C10.3 17.9 9.69999 17.9 9.29999 18.3Z" fill="black"/>
+<path d="M17.7 26.7L19 25.4V35H21V25.4L22.3 26.7L23.7 25.3L20.7 22.3C20.3 21.9 19.7 21.9 19.3 22.3L16.3 25.3L17.7 26.7Z" fill="black"/>
+<path d="M31 19.4L32.3 20.7L33.7 19.3L30.7 16.3C30.3 15.9 29.7 15.9 29.3 16.3L26.3 19.3L27.7 20.7L29 19.4V35H31V19.4Z" fill="black"/>
+<path d="M24 40H9V42H24V40Z" fill="black"/>
+<path d="M35 45H9V47H35V45Z" fill="black"/>
+<path d="M35 50H9V52H35V50Z" fill="black"/>
+<path d="M30 40H26V42H30V40Z" fill="black"/>
+</g>
+<defs>
+<clipPath id="clip0_859_2">
+<rect width="60" height="60" fill="white"/>
+</clipPath>
+</defs>
+</svg>
