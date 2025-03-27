@@ -8,6 +8,18 @@
         <h1 class="text-xl md:text-3xl font-bold">Management Billing</h1>
         <p class="text-[#414141] mb-8">Atur dan kelola paket billing dengan menentukan nama, durasi, dan harga.</p>
 
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline">{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline">{{ $errors->first() }}</span>
+            </div>
+        @endif
+
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-white p-6">
             <div class="flex flex-col md:flex-row md:justify-end md:items-center gap-2">
                 <div class="relative w-full md:w-1/5">

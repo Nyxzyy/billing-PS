@@ -28,25 +28,51 @@ class BillingPackageController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'package_name'      => 'required|string|max:100',
-            'duration_hours'    => 'required|integer|min:0',
-            'duration_minutes'  => 'required|integer|min:0|max:59',
+            'duration_hours'    => [
+                'required',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($value == 0 && $request->duration_minutes == 0) {
+                        $fail('Durasi tidak boleh 0 jam 0 menit. ');
+                    }
+                    if ($value === '00') {
+                        $fail('Format jam tidak valid (Isikan "0" Saja).');
+                    }
+                },
+            ],
+            'duration_minutes'  => [
+                'required',
+                'min:0',
+                'max:59',
+                function ($attribute, $value, $fail) {
+                    if ($value === '00') {
+                        $fail('Format menit tidak valid (Isikan "0" Saja).');
+                    }
+                },
+            ],
             'total_price'       => 'required|numeric|min:0',
             'active_days'       => 'required|array',
             'active_days.*'     => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
         ]);
 
-        BillingPackage::create([
-            'package_name'     => $request->package_name,
-            'duration_hours'   => $request->duration_hours,
-            'duration_minutes' => $request->duration_minutes,
-            'total_price'      => $request->total_price,
-            'active_days'      => $request->active_days,
-        ]);
+        try {
+            BillingPackage::create([
+                'package_name'     => $request->package_name,
+                'duration_hours'   => $request->duration_hours,
+                'duration_minutes' => $request->duration_minutes,
+                'total_price'      => $request->total_price,
+                'active_days'      => $request->active_days,
+            ]);
 
-        return redirect()->route('admin.paketBilling')
-            ->with('success', 'Paket berhasil ditambahkan.');
+            return redirect()->route('admin.paketBilling')
+                ->with('success', 'Paket berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Gagal menambahkan paket'])
+                ->withInput();
+        }
     }
 
     public function edit($id)
@@ -60,25 +86,51 @@ class BillingPackageController extends Controller
     {
         $package = BillingPackage::findOrFail($id);
 
-        $request->validate([
+        $validated = $request->validate([
             'package_name'      => 'required|string|max:100',
-            'duration_hours'    => 'required|integer|min:0',
-            'duration_minutes'  => 'required|integer|min:0|max:59',
+            'duration_hours'    => [
+                'required',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($value == 0 && $request->duration_minutes == 0) {
+                        $fail('Durasi tidak boleh 0 jam 0 menit. ');
+                    }
+                    if ($value === '00') {
+                        $fail('Format jam tidak valid (Isikan "0" Saja).');
+                    }
+                },
+            ],
+            'duration_minutes'  => [
+                'required',
+                'min:0',
+                'max:59',
+                function ($attribute, $value, $fail) {
+                    if ($value === '00') {
+                        $fail('Format menit tidak valid (Isikan "0" Saja).');
+                    }
+                },
+            ],
             'total_price'       => 'required|numeric|min:0',
             'active_days'       => 'required|array',
             'active_days.*'     => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
         ]);
 
-        $package->update([
-            'package_name'     => $request->package_name,
-            'duration_hours'   => $request->duration_hours,
-            'duration_minutes' => $request->duration_minutes,
-            'total_price'      => $request->total_price,
-            'active_days'      => $request->active_days,
-        ]);
+        try {
+            $package->update([
+                'package_name'     => $request->package_name,
+                'duration_hours'   => $request->duration_hours,
+                'duration_minutes' => $request->duration_minutes,
+                'total_price'      => $request->total_price,
+                'active_days'      => $request->active_days,
+            ]);
 
-        return redirect()->route('admin.paketBilling')
-            ->with('success', 'Paket berhasil diperbarui.');
+            return redirect()->route('admin.paketBilling')
+                ->with('success', 'Paket berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Gagal memperbarui paket'])
+                ->withInput();
+        }
     }
 
     public function destroy($id)

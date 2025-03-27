@@ -28,8 +28,6 @@
                         class="text-[#6D717F] text-sm w-full px-3 outline-none bg-transparent border-none appearance-none">
                 </div>
 
-                <span class="hidden md:flex items-center text-[#6D717F] text-lg font-semibold">-</span>
-
                 <div
                     class="relative w-full md:w-1/5 flex items-center border rounded-lg text-[#6D717F] border-[#C0C0C0] px-3 py-1.5">
                     <button type="button" onclick="document.getElementById('end_date').showPicker()">
