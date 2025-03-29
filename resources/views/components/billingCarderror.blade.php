@@ -9,7 +9,7 @@
         <p class="text-[#CDCDCD] text-xs">{{ $device->location ?? 'Tidak Ditemukan' }}</p>
         <p class="text-[#A8A8A8] font-bold text-xs mt-2 mb-4">Maintenance</p>
     </div>
-    <button class="text-xs mt-auto bg-[#A8A8A8] text-white font-extrabold py-2 rounded-lg w-full">
+    <button class="text-xs mt-auto bg-[#A8A8A8] text-white font-extrabold py-2 rounded-lg w-full transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">
         MAINTENANCE
     </button>
     <div class="absolute top-4 right-4 text-[#FB2C36] cursor-pointer" onclick="showKendalaDetail('{{ $device->id }}', '{{ $device->name }}')">

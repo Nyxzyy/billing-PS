@@ -10,7 +10,7 @@
     <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-lg font-semibold">Mulai Shift Kerja</h2>
-            <button type="button" onclick="closeShiftModal()" class="text-gray-400 hover:text-gray-600">
+            <button type="button" onclick="closeShiftModal()" class="text-gray-400 hover:text-gray-600 cursor-pointer">
                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -23,11 +23,11 @@
 
         <div class="flex flex-col gap-3">
             <button onclick="startShift()"
-                class="w-full bg-[#3E81AB] hover:bg-[#2C5F7C] text-white px-4 py-2 rounded text-sm cursor-pointer">
+                class="w-full bg-[#3E81AB] text-white px-4 py-2 rounded text-sm cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">
                 Mulai Shift
             </button>
             <button onclick="closeShiftModal()"
-                class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm cursor-pointer">
+                class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded text-sm cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">
                 Nanti Saja
             </button>
         </div>
@@ -44,16 +44,18 @@
         <textarea id="textareaKendala" class="w-full border border-[#C0C0C0] p-2 rounded mt-1"
             placeholder="Ketikkan Kendalanya..."></textarea>
 
-        <div class="flex items-center mt-2">
-            <input type="checkbox" id="konfirmasi" class="mr-2" onchange="toggleKunciButton()">
-            <label for="konfirmasi" class="text-[#4E4E4E] text-xs">Konfirmasi Kunci Device</label>
+        <div class="flex items-center mt-2 cursor-pointer">
+            <input type="checkbox" id="konfirmasi" class="mr-2 cursor-pointer" onchange="toggleKunciButton()">
+            <label for="konfirmasi" class="text-[#4E4E4E] text-xs cursor-pointer">Konfirmasi Kunci Device</label>
         </div>
 
         <div class="flex justify-end mt-4">
-            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs cursor-pointer"
+            <button
+                class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg"
                 onclick="closeModalKendala()">Batal</button>
-            <button id="btnKunci" class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs cursor-not-allowed" disabled
-                onclick="openModalKunci()">Kunci</button>
+            <button id="btnKunci"
+                class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs cursor-not-allowed transition duration-200 ease-in-out enabled:hover:-translate-y-0.5 enabled:hover:shadow-lg"
+                disabled onclick="openModalKunci()">Kunci</button>
         </div>
     </div>
 </div>
@@ -65,10 +67,12 @@
                 class="text-[#FF4747] font-semibold"></span> ini?</p>
 
         <div class="flex justify-center w-full mt-4 space-x-2">
-            <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs cursor-pointer"
+            <button
+                class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg"
                 onclick="closeModal('modalKonfirmasiKunci')">Tidak, Kembali</button>
             <button onclick="submitKendala()"
-                class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs cursor-pointer">Kunci dan
+                class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">Kunci
+                dan
                 Laporkan</button>
         </div>
     </div>
@@ -84,9 +88,11 @@
         <textarea id="textareaDetailKendala" class="w-full border border-[#C0C0C0] p-2 rounded mt-1" readonly></textarea>
 
         <div class="flex justify-end mt-4">
-            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs cursor-pointer"
+            <button
+                class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg"
                 onclick="closeModal('modalDetailKendala')">Tutup</button>
-            <button class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs cursor-pointer"
+            <button
+                class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg"
                 onclick="openModalBukaKunci()">Buka Kunci</button>
         </div>
     </div>
@@ -99,10 +105,12 @@
                 class="text-[#FF4747] font-semibold"></span> ini?</p>
 
         <div class="flex justify-center w-full mt-4 space-x-2">
-            <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs cursor-pointer"
+            <button
+                class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg"
                 onclick="closeModal('modalBukaKunci')">Tidak, Kembali</button>
             <button onclick="resolveKendala()"
-                class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs cursor-pointer">Buka Kunci</button>
+                class="w-full bg-[#FF4747] text-white px-4 py-2 rounded text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">Buka
+                Kunci</button>
         </div>
     </div>
 </div>
@@ -113,7 +121,7 @@
             class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414z"
                     clip-rule="evenodd" />
             </svg>
         </button>
@@ -129,9 +137,12 @@
         <p class="mt-3 text-sm">Apakah Anda yakin ingin memulai billing dengan Paket Ini?</p>
 
         <div class="justify-center w-full mt-4 space-x-2">
-            <button class="w-full bg-[#3E81AB] text-white px-4 py-2 rounded mr-2 text-xs mb-2" id="btnTambahBilling"
-                onclick="closeModal('modalDetailPaket'); openModalPilihPaket(true)">Tambah Billing</button>
-            <button id="btnStop" class="w-full bg-[#FB2C36] text-white px-4 py-2 rounded text-xs cursor-pointer"
+            <button
+                class="w-full bg-[#3E81AB] text-white px-4 py-2 rounded mr-2 text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg mb-2"
+                id="btnTambahBilling" onclick="closeModal('modalDetailPaket'); openModalPilihPaket(true)">Tambah
+                Billing</button>
+            <button id="btnStop"
+                class="w-full bg-[#FB2C36] text-white px-4 py-2 rounded text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg"
                 onclick="stopDevice()">STOP</button>
         </div>
     </div>
@@ -155,15 +166,15 @@
 
         <div class="flex flex-col gap-3">
             <button onclick="endShiftAndLogout()"
-                class="w-full bg-[#3E81AB] hover:bg-[#2C5F7C] text-white px-4 py-2 rounded text-sm cursor-pointer">
+                class="w-full bg-[#3E81AB] hover:bg-[#2C5F7C] text-white px-4 py-2 rounded text-sm cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">
                 Tutup Buku & Keluar
             </button>
             <button onclick="forceLogout()"
-                class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm cursor-pointer">
+                class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">
                 Lanjutkan Keluar
             </button>
             <button onclick="closeLogoutModal()"
-                class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm cursor-pointer">
+                class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">
                 Batal
             </button>
         </div>
@@ -195,9 +206,11 @@
         </div>
 
         <div class="flex justify-end mt-4">
-            <button class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs cursor-pointer"
+            <button
+                class="bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded mr-2 text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg"
                 onclick="closeModal('modalPilihPaket')">Batal</button>
-            <button class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs cursor-pointer"
+            <button
+                class="bg-[#3E81AB] text-white px-4 py-2 rounded text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg"
                 onclick="openModalKonfirmasi()">Lanjut</button>
         </div>
     </div>
@@ -217,10 +230,11 @@
         <p class="mt-3 text-sm">Apakah Anda yakin ingin memulai billing dengan Paket Ini?</p>
 
         <div class="flex justify-center w-full mt-4 space-x-2">
-            <button class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs cursor-pointer"
+            <button
+                class="w-full bg-[#C6C6C6] text-[#4E4E4E] px-4 py-2 rounded text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg"
                 onclick="closeModal('modalKonfirmasi')">Batal</button>
             <button id="btnKonfirmasi"
-                class="w-full bg-[#64DF64] text-white px-4 py-2 rounded text-xs cursor-pointer">Mulai</button>
+                class="w-full bg-[#64DF64] text-white px-4 py-2 rounded text-xs cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">Mulai</button>
         </div>
     </div>
 </div>

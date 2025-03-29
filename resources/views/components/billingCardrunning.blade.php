@@ -5,7 +5,7 @@
     $start_time = $device->last_used_at ? \Carbon\Carbon::parse($device->last_used_at)->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s');
 @endphp
 
-<div class="relative bg-white shadow-md rounded-lg p-4 flex flex-col billing-card-running" 
+<div class="relative bg-white shadow-md rounded-lg p-4 flex flex-col billing-card-running"
      data-device-id="{{ $device->id }}"
      data-shutdown-time="{{ $shutdown_time }}"
      data-status="{{ $device->status }}"
@@ -20,8 +20,8 @@
         </p>
     </div>
     <button
-        class="text-xs mt-auto bg-[#3E81AB] text-white font-extrabold py-2 rounded-lg w-full cursor-pointer btn-detail-billing"
-        onclick="openModalDetailPaket('{{ $device->id }}', '{{ $device->name }}', '{{ $formatted_time }}', '{{ $device->package }}', '{{ $shutdown_time }}', '{{ $device->last_used_at }}')" 
+        class="text-xs mt-auto bg-[#3E81AB] text-white font-extrabold py-2 rounded-lg w-full cursor-pointer btn-detail-billing transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg"
+        onclick="openModalDetailPaket('{{ $device->id }}', '{{ $device->name }}', '{{ $formatted_time }}', '{{ $device->package }}', '{{ $shutdown_time }}', '{{ $device->last_used_at }}')"
         data-device-id="{{ $device->id }}"
         data-start-time="{{ $start_time }}">
         DETAIL

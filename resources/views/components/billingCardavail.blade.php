@@ -12,9 +12,9 @@
             <p class="text-[#364153] font-bold text-xs mt-2 mb-4">Tersedia</p>
         @elseif($device->status === 'Pending')
             <p class="text-[#364153] font-bold text-xs mt-2 mb-4">Pending</p>
-            <button 
+            <button
                 class="text-xs mt-auto bg-[#364153] text-white font-extrabold py-2 rounded-lg w-full cursor-pointer btn-start-billing"
-                onclick="restartBilling('{{ $device->id }}')" 
+                onclick="restartBilling('{{ $device->id }}')"
                 data-device-id="{{ $device->id }}">
                 Lanjutkan Billing
             </button>
@@ -23,9 +23,9 @@
         @endif
     </div>
     @if($device->status === 'Tersedia')
-        <button 
-            class="text-xs mt-auto bg-[#364153] text-white font-extrabold py-2 rounded-lg w-full cursor-pointer btn-start-billing"
-            onclick="openModalPilihPaket(false, '{{ $device->id }}')" 
+        <button
+            class="text-xs mt-auto bg-[#364153] text-white font-extrabold py-2 rounded-lg w-full cursor-pointer btn-start-billing transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg"
+            onclick="openModalPilihPaket(false, '{{ $device->id }}')"
             data-device-id="{{ $device->id }}">
             MULAI
         </button>

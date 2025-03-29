@@ -331,7 +331,6 @@
             if (currentShiftElement) {
                 // Gunakan data dari server-side
                 const hasActiveShift = currentShiftElement.getAttribute('data-shift-active') === '1';
-                updateShiftStatus(hasActiveShift);
                 return;
             }
 
