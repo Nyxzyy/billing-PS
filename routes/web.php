@@ -52,6 +52,7 @@ Route::middleware('auth')->get('/server-time', function() {
 Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('kasir.dashboard');
+    Route::get('/current-time', [DashboardController::class, 'getCurrentTime']); // Add this line
 
     // Billing Management
     Route::controller(BillingPageKasirController::class)->group(function () {

@@ -13,7 +13,8 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="text-[#565656]">Hari ini,</p>
-                        <p id="currentTime" class="text-lg md:text-xl font-bold">{{ $today }}</p>
+                        <p id="currentDate" class="text-lg md:text-xl font-bold"></p>
+                        <p id="currentTime" class="text-sm text-gray-500"></p>
                     </div>
                     <div class="bg-[#3E81AB] text-white p-2 rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -153,4 +154,22 @@
     </div>
 @endsection
 
-<script></script>
+@push('scripts')
+    <script>
+        // Update time function
+        function updateTime() {
+            fetch('/kasir/current-time')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('currentTime').innerText = data.time;
+                    document.getElementById('currentDate').innerText = data.date;
+                });
+        }
+
+        // Update time every second
+        setInterval(updateTime, 1000);
+
+        // Initial call
+        updateTime();
+    </script>
+@endpush

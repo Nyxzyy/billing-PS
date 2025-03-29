@@ -27,4 +27,12 @@ class DashboardController extends Controller
             'pendingDevices' => $pendingDevices
         ]);
     }
+
+    public function getCurrentTime()
+    {
+        return response()->json([
+            'time' => Carbon::now()->format('H:i:s'),
+            'date' => Carbon::now()->isoFormat('dddd, D MMMM Y')
+        ]);
+    }
 }
