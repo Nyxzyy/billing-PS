@@ -1,3 +1,10 @@
+<style>
+    .processing {
+        opacity: 0.7;
+        cursor: not-allowed !important;
+    }
+</style>
+
 {{-- Modal Mulai Shift --}}
 <div id="modalMulaiShift" class="invisible fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
     <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md">
@@ -434,7 +441,7 @@
             btnKonfirmasi.innerHTML = isTambahBilling ? "Print Struk dan Tambah" : "Print Struk dan Mulai";
         }
 
-        // Start Billing 
+        // Start Billing
         document.addEventListener("DOMContentLoaded", function() {
             let btnKonfirmasi = document.getElementById("btnKonfirmasi");
 
@@ -442,6 +449,12 @@
         });
 
         function confirmPackage() {
+            const btnKonfirmasi = document.querySelector("#btnKonfirmasi");
+
+            if (btnKonfirmasi.disabled || btnKonfirmasi.classList.contains('processing')) {
+                return;
+            }
+
             const deviceId = document.querySelector("#btnKonfirmasi").getAttribute("data-device-id");
             const packageId = document.querySelector("#btnKonfirmasi").getAttribute("data-package-id");
             const isOpen = document.querySelector("#btnKonfirmasi").getAttribute("data-is-open") === "true";
@@ -451,6 +464,14 @@
                 alert("Device ID tidak ditemukan!");
                 return;
             }
+
+            // Disable tombol dan tambah class processing
+            btnKonfirmasi.disabled = true;
+            btnKonfirmasi.classList.add('processing');
+
+            // Ubah text tombol
+            const originalText = btnKonfirmasi.innerHTML;
+            btnKonfirmasi.innerHTML = 'Memproses...';
 
             // Tentukan URL berdasarkan apakah menambah waktu atau memulai billing baru
             const url = isAdding ? '/kasir/billing/add' : '/kasir/billing/start';
@@ -478,9 +499,7 @@
                 })
                 .then(data => {
                     if (data.status === 'Berjalan') {
-                        // Jika bukan Open Billing dan transaksi berhasil dibuat
                         if (!isOpen && data.transaction_id) {
-                            // Buka struk di window baru
                             const receiptUrl = `/kasir/print-receipt/${data.transaction_id}`;
                             const receiptWindow = window.open(
                                 receiptUrl,
@@ -495,10 +514,8 @@
                             }
                         }
 
-                        // Tutup popup
                         closeModal('modalKonfirmasi');
 
-                        // Tampilkan pesan sukses
                         const message = isAdding ?
                             "Billing berhasil ditambahkan!" :
                             "Billing berhasil dimulai!";
@@ -515,7 +532,6 @@
                             alert(message);
                         }
 
-                        // Refresh halaman setelah delay singkat
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
@@ -526,10 +542,14 @@
                 .catch(error => {
                     console.error('Error:', error);
                     alert(error.message || 'Terjadi kesalahan saat memulai billing. Silakan coba lagi.');
+                })
+                .finally(() => {
+                    btnKonfirmasi.disabled = false;
+                    btnKonfirmasi.classList.remove('processing');
+                    btnKonfirmasi.innerHTML = originalText;
                 });
         }
 
-        // Add event listener for confirmation button
         document.addEventListener("DOMContentLoaded", function() {
             const btnKonfirmasi = document.getElementById("btnKonfirmasi");
             if (btnKonfirmasi) {
@@ -538,7 +558,6 @@
         });
 
         function openModalDetailPaket(deviceId, deviceName, shutdownTime, packageName, fullShutdownTime, lastUsedAt) {
-            // Clear any existing intervals
             Object.keys(timerIntervals).forEach(key => {
                 clearInterval(timerIntervals[key]);
                 delete timerIntervals[key];
