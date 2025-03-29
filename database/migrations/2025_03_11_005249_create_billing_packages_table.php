@@ -17,7 +17,9 @@ return new class extends Migration
             $table->integer('duration_hours');
             $table->integer('duration_minutes');
             $table->decimal('total_price', 10, 2);
-            $table->text('active_days'); // Ubah dari SET ke TEXT
+            $table->text('active_days');
+            $table->time('active_hours_start');
+            $table->time('active_hours_end');
             $table->timestamps();
         });
     }

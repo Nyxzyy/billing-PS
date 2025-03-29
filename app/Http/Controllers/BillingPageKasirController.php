@@ -21,7 +21,7 @@ class BillingPageKasirController extends Controller
             preg_match('/(\d+)/', $device->name, $matches);
             return $matches[1] ?? $device->name;
         });
-        
+
         $dayNames = [
             1 => 'Senin',
             2 => 'Selasa',
@@ -31,13 +31,32 @@ class BillingPageKasirController extends Controller
             6 => 'Sabtu',
             7 => 'Minggu'
         ];
-        
+
         $currentDay = Carbon::now()->dayOfWeek;
         if ($currentDay == 0) $currentDay = 7;
         $currentDayName = $dayNames[$currentDay];
-        
-        $packages = BillingPackage::whereJsonContains('active_days', $currentDayName)->get();
-        
+
+        $currentTime = Carbon::now();
+        $currentTimeString = $currentTime->format('H:i:s');
+
+        $packages = BillingPackage::whereJsonContains('active_days', $currentDayName)
+            ->where(function($query) use ($currentTimeString) {
+                $query->where(function($q) use ($currentTimeString) {
+                    // Kasus normal (tidak melewati tengah malam)
+                    $q->where('active_hours_start', '<=', $currentTimeString)
+                      ->where('active_hours_end', '>=', $currentTimeString);
+                })
+                ->orWhere(function($q) use ($currentTimeString) {
+                    // Kasus melewati tengah malam
+                    $q->where('active_hours_start', '>', 'active_hours_end')
+                      ->where(function($sq) use ($currentTimeString) {
+                          $sq->where('active_hours_start', '<=', $currentTimeString)
+                             ->orWhere('active_hours_end', '>=', $currentTimeString);
+                      });
+                });
+            })
+            ->get();
+
         return view('kasir.billing', compact('devices', 'packages'));
     }
 
@@ -81,10 +100,10 @@ class BillingPageKasirController extends Controller
 
             $additionalMinutes = ($package->duration_hours * 60) + $package->duration_minutes;
             $currentTime = Carbon::now();
-            
+
             if ($device->shutdown_time) {
                 $shutdownTime = Carbon::parse($device->shutdown_time);
-                
+
                 if ($request->is_adding && $shutdownTime->isFuture()) {
                     \Log::info('Adding time to existing future shutdown time');
                     $newShutdownTime = $shutdownTime->copy()->addMinutes($additionalMinutes);
@@ -134,7 +153,7 @@ class BillingPageKasirController extends Controller
                 DB::rollback();
                 throw $e;
             }
-            
+
         } catch (\Exception $e) {
             \Log::error('Add Billing Error:', [
                 'message' => $e->getMessage(),
@@ -191,7 +210,7 @@ class BillingPageKasirController extends Controller
                         'status' => 'error'
                     ], 404);
                 }
-                
+
                 $packageTime = ($package->duration_hours * 60) + $package->duration_minutes;
                 $newShutdownTime = $currentTime->copy()->addMinutes($packageTime);
                 $packageName = $package->package_name;
@@ -265,7 +284,7 @@ class BillingPageKasirController extends Controller
             ]);
 
             $device = Device::find($request->device_id);
-            
+
             if (!$device) {
                 return response()->json([
                     'message' => 'Device tidak ditemukan',
@@ -283,15 +302,15 @@ class BillingPageKasirController extends Controller
                 // Calculate duration and price for open billing
                 $startTime = Carbon::parse($transaction->start_time);
                 $endTime = Carbon::now();
-                
+
                 // Pastikan endTime selalu lebih besar dari startTime
                 if ($endTime->lt($startTime)) {
                     $endTime = $startTime->copy();
                 }
-                
+
                 // Hitung durasi dalam menit (absolute value)
                 $duration = abs($startTime->diffInMinutes($endTime));
-                
+
                 // If this is an open billing, calculate the price
                 if ($transaction->package_name === 'Open Billing') {
                     // Get the billing settings
@@ -305,12 +324,12 @@ class BillingPageKasirController extends Controller
 
                     // Calculate total price based on duration
                     $totalPrice = 0;
-                    
+
                     // Jika durasi 0 menit (kurang dari 1 menit), tetap hitung sebagai 1 menit
                     if ($duration == 0) {
                         $duration = 1;
                     }
-                    
+
                     // If duration is less than or equal to 60 minutes
                     if ($duration <= 60) {
                         // Hitung berapa blok yang digunakan, minimal 1 blok
@@ -320,7 +339,7 @@ class BillingPageKasirController extends Controller
                         // Calculate full hours
                         $fullHours = floor($duration / 60);
                         $totalPrice += $fullHours * $billingOpen->price_per_hour;
-                        
+
                         // Calculate remaining minutes
                         $remainingMinutes = $duration % 60;
                         if ($remainingMinutes > 0) {
@@ -333,7 +352,7 @@ class BillingPageKasirController extends Controller
                     // Cek apakah ada promo yang berlaku
                     $hours = floor($duration / 60);
                     $minutes = $duration % 60;
-                    
+
                     $applicablePromo = OpenBillingPromo::where(function($query) use ($hours, $minutes) {
                         $query->where('min_hours', '<=', $hours)
                               ->where(function($q) use ($hours, $minutes) {
@@ -398,7 +417,7 @@ class BillingPageKasirController extends Controller
                 if ($transaction->package_name === 'Open Billing') {
                     $billingOpen = BillingOpen::first();
                     $duration = Carbon::parse($transaction->start_time)->diffInMinutes(now());
-                    
+
                     // Calculate original price
                     $originalPrice = 0;
                     if ($duration <= 60) {
@@ -407,7 +426,7 @@ class BillingPageKasirController extends Controller
                     } else {
                         $fullHours = floor($duration / 60);
                         $originalPrice = $fullHours * $billingOpen->price_per_hour;
-                        
+
                         $remainingMinutes = $duration % 60;
                         if ($remainingMinutes > 0) {
                             $blocks = max(1, ceil($remainingMinutes / $billingOpen->minute_count));
@@ -517,7 +536,7 @@ class BillingPageKasirController extends Controller
 
                     $now = Carbon::now();
                     $shutdownTime = Carbon::parse($device->shutdown_time);
-                    
+
                     // If billing time has expired, don't allow restart
                     if ($now->gt($shutdownTime)) {
                         return response()->json([
@@ -544,14 +563,14 @@ class BillingPageKasirController extends Controller
 
             // Update device status
             $device->status = $request->status;
-            
+
             // Clear billing info if status is Tersedia
             if ($request->status === 'Tersedia') {
                 $device->package = null;
                 $device->shutdown_time = null;
                 $device->last_used_at = null;
             }
-            
+
             $device->save();
 
             \Log::info('Device status updated:', [

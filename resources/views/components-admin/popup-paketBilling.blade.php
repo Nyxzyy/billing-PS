@@ -52,6 +52,18 @@
                         class="w-full border rounded py-2 text-sm text-black cursor-pointer hover:bg-[#3E81AB] hover:text-white hover:border-[#3E81AB]"
                         onclick="selectAllDays('add')">Semua Hari</button>
                 </div>
+
+                <label class="text-sm font-medium text-[#656565]">Jam Aktif</label>
+                <div class="flex gap-2">
+                    <div class="w-1/2">
+                        <input type="time" name="active_hours_start"
+                            class="border rounded p-2 w-full text-sm text-black" required>
+                    </div>
+                    <div class="w-1/2">
+                        <input type="time" name="active_hours_end"
+                            class="border rounded p-2 w-full text-sm text-black" required>
+                    </div>
+                </div>
             </div>
 
             <div class="flex justify-end mt-4">
@@ -120,6 +132,18 @@
                         class="w-full border rounded py-2 text-sm text-black cursor-pointer hover:bg-[#3E81AB] hover:text-white hover:border-[#3E81AB]"
                         onclick="selectAllDays('edit')">Semua Hari</button>
                 </div>
+
+                <label class="text-sm font-medium text-[#656565]">Jam Aktif</label>
+                <div class="flex gap-2">
+                    <div class="w-1/2">
+                        <input type="time" name="active_hours_start" id="edit_active_hours_start"
+                            class="border rounded p-2 w-full text-sm text-black" required>
+                    </div>
+                    <div class="w-1/2">
+                        <input type="time" name="active_hours_end" id="edit_active_hours_end"
+                            class="border rounded p-2 w-full text-sm text-black" required>
+                    </div>
+                </div>
             </div>
 
             <div class="flex justify-between mt-4">
@@ -159,7 +183,7 @@
 
 <script>
     function openModal(modalToShow, id = null, name = '', hours = 0, minutes = 0, price = 0, active_days = [],
-        modalToHide = null) {
+        modalToHide = null, active_hours_start = '', active_hours_end = '') {
         if (modalToHide) {
             document.getElementById(modalToHide).classList.add("invisible");
         }
@@ -209,11 +233,42 @@
             document.getElementById('deletePackageName').textContent = name;
             document.getElementById('deletePackageForm').action =
                 `{{ url('/admin/billingPackages/billing-packages') }}/${id}`;
+
+            // Set jam aktif
+            document.getElementById('edit_active_hours_start').value = active_hours_start;
+            document.getElementById('edit_active_hours_end').value = active_hours_end;
         }
     }
 
     function closeModal(modalToHide) {
         document.getElementById(modalToHide).classList.add("invisible");
+
+        // Reset state tombol hari jika yang ditutup adalah modal edit atau add
+        if (modalToHide === 'modalEditPaket' || modalToHide === 'modalAddPaket') {
+            const formType = modalToHide === 'modalEditPaket' ? 'edit' : 'add';
+            const formId = formType === 'edit' ? 'editPackageForm' : 'addPackageForm';
+            const prefix = formType === 'edit' ? 'edit_day_' : 'add_day_';
+            const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
+            // Reset semua input hidden
+            days.forEach(day => {
+                const input = document.getElementById(prefix + day);
+                if (input) {
+                    input.disabled = true;
+                }
+            });
+
+            // Reset semua tombol hari
+            document.querySelectorAll(`#${formId} .day-btn`).forEach(button => {
+                button.classList.remove('bg-[#3E81AB]', 'text-white');
+            });
+
+            // Reset form jika ada
+            const form = document.getElementById(formId);
+            if (form) {
+                form.reset();
+            }
+        }
     }
 
     function toggleDay(day, formType) {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\BillingPackage;
+use Carbon\Carbon;
 
 class BillingPackageController extends Controller
 {
@@ -55,15 +56,32 @@ class BillingPackageController extends Controller
             'total_price'       => 'required|numeric|min:0',
             'active_days'       => 'required|array',
             'active_days.*'     => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'active_hours_start' => 'required|date_format:H:i',
+            'active_hours_end'   => [
+                'required',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) use ($request) {
+                    $start = Carbon::createFromFormat('H:i', $request->active_hours_start);
+                    $end = Carbon::createFromFormat('H:i', $value);
+
+                    // Jika jam akhir lebih kecil dari jam mulai, berarti melewati tengah malam
+                    if ($end < $start) {
+                        // Tambahkan 24 jam ke jam akhir untuk perhitungan
+                        $end->addDay();
+                    }
+                },
+            ],
         ]);
 
         try {
             BillingPackage::create([
-                'package_name'     => $request->package_name,
-                'duration_hours'   => $request->duration_hours,
-                'duration_minutes' => $request->duration_minutes,
-                'total_price'      => $request->total_price,
-                'active_days'      => $request->active_days,
+                'package_name'       => $request->package_name,
+                'duration_hours'     => $request->duration_hours,
+                'duration_minutes'   => $request->duration_minutes,
+                'total_price'        => $request->total_price,
+                'active_days'        => $request->active_days,
+                'active_hours_start' => $request->active_hours_start,
+                'active_hours_end'   => $request->active_hours_end,
             ]);
 
             return redirect()->route('admin.paketBilling')
@@ -113,15 +131,32 @@ class BillingPackageController extends Controller
             'total_price'       => 'required|numeric|min:0',
             'active_days'       => 'required|array',
             'active_days.*'     => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'active_hours_start' => 'required|date_format:H:i',
+            'active_hours_end'   => [
+                'required',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) use ($request) {
+                    $start = Carbon::createFromFormat('H:i', $request->active_hours_start);
+                    $end = Carbon::createFromFormat('H:i', $value);
+
+                    // Jika jam akhir lebih kecil dari jam mulai, berarti melewati tengah malam
+                    if ($end < $start) {
+                        // Tambahkan 24 jam ke jam akhir untuk perhitungan
+                        $end->addDay();
+                    }
+                },
+            ],
         ]);
 
         try {
             $package->update([
-                'package_name'     => $request->package_name,
-                'duration_hours'   => $request->duration_hours,
-                'duration_minutes' => $request->duration_minutes,
-                'total_price'      => $request->total_price,
-                'active_days'      => $request->active_days,
+                'package_name'       => $request->package_name,
+                'duration_hours'     => $request->duration_hours,
+                'duration_minutes'   => $request->duration_minutes,
+                'total_price'        => $request->total_price,
+                'active_days'        => $request->active_days,
+                'active_hours_start' => $request->active_hours_start,
+                'active_hours_end'   => $request->active_hours_end,
             ]);
 
             return redirect()->route('admin.paketBilling')

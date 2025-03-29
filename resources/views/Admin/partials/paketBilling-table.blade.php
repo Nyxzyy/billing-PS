@@ -7,6 +7,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Durasi</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Harga (Rp)</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Hari Aktif</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Jam Aktif</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
         </tr>
     </thead>
@@ -32,9 +33,13 @@
                         {{ json_decode($package->active_days) ? implode(', ', json_decode($package->active_days)) : '' }}
                     @endif
                 </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    {{ \Carbon\Carbon::parse($package->active_hours_start)->format('H:i') }} -
+                    {{ \Carbon\Carbon::parse($package->active_hours_end)->format('H:i') }}
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                     <button
-                        onclick="openModal('modalEditPaket', {{ $package->id }}, '{{ $package->package_name }}', {{ $package->duration_hours }}, {{ $package->duration_minutes }}, {{ $package->total_price }}, {{ json_encode($package->active_days) }})"
+                        onclick="openModal('modalEditPaket', {{ $package->id }}, '{{ $package->package_name }}', {{ $package->duration_hours }}, {{ $package->duration_minutes }}, {{ $package->total_price }}, {{ json_encode($package->active_days) }}, null, '{{ $package->active_hours_start }}', '{{ $package->active_hours_end }}')"
                         class="text-[#3E81AB] hover:text-[#2C5F7C] font-medium flex items-center gap-1 cursor-pointer">
                         Edit
                     </button>

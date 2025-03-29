@@ -10,7 +10,15 @@ class BillingPackage extends Model
     use HasFactory;
 
     protected $table = 'billing_packages';
-    protected $fillable = ['package_name', 'duration_hours', 'duration_minutes', 'total_price', 'active_days'];
+    protected $fillable = [
+        'package_name',
+        'duration_hours',
+        'duration_minutes',
+        'total_price',
+        'active_days',
+        'active_hours_start',
+        'active_hours_end'
+    ];
 
     protected $casts = [
         'active_days' => 'array',

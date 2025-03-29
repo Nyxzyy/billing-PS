@@ -19,8 +19,8 @@ class DeviceSeeder extends Seeder
             ['name' => 'Device 6', 'ip_address' => '192.168.1.6', 'location' => 'Ruang IT', 'status' => 'Tersedia'],
             ['name' => 'Device 7', 'ip_address' => '192.168.1.7', 'location' => 'Lobby', 'status' => 'Tersedia'],
             ['name' => 'Device 8', 'ip_address' => '192.168.1.8', 'location' => 'Kantor Utama', 'status' => 'Tersedia'],
-            ['name' => 'Device 9', 'ip_address' => '192.168.1.9', 'location' => 'Lab', 'status' => 'Maintenance'],
-            ['name' => 'Device 10', 'ip_address' => '192.168.1.10', 'location' => 'Workshop', 'status' => 'Maintenance'],
+            ['name' => 'Device 9', 'ip_address' => '192.168.1.9', 'location' => 'Lab', 'status' => 'Tersedia'],
+            ['name' => 'Device 10', 'ip_address' => '192.168.1.10', 'location' => 'Workshop', 'status' => 'Tersedia'],
         ];
 
         foreach ($devices as &$device) {
