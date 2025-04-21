@@ -122,31 +122,47 @@ class BillingPageKasirController extends Controller
                 $transaction = TransactionReport::create([
                     'device_id' => $device->id,
                     'user_id' => Auth::id(),
-                    'package_name' => $package->package_name,
-                    'package_time' => $additionalMinutes,
+                    'package_name' => $packageName,
+                    'package_time' => $packageTime,
                     'start_time' => $currentTime,
                     'end_time' => $newShutdownTime,
-                    'total_price' => $package->total_price
+                    'total_price' => $totalPrice
                 ]);
 
                 // Update device status
                 $device->status = 'Berjalan';
-                $device->package = $package->package_name;
+                $device->package = $packageName;
                 $device->shutdown_time = $newShutdownTime;
                 $device->last_used_at = $currentTime;
                 $device->save();
 
                 // Update shift totals
                 $currentShift->increment('total_transactions');
-                $currentShift->increment('total_revenue', $package->total_price);
+                $currentShift->increment('total_revenue', $totalPrice);
 
                 DB::commit();
 
+                // Panggil FastAPI untuk mengaktifkan perangkat (action on)
+                try {
+                    $client = new Client();
+                    $response = $client->post('http://127.0.0.1:8001/api/tapo/control', [
+                        'json' => [
+                            'action' => 'on',
+                            'ip_address' => $device->ip_address // Pastikan field ini ada di model Device
+                        ]
+                    ]);
+                    \Log::info('Perintah ON berhasil dikirim ke FastAPI', [
+                        'response' => $response->getBody()->getContents()
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Gagal mengirim perintah ON ke FastAPI', ['error' => $e->getMessage()]);
+                }
+
                 return response()->json([
-                    'message' => 'Billing berhasil ditambahkan',
+                    'message' => 'Billing berhasil dimulai',
                     'status' => 'Berjalan',
                     'transaction_id' => $transaction->id,
-                    'shutdown_time' => $newShutdownTime->toIso8601String()
+                    'shutdown_time' => $newShutdownTime ? $newShutdownTime->toIso8601String() : null
                 ]);
 
             } catch (\Exception $e) {
@@ -155,12 +171,12 @@ class BillingPageKasirController extends Controller
             }
 
         } catch (\Exception $e) {
-            \Log::error('Add Billing Error:', [
+            \Log::error('Start Billing Error:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
             return response()->json([
-                'message' => 'Terjadi kesalahan saat menambah billing',
+                'message' => 'Terjadi kesalahan saat memulai billing',
                 'status' => 'error'
             ], 500);
         }
@@ -284,7 +300,6 @@ class BillingPageKasirController extends Controller
             ]);
 
             $device = Device::find($request->device_id);
-
             if (!$device) {
                 return response()->json([
                     'message' => 'Device tidak ditemukan',
@@ -292,28 +307,38 @@ class BillingPageKasirController extends Controller
                 ], 404);
             }
 
-            // Get the latest transaction for this device
+            $now = Carbon::now();
+            // Jika perangkat memiliki shutdown_time dan waktu sekarang sudah lebih besar atau sama,
+            // maka kita anggap paket telah habis tanpa menunggu konfirmasi.
+            if ($device->shutdown_time && $now->gte(Carbon::parse($device->shutdown_time))) {
+                \Log::info("Waktu paket habis, proses finishBilling otomatis dijalankan tanpa konfirmasi.");
+            }
+
+            // Ambil transaksi terakhir yang belum selesai untuk perangkat ini
             $transaction = TransactionReport::where('device_id', $device->id)
                 ->whereNull('end_time')
                 ->latest()
                 ->first();
 
             if ($transaction) {
-                // Calculate duration and price for open billing
-                $startTime = Carbon::parse($transaction->start_time);
-                $endTime = Carbon::now();
+                // Jika shutdown_time ada dan waktu sudah habis, gunakan shutdown_time sebagai end_time
+                if ($device->shutdown_time && $now->gte(Carbon::parse($device->shutdown_time))) {
+                    $endTime = Carbon::parse($device->shutdown_time);
+                } else {
+                    $endTime = $now;
+                }
 
-                // Pastikan endTime selalu lebih besar dari startTime
+                // Pastikan endTime tidak kurang dari startTime
+                $startTime = Carbon::parse($transaction->start_time);
                 if ($endTime->lt($startTime)) {
                     $endTime = $startTime->copy();
                 }
 
-                // Hitung durasi dalam menit (absolute value)
+                // Hitung durasi billing
                 $duration = abs($startTime->diffInMinutes($endTime));
 
-                // If this is an open billing, calculate the price
+                // Proses perhitungan untuk Open Billing
                 if ($transaction->package_name === 'Open Billing') {
-                    // Get the billing settings
                     $billingOpen = BillingOpen::first();
                     if (!$billingOpen) {
                         return response()->json([
@@ -322,37 +347,28 @@ class BillingPageKasirController extends Controller
                         ], 400);
                     }
 
-                    // Calculate total price based on duration
                     $totalPrice = 0;
-
-                    // Jika durasi 0 menit (kurang dari 1 menit), tetap hitung sebagai 1 menit
                     if ($duration == 0) {
                         $duration = 1;
                     }
 
-                    // If duration is less than or equal to 60 minutes
                     if ($duration <= 60) {
-                        // Hitung berapa blok yang digunakan, minimal 1 blok
                         $blocks = max(1, ceil($duration / $billingOpen->minute_count));
                         $totalPrice = $blocks * $billingOpen->price_per_minute;
                     } else {
-                        // Calculate full hours
                         $fullHours = floor($duration / 60);
                         $totalPrice += $fullHours * $billingOpen->price_per_hour;
 
-                        // Calculate remaining minutes
                         $remainingMinutes = $duration % 60;
                         if ($remainingMinutes > 0) {
-                            // Hitung berapa blok yang digunakan untuk sisa menit, minimal 1 blok
                             $blocks = max(1, ceil($remainingMinutes / $billingOpen->minute_count));
                             $totalPrice += $blocks * $billingOpen->price_per_minute;
                         }
                     }
 
-                    // Cek apakah ada promo yang berlaku
+                    // Cek promo jika ada
                     $hours = floor($duration / 60);
                     $minutes = $duration % 60;
-
                     $applicablePromo = OpenBillingPromo::where(function($query) use ($hours, $minutes) {
                         $query->where('min_hours', '<=', $hours)
                               ->where(function($q) use ($hours, $minutes) {
@@ -363,10 +379,8 @@ class BillingPageKasirController extends Controller
                     ->orderBy('discount_price', 'desc')
                     ->first();
 
-                    // Terapkan diskon jika ada
                     if ($applicablePromo) {
                         $totalPrice -= $applicablePromo->discount_price;
-                        // Pastikan harga tidak minus
                         $totalPrice = max(0, $totalPrice);
                     }
 
