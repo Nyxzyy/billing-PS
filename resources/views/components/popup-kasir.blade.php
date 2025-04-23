@@ -6,29 +6,13 @@
 </style>
 
 {{-- Modal Mulai Shift --}}
-<div id="modalMulaiShift" class="invisible fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-md">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold">Mulai Shift Kerja</h2>
-            <button type="button" onclick="closeShiftModal()" class="text-gray-400 hover:text-gray-600 cursor-pointer">
-                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-
-        <p class="text-sm text-gray-600 mb-6">Selamat datang, {{ Auth::user()->name }}! Silakan mulai shift untuk
-            memulai transaksi hari ini.</p>
-
-        <div class="flex flex-col gap-3">
+<div id="modalMulaiShift" class="invisible fixed bottom-4 right-4 z-50">
+    <div class="bg-white p-4 rounded-lg shadow-lg w-72">
+        <div class="flex flex-col">
+            <p class="text-sm text-gray-600 mb-4">Selamat datang, {{ Auth::user()->name }}!</p>
             <button onclick="startShift()"
                 class="w-full bg-[#3E81AB] text-white px-4 py-2 rounded text-sm cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">
                 Mulai Shift
-            </button>
-            <button onclick="closeShiftModal()"
-                class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded text-sm cursor-pointer transition duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">
-                Nanti Saja
             </button>
         </div>
     </div>
@@ -1029,6 +1013,38 @@
                     alert(error.message || 'Terjadi kesalahan saat menyelesaikan billing. Silakan coba lagi.');
                 });
         }
+
+        function checkShiftStatus() {
+            fetch('{{ route('shift.check') }}')
+                .then(response => response.json())
+                .then(data => {
+                    const modalMulaiShift = document.getElementById('modalMulaiShift');
+                    if (!data.hasActiveShift) {
+                        modalMulaiShift.classList.remove("invisible");
+                    } else {
+                        modalMulaiShift.classList.add("invisible");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('error', 'Terjadi kesalahan saat memeriksa status shift');
+                });
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            #modalMulaiShift {
+                transition: opacity 0.3s ease-in-out;
+            }
+            #modalMulaiShift.invisible {
+                opacity: 0;
+                pointer-events: none;
+            }
+            #modalMulaiShift:not(.invisible) {
+                opacity: 1;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 
     <script>
