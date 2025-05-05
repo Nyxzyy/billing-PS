@@ -26,3 +26,17 @@
 
     @include('components.popup-kasir', ['packages' => $packages])
 @endsection
+@push('scripts')
+    <script>
+        setInterval(() => {
+            fetch('/kasir/auto-shutdown')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.message); // Optional, buat debug
+                })
+                .catch(err => {
+                    console.error('Error checking shutdown:', err);
+                });
+        }, 60000); // Setiap 60 detik (1 menit)
+    </script>
+@endpush
