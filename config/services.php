@@ -14,6 +14,11 @@ return [
     |
     */
 
+    'tapo' => [
+        'email'    => env('TAPO_EMAIL'),
+        'password' => env('TAPO_PASSWORD'),
+    ],
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],

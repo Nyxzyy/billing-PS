@@ -165,3 +165,8 @@ Route::prefix('log-activity')->middleware('auth')->controller(LogActivityControl
     Route::get('/', 'adminIndex')->name('admin.logActivity');
     Route::get('/admin/log-activity/search', [LogActivityController::class, 'search'])->name('admin.logActivity.search');
 });
+use App\Http\Controllers\TapoController;
+
+Route::post('/control-plug', [TapoController::class, 'controlPlug']);
+// web.php
+Route::get('/kasir/auto-shutdown', [BillingPageKasirController::class, 'checkAndShutdown'])->name('kasir.autoShutdown');
