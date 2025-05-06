@@ -24,7 +24,7 @@
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
                         <div id="logsTable">
-                            @include('Admin.partials.log-table', ['logs' => $logs])
+                            @include('admin.partials.log-table', ['logs' => $logs])
                         </div>
                     </div>
                 </div>

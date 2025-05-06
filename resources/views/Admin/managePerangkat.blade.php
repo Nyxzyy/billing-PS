@@ -41,7 +41,7 @@
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
                         <div id="deviceTable">
-                            @include('Admin.partials.managePerangkat-table', ['devices' => $devices])
+                            @include('admin.partials.managePerangkat-table', ['devices' => $devices])
                         </div>
                     </div>
                 </div>

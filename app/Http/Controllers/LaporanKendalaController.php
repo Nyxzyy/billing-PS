@@ -44,7 +44,7 @@ class LaporanKendalaController extends Controller
         $kendalaReports = $query->paginate(10);
 
         return response()->json([
-            'html' => view('Admin.partials.kendala-table', compact('kendalaReports'))->render(),
+            'html' => view('admin.partials.kendala-table', compact('kendalaReports'))->render(),
             'total_kendala' => $totalKendala,
             'pagination' => (string) $kendalaReports->appends(['start_date' => $startDate, 'end_date' => $endDate])->links(),
             'first_item' => $kendalaReports->firstItem() ?? 0,

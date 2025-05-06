@@ -27,9 +27,9 @@ class DeviceManagementController extends Controller
                         ->orWhere('location', 'LIKE', "%{$query}%")
                         ->orWhere('ip_address', 'LIKE', "%{$query}%")
                         ->paginate(10);
-    
-        $html = view('Admin.partials.managePerangkat-table', compact('devices'))->render();
-        
+
+        $html = view('admin.partials.managePerangkat-table', compact('devices'))->render();
+
         return response()->json(['html' => $html]);
     }
 

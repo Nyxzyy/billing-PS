@@ -19,7 +19,7 @@ class LaporanPageKasirController extends Controller
 
         $transactions = collect([]);
         $totalRevenue = 0;
-        
+
         if ($currentShift) {
             // Ubah query untuk mengambil transaksi berdasarkan shift_start saja
             $transactions = TransactionReport::with(['device', 'user'])
@@ -51,7 +51,7 @@ class LaporanPageKasirController extends Controller
             ]);
         }
 
-        return view('Kasir.laporan', [
+        return view('kasir.laporan', [
             'transactions' => $transactions,
             'currentShift' => $currentShift,
             'totalRevenue' => $totalRevenue
@@ -61,7 +61,7 @@ class LaporanPageKasirController extends Controller
     public function printReceipt($transactionId)
     {
         $transaction = TransactionReport::with(['device', 'user'])->findOrFail($transactionId);
-        
+
         if ($transaction->user_id !== Auth::id()) {
             abort(403, 'Unauthorized');
         }
@@ -74,7 +74,7 @@ class LaporanPageKasirController extends Controller
             'total_price' => $transaction->total_price
         ]);
 
-        return view('Kasir.receipt', [
+        return view('kasir.receipt', [
             'transaction' => [
                 'id' => $transaction->id,
                 'device_name' => $transaction->device->name,
@@ -95,7 +95,7 @@ class LaporanPageKasirController extends Controller
     {
         try {
             $today = Carbon::now()->format('Y-m-d');
-            
+
             $currentShift = CashierReport::where('cashier_id', Auth::id())
                 ->whereDate('work_date', $today)
                 ->whereNull('shift_end')
@@ -110,7 +110,7 @@ class LaporanPageKasirController extends Controller
 
             // Calculate final work hours
             $workHours = Carbon::parse($currentShift->shift_start)->diffInHours(now());
-            
+
             $currentShift->update([
                 'shift_end' => now(),
                 'total_work_hours' => $workHours

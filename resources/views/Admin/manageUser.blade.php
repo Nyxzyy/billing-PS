@@ -49,7 +49,7 @@
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
                         <div id="userTable">
-                            @include('Admin.partials.manageUser-table', ['users' => $users])
+                            @include('admin.partials.manageUser-table', ['users' => $users])
                         </div>
                     </div>
                 </div>

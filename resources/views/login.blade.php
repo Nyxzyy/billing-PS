@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Billing Manage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
@@ -16,7 +17,7 @@
         <div class="relative flex items-center justify-center w-full md:w-1/2 lg:w-3/5 bg-cover bg-center h-40 md:h-auto"
             style="background-image: url('{{ asset('assets/images/Background (1).png') }}');">
             <div class="absolute inset-0 bg-black opacity-50"></div>
-            <h1 class="relative text-white text-3xl md:text-4xl font-semibold italic underline text-center px-4" 
+            <h1 class="relative text-white text-3xl md:text-4xl font-semibold italic underline text-center px-4"
                 style="font-family: Roboto, sans-serif">
                 "INILOGONYA"
             </h1>
@@ -50,7 +51,8 @@
             <div id="alert-message" class="hidden text-center text-red-600 font-semibold mb-4"></div>
 
             <!-- Card container for the form on mobile -->
-            <div class="bg-white rounded-lg shadow-md p-5 sm:p-6 border border-gray-100 max-w-md md:max-w-lg mx-auto w-full">
+            <div
+                class="bg-white rounded-lg shadow-md p-5 sm:p-6 border border-gray-100 max-w-md md:max-w-lg mx-auto w-full">
                 <form id="loginForm" action="{{ route('login') }}" method="POST" class="w-full max-w mt-2">
                     @csrf
                     <div class="mb-4">

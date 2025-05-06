@@ -50,7 +50,7 @@ class LaporanDeviceController extends Controller
         $transactions = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return response()->json([
-            'html' => view('Admin.partials.device-table', compact('transactions'))->render(),
+            'html' => view('admin.partials.device-table', compact('transactions'))->render(),
             'summary' => $summary,
             'pagination' => $transactions->appends($request->all())->links()->render(),
             'first_item' => $transactions->firstItem() ?? 0,
@@ -77,7 +77,7 @@ class LaporanDeviceController extends Controller
         $transactions = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return response()->json([
-            'html' => view('Admin.partials.device-table', compact('transactions'))->render(),
+            'html' => view('admin.partials.device-table', compact('transactions'))->render(),
             'summary' => $summary,
             'pagination' => $transactions->links()->render(),
             'first_item' => $transactions->firstItem() ?? 0,
@@ -89,7 +89,7 @@ class LaporanDeviceController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-        
+
         $filteredTransactions = TransactionReport::with(['device', 'user'])
             ->where(function ($q) use ($query) {
                 $q->whereHas('device', function ($subQuery) use ($query) {
@@ -109,7 +109,7 @@ class LaporanDeviceController extends Controller
         $transactions = $filteredTransactions->paginate(10);
 
         return response()->json([
-            'html' => view('Admin.partials.device-table', compact('transactions'))->render(),
+            'html' => view('admin.partials.device-table', compact('transactions'))->render(),
             'summary' => $summary,
             'pagination' => $transactions->appends(['query' => $query])->links()->render(),
             'first_item' => $transactions->firstItem() ?? 0,
@@ -177,16 +177,16 @@ class LaporanDeviceController extends Controller
     private function getSummary($query)
     {
         $totalMinutes = $query->sum('package_time');
-        
-        $years = floor($totalMinutes / (525600)); 
+
+        $years = floor($totalMinutes / (525600));
         $remainingMinutes = $totalMinutes % 525600;
-        
+
         $months = floor($remainingMinutes / (43800));
         $remainingMinutes = $remainingMinutes % 43800;
-        
-        $days = floor($remainingMinutes / 1440); 
+
+        $days = floor($remainingMinutes / 1440);
         $remainingMinutes = $remainingMinutes % 1440;
-        
+
         $hours = floor($remainingMinutes / 60);
         $minutes = $remainingMinutes % 60;
 
@@ -196,7 +196,7 @@ class LaporanDeviceController extends Controller
         if ($days > 0) $waktuPakai[] = $days . ' Hari';
         if ($hours > 0) $waktuPakai[] = $hours . ' Jam';
         if ($minutes > 0) $waktuPakai[] = $minutes . ' Menit';
-        
+
         $formattedWaktuPakai = !empty($waktuPakai) ? implode(' ', $waktuPakai) : '0 Menit';
 
         return [

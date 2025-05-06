@@ -28,6 +28,9 @@
                         class="text-[#6D717F] text-sm w-full px-3 outline-none bg-transparent border-none appearance-none">
                 </div>
 
+                <span class="hidden md:flex items-center text-[#6D717F] text-lg font-semibold">-</span>
+
+
                 <div
                     class="relative w-full md:w-1/5 flex items-center border rounded-lg text-[#6D717F] border-[#C0C0C0] px-3 py-1.5">
                     <button type="button" onclick="document.getElementById('end_date').showPicker()">
@@ -44,14 +47,14 @@
                         class="text-[#6D717F] text-sm w-full px-3 outline-none bg-transparent border-none appearance-none">
                 </div>
                 <div class="relative w-full md:w-1/5">
-                    <svg class="absolute left-3 top-2 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg"
+                    <svg class="absolute left-3 top-2.5 w-4 h-4 text-[#6D717F]" xmlns="http://www.w3.org/2000/svg"
                         width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                     <input type="text" name="searchKendala" id="searchKendala" placeholder="Ketik untuk mencari di tabel"
-                        class="text-[#6D717F] text-sm w-full pl-8 py-1.5 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="text-[#6D717F] text-sm w-full pl-8 py-2 border border-[#c4c4c4] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="relative" x-data="{ isOpen: false }">
                     <button @click="isOpen = !isOpen"

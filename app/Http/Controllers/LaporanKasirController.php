@@ -75,7 +75,7 @@ class LaporanKasirController extends Controller
         $reports = $query->orderBy('work_date', 'desc')->paginate(10);
 
         return response()->json([
-            'html' => view('Admin.partials.kasir-table', compact('reports'))->render(),
+            'html' => view('admin.partials.kasir-table', compact('reports'))->render(),
             'summary' => $summary,
             'pagination' => $reports->appends($request->all())->links()->render(),
             'first_item' => $reports->firstItem() ?? 0,
@@ -87,7 +87,7 @@ class LaporanKasirController extends Controller
     public function filterByCashier(Request $request)
     {
         $cashierId = $request->cashier_id;
-        
+
         $query = CashierReport::with('cashier');
 
         if ($cashierId) {
@@ -111,7 +111,7 @@ class LaporanKasirController extends Controller
         ];
 
         return response()->json([
-            'html' => view('Admin.partials.kasir-table', compact('reports'))->render(),
+            'html' => view('admin.partials.kasir-table', compact('reports'))->render(),
             'summary' => $summary,
             'pagination' => $reports->links()->render(),
             'first_item' => $reports->firstItem() ?? 0,
@@ -123,7 +123,7 @@ class LaporanKasirController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-        
+
         $filteredReports = CashierReport::with('cashier')
             ->where(function ($q) use ($query) {
                 $q->whereHas('cashier', function ($subQuery) use ($query) {
@@ -146,7 +146,7 @@ class LaporanKasirController extends Controller
         $reports = $filteredReports->paginate(10);
 
         return response()->json([
-            'html' => view('Admin.partials.kasir-table', compact('reports'))->render(),
+            'html' => view('admin.partials.kasir-table', compact('reports'))->render(),
             'summary' => $summary,
             'pagination' => $reports->appends(['query' => $query])->links()->render(),
             'first_item' => $reports->firstItem() ?? 0,
@@ -173,7 +173,7 @@ class LaporanKasirController extends Controller
         }
 
         $reports = $query->get();
-        
+
         $summary = [
             'total_work_hours' => $reports->sum('total_work_hours'),
             'total_transactions' => $reports->sum('total_transactions'),

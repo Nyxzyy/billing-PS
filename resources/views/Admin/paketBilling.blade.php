@@ -47,7 +47,7 @@
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
                         <div id="billingTable">
-                            @include('Admin.partials.paketBilling-table', ['packages' => $packages])
+                            @include('admin.partials.paketBilling-table', ['packages' => $packages])
                         </div>
                     </div>
                 </div>

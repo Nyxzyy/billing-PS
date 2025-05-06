@@ -27,7 +27,7 @@ class UserManagementController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-    
+
         $users = User::where('role_id', 2)
             ->where(function ($q) use ($query) {
                 $q->where('name', 'LIKE', "%{$query}%")
@@ -36,12 +36,12 @@ class UserManagementController extends Controller
                   ->orWhere('address', 'LIKE', "%{$query}%");
             })
             ->paginate(10);
-    
+
         return response()->json([
-            'html' => view('Admin.partials.manageUser-table', compact('users'))->render()
+            'html' => view('admin.partials.manageUser-table', compact('users'))->render()
         ]);
     }
-    
+
 
     public function store(Request $request)
     {
@@ -55,7 +55,7 @@ class UserManagementController extends Controller
 
         $validated['role_id'] = $request->role_id ?? 2;
         $validated['password'] = Hash::make($validated['password']);
-        
+
         User::create($validated);
 
         return redirect()->route('admin.manageUser')

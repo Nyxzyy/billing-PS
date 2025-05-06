@@ -17,7 +17,7 @@ class DashboardAdminController extends Controller
         $usedDevices = Device::whereIn('status', ['Berjalan', 'Pending'])->count();
         $availableDevices = Device::where('status', 'Tersedia')->count();
         $maintenanceDevices = Device::where('status', 'Maintenance')->count();
-        
+
         $totalCashiers = User::whereHas('role', function($query) {
             $query->where('name', 'kasir');
         })->count();
@@ -35,11 +35,11 @@ class DashboardAdminController extends Controller
             ->toArray();
 
         $totalTodayIncome = array_sum($todayIncome);
-        
+
         // Get yesterday's income for comparison
         $yesterday = Carbon::yesterday();
         $yesterdayIncome = TransactionReport::whereDate('created_at', $yesterday)->sum('total_price');
-        
+
         // Calculate percentage change
         $percentageChange = 0;
         if ($yesterdayIncome > 0) {
@@ -68,7 +68,7 @@ class DashboardAdminController extends Controller
         // Default to weekly data
         $chartData = $this->getChartData('week');
 
-        return view('Admin.dashboard', compact(
+        return view('admin.dashboard', compact(
             'totalDevices',
             'usedDevices',
             'availableDevices',
@@ -93,7 +93,7 @@ class DashboardAdminController extends Controller
     public function getDashboardStats()
     {
         $today = Carbon::today();
-        
+
         $stats = [
             'devices' => [
                 'total' => Device::count(),

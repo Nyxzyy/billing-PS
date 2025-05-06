@@ -11,8 +11,8 @@ class OpenBillingController extends Controller
     public function index()
     {
         $openBilling = BillingOpen::first();
-        $promos = OpenBillingPromo::paginate(10); 
-        return view('Admin.openBilling', compact('openBilling', 'promos'));
+        $promos = OpenBillingPromo::paginate(10);
+        return view('admin.openBilling', compact('openBilling', 'promos'));
     }
 
     public function search(Request $request)
@@ -25,7 +25,7 @@ class OpenBillingController extends Controller
             ->paginate(10);
 
         return response()->json([
-            'html' => view('Admin.partials.paketBilling-table', compact('packages'))->render()
+            'html' => view('admin.partials.paketBilling-table', compact('packages'))->render()
         ]);
     }
 

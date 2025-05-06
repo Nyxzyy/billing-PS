@@ -11,7 +11,7 @@ class BillingPackageController extends Controller
     public function index()
     {
         $packages = BillingPackage::paginate(10);
-        return view('Admin.paketBilling', compact('packages'));
+        return view('admin.paketBilling', compact('packages'));
     }
 
     public function search(Request $request)
@@ -23,7 +23,7 @@ class BillingPackageController extends Controller
             ->paginate(10);
 
         return response()->json([
-            'html' => view('Admin.partials.paketBilling-table', compact('packages'))->render()
+            'html' => view('admin.partials.paketBilling-table', compact('packages'))->render()
         ]);
     }
 
@@ -97,7 +97,7 @@ class BillingPackageController extends Controller
     {
         $packages = BillingPackage::paginate(10);
         $editPackage = BillingPackage::findOrFail($id);
-        return view('Admin.paketBilling', compact('packages', 'editPackage'));
+        return view('admin.paketBilling', compact('packages', 'editPackage'));
     }
 
     public function update(Request $request, $id)

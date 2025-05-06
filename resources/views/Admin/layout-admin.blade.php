@@ -6,14 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
-    @vite(['resources/css/app.css', 'resources/css/styles.css', 'resources/js/app.js'])
+    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
-<body style="background-color: #F5F5F5">
+<body style="background-color: #F5F5F5" class="overflow-hidden">
     <div class="flex flex-col md:flex-row h-screen">
         @include('components.sidebar-admin')
-        <div class="w-full md:w-full pt-5 mx-auto overflow-auto" id="content-area">
+        <!-- Ubah div content -->
+        <div class="w-full md:w-full h-screen overflow-y-auto" id="content-area">
             <div class="w-full bg-gray-100 py-2 mb-2 flex flex-wrap justify-between items-center px-4 md:px-6">
                 <div class="text-lg md:text-2xl text-gray-500">
                     Pages / <span id="breadcrumb" class="font-normal text-black">@yield('breadcrumb')</span>
